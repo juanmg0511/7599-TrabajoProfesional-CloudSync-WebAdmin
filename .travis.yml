@@ -33,6 +33,7 @@ before_deploy:
 deploy:
   provider: heroku
   strategy: api
+  api_key: $HEROKU_API_KEY
   app:
     qa: $HEROKU_APP_NAME_QA
     master: $HEROKU_APP_NAME
