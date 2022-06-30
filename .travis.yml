@@ -21,9 +21,9 @@ script:
 - npm test -- --coverage
 # build optimized production version
 - npm run build
-after_success:
+# after_success:
   # submit results to coveralls, on success
-  - coveralls
+  # - coveralls
 branches:
   # include ONLY these branches
   only:
