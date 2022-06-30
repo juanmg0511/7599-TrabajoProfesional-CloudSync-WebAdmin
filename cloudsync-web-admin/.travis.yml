@@ -1,0 +1,34 @@
+# CloudSync - Web Admin
+# React App
+# .travis.yml
+
+# Basado en:
+# https://dev.to/michalhonc/set-up-continuous-deploy-for-free-with-react-github-travis-and-heroku-381b
+
+os: [ "linux" ]
+dist: "xenial"
+languaje: node_js
+node_js:
+  - 18
+before_install:
+- npm update
+- sudo apt-get update
+- npm install --global http-server
+install:
+- npm install
+- npm build
+script:
+- npm run coveralls
+#after_success:
+  # submit results to coveralls, on success
+#  - coveralls
+branches:
+  # include ONLY these branches
+  only:
+    - qa
+    - master
+#deploy:
+#  provider: heroku
+#  app:
+#    qa: $HEROKU_APP_NAME_QA
+#    master: $HEROKU_APP_NAME
