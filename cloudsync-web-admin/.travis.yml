@@ -11,24 +11,24 @@ languaje: node_js
 node_js:
   - 18
 before_install:
-- npm update
-- sudo apt-get update
-- npm install --global http-server
+- npm --prefix cloudsync-web-admin update
 install:
-- npm install
-- npm build
+# install requirements
+- npm --prefix cloudsync-web-admin install
+- npm --prefix cloudsync-web-admin build
 script:
-- npm run coveralls
-#after_success:
+# run tests
+- npm --prefix cloudsync-web-admin test
+after_success:
   # submit results to coveralls, on success
-#  - coveralls
+  - coveralls
 branches:
   # include ONLY these branches
   only:
     - qa
     - master
-#deploy:
-#  provider: heroku
-#  app:
-#    qa: $HEROKU_APP_NAME_QA
-#    master: $HEROKU_APP_NAME
+deploy:
+  provider: heroku
+  app:
+    qa: $HEROKU_APP_NAME_QA
+    master: $HEROKU_APP_NAME
