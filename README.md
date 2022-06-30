@@ -2,7 +2,7 @@
 
 [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
 
-## CloudSync - App Server
+## CloudSync - Web Admin
 ### Resumen
 
 Repositorio correspondiente al desarrollo del trabajo final de la carrera **_"Ingeniería en Informática"_** de la **_"Facultad de Ingeniería de la Universidad de Buenos Aires" (FIUBA)_**.  
