@@ -4,22 +4,23 @@
 
 # Basado en:
 # https://dev.to/michalhonc/set-up-continuous-deploy-for-free-with-react-github-travis-and-heroku-381b
+# https://dev.to/nedsoft/ci-cd-with-travisci-and-coveralls-in-node-express-api-2i55
 
 os: [ "linux" ]
 dist: "xenial"
 language: node_js
 node_js:
   - 17
-# before_install:
-#
+before_install:
+- cd cloudsync-web-admin
 install:
 # install requirements
-- npm --prefix cloudsync-web-admin install
+- npm install
 script:
 # run tests
-- npm --prefix cloudsync-web-admin test -- --coverage
+- npm test -- --coverage
 # build optimized production version
-- npm --prefix cloudsync-web-admin run build
+- npm run build
 after_success:
   # submit results to coveralls, on success
   - coveralls
