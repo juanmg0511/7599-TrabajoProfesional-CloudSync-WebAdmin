@@ -10,12 +10,14 @@ dist: "xenial"
 language: node_js
 node_js:
   - 17
+# before_install:
+#
 install:
 # install requirements
 - npm --prefix cloudsync-web-admin install
 script:
 # run tests
-- npm --prefix cloudsync-web-admin test
+- npm --prefix cloudsync-web-admin test -- --coverage
 # build optimized production version
 - npm --prefix cloudsync-web-admin run build
 after_success:
@@ -26,6 +28,8 @@ branches:
   only:
     - qa
     - master
+before_deploy:
+- rvm $(travis_internal_ruby) --fuzzy do ruby -S gem install faraday -v 1.8.0
 deploy:
   provider: heroku
   strategy: api
