@@ -7,9 +7,9 @@
 
 os: [ "linux" ]
 dist: "xenial"
-languaje: node_js
+language: node_js
 node_js:
-  - 18
+  - 17
 before_install:
 - npm --prefix cloudsync-web-admin update
 install:
@@ -29,6 +29,7 @@ branches:
     - master
 deploy:
   provider: heroku
+  strategy: api
   app:
     qa: $HEROKU_APP_NAME_QA
     master: $HEROKU_APP_NAME
