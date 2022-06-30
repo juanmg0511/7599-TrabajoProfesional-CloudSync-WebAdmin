@@ -10,8 +10,6 @@ dist: "xenial"
 language: node_js
 node_js:
   - 17
-before_install:
-- npm --prefix cloudsync-web-admin update
 install:
 # install requirements
 - npm --prefix cloudsync-web-admin install
