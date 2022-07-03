@@ -18,12 +18,12 @@ install:
 - npm install
 script:
 # run tests
-- nyc npm test && nyc report --reporter=text-lcov
+- npm run test -- --coverage
 # build optimized production version
 - npm run build
 after_success:
   # submit results to coveralls, on success
-  - coveralls
+  - cat ./coverage/lcov.info | coveralls
 branches:
   # include ONLY these branches
   only:
