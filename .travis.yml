@@ -22,7 +22,7 @@ script:
 # build optimized production version
 - npm run build
 # after_success:
-  # submit results to coveralls, on success
+  # submit results to coveralls, on success 
   coveralls
 branches:
   # include ONLY these branches
