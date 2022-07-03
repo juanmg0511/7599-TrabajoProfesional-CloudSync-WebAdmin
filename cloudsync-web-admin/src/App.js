@@ -6,12 +6,28 @@
 // https://marmelab.com/react-admin/Tutorial.html
 // https://aatifbandey.medium.com/test-your-react-app-with-react-testing-library-and-jest-dom-26b92201bbe3
 
-import * as React from "react";
-import { Admin } from 'react-admin';
-import jsonServerProvider from 'ra-data-json-server';
+import logo from './logo.svg';
+import './App.css';
 
-  const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+    </div>
+  );
+}
 
-  const App = () => <Admin dataProvider={dataProvider} />;
-
-  export default App;
+export default App;
