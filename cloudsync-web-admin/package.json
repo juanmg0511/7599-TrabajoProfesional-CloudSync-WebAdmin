@@ -8,11 +8,11 @@
     "url": "https://github.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin/issues"
   },
   "scripts": {
-    "build": "react-scripts build",
+    "start": "node --max_old_space_size=460 node_modules/.bin/react-scripts start",
+    "build": "node --max_old_space_size=460 node_modules/.bin/react-scripts build",
     "changelog": "auto-changelog --starting-version 4.3.1 --commit-limit false --hide-credit",
     "eject": "react-scripts eject",
-    "lint": "eslint \"src/**/*.js\"",
-    "start": "react-scripts start",
+    "lint": "eslint \"src/**/*.js\"",    
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand"
@@ -64,8 +64,8 @@
     "web-vitals": "^2.1.4"
   },
   "engines": {
-    "node": ">=10",
-    "npm": ">=6"
+    "node": "18.x",
+    "npm": "8.x"
   },
   "browserslist": {
     "production": [
