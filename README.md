@@ -23,6 +23,7 @@ El mismo consiste en la creación de un juego en 2D con mecánicas _roguelike_ c
 ## Herramientas Utilizadas
 
 - React
+- [Core UI Free React Admin Template](https://github.com/coreui/coreui-free-react-admin-template) (bajo licencia [MIT](https://github.com/coreui/coreui-free-react-admin-template/blob/main/LICENSE))
 - npm
 
 ## Ambientes
