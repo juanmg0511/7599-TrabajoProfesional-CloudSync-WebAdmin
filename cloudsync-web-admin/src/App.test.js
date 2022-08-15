@@ -1,10 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import App from './App';
+import React from 'react'
+import { render } from '@testing-library/react'
+import App from './App'
 
-test('renders placeholder text', async () => {
-  render(<App />);
-  const linkElement = screen.getByText(/CloudSync/i);
-  await waitFor(() => {
-    expect(linkElement).toBeInTheDocument();
-  });
+test('renders home page', () => { 
+
+  const {container} = render(<App />);
+  const divs = container.getElementsByClassName('sk-spinner');
+
+  expect(divs.length).toBe(1);
 });

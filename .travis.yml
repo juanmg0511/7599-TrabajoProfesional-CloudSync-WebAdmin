@@ -3,6 +3,7 @@
 # .travis.yml
 
 # Basado en:
+# https://stackoverflow.com/questions/60909911/how-do-i-deploy-a-static-react-app-to-heroku
 # https://dev.to/michalhonc/set-up-continuous-deploy-for-free-with-react-github-travis-and-heroku-381b
 # https://dev.to/nedsoft/ci-cd-with-travisci-and-coveralls-in-node-express-api-2i55
 
