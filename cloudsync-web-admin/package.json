@@ -8,8 +8,8 @@
     "url": "https://github.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin/issues"
   },
   "scripts": {
-    "start": "node --optimize_for_size --max_old_space_size=256 node_modules/.bin/react-scripts start",
-    "build": "node --optimize_for_size --max_old_space_size=256 node_modules/.bin/react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "changelog": "auto-changelog --starting-version 4.3.1 --commit-limit false --hide-credit",
     "eject": "react-scripts eject",
     "lint": "eslint \"src/**/*.js\"",    
