@@ -50,6 +50,15 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
+// CloudSync
+const AdminUsers = React.lazy(() => import('./views/admin-users'))
+const Users = React.lazy(() => import('./views/users'))
+const Sessions = React.lazy(() => import('./views/sessions'))
+const GameProgress = React.lazy(() => import('./views/game-progress'))
+const Highscores = React.lazy(() => import('./views/highscores'))
+const RequestLog = React.lazy(() => import('./views/request-log'))
+
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -95,6 +104,13 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
+  // CloudSync
+  { path: '/admin-users', name: 'Admin Users', element: AdminUsers },
+  { path: '/users', name: 'Users', element: Users },
+  { path: '/sessions', name: 'Sessions', element: Sessions },
+  { path: '/game-progress', name: 'Game Progress', element: GameProgress },
+  { path: '/highscores', name: 'Highscores', element: Highscores },
+  { path: '/request-log', name: 'Request Log', element: RequestLog },
 ]
 
 export default routes

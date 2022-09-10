@@ -1,6 +1,13 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
+  cilSpeedometer,
+  cilStar,
+  cilUser,
+  cilClock,
+  cilVideogame,
+  cilBarChart,
+  cilClipboard,
   cilBell,
   cilCalculator,
   cilChartPie,
@@ -9,8 +16,6 @@ import {
   cilNotes,
   cilPencil,
   cilPuzzle,
-  cilSpeedometer,
-  cilStar,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -20,21 +25,60 @@ const _nav = [
     name: 'Dashboard',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
+    /* badge: {
       color: 'info',
       text: 'NEW',
-    },
+    }, */
   },
   {
     component: CNavTitle,
-    name: 'CloudSync',
+    name: 'Users & Sessions',
+  },
+  {
+    component: CNavItem,
+    name: 'Admin Users',
+    to: '/admin-users',
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Users',
-    to: '/theme/colors',
-    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+    to: '/users',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
+  {
+    component: CNavItem,
+    name: 'Sessions',
+    to: '/sessions',
+    icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'Game',
+  },
+  {
+    component: CNavItem,
+    name: 'Game Progress',
+    to: '/game-progress',
+    icon: <CIcon icon={cilVideogame} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Highscores',
+    to: '/highscores',
+    icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'Logs',
+  },
+  {
+    component: CNavItem,
+    name: 'Request Log',
+    to: '/request-log',
+    icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+  },
+/*
   {
     component: CNavTitle,
     name: 'Theme',
@@ -303,6 +347,7 @@ const _nav = [
       },
     ],
   },
+*/
 ]
 
 export default _nav
