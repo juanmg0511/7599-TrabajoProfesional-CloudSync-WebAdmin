@@ -12,11 +12,11 @@ import {
   CNavItem,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
+import { cilBell, cilEnvelopeOpen, cilList, cilMenu, cilBadge, cilBookmark, cilAsteriskCircle } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
-import { logo } from 'src/assets/brand/logo'
+import { logoCs } from 'src/assets/brand/logo-cs'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
@@ -32,7 +32,7 @@ const AppHeader = () => {
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
         <CHeaderBrand className="mx-auto d-md-none" to="/">
-          <CIcon icon={logo} height={48} alt="Logo" />
+          <CIcon icon={logoCs} height={48} alt="Logo" />
         </CHeaderBrand>
 {/*
         <CHeaderNav className="d-none d-md-flex me-auto">
@@ -48,17 +48,12 @@ const AppHeader = () => {
             <CNavLink href="#">Settings</CNavLink>
           </CNavItem>
         </CHeaderNav>
-  */}
         <CHeaderNav>
           <CNavItem>
-            FIUBA CloudSync - Admin Site
-            {/*
             <CNavLink href="#">
               <CIcon icon={cilBell} size="lg" />
             </CNavLink>
-            */}
           </CNavItem>
-{/*
           <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilList} size="lg" />
@@ -66,15 +61,15 @@ const AppHeader = () => {
           </CNavItem>
           <CNavItem>
             <CNavLink href="#">
-              <CIcon icon={cilEnvelopeOpen} size="lg" />
+              <CIcon icon={cilAsteriskCircle} size="lg" />
             </CNavLink>
           </CNavItem>
-*/}
           </CHeaderNav>
-        <CHeaderNav className="ms-3">
+ */}
+          <CHeaderNav className="ms-3">
           <AppHeaderDropdown />
         </CHeaderNav>
-      </CContainer>
+       </CContainer>
       <CHeaderDivider />
       <CContainer fluid>
         <AppBreadcrumb />
