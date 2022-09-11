@@ -34,6 +34,7 @@ const AppHeader = () => {
         <CHeaderBrand className="mx-auto d-md-none" to="/">
           <CIcon icon={logo} height={48} alt="Logo" />
         </CHeaderBrand>
+{/*
         <CHeaderNav className="d-none d-md-flex me-auto">
           <CNavItem>
             <CNavLink to="/dashboard" component={NavLink}>
@@ -47,12 +48,17 @@ const AppHeader = () => {
             <CNavLink href="#">Settings</CNavLink>
           </CNavItem>
         </CHeaderNav>
+  */}
         <CHeaderNav>
           <CNavItem>
+            FIUBA CloudSync - Admin Site
+            {/*
             <CNavLink href="#">
               <CIcon icon={cilBell} size="lg" />
             </CNavLink>
+            */}
           </CNavItem>
+{/*
           <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilList} size="lg" />
@@ -63,7 +69,8 @@ const AppHeader = () => {
               <CIcon icon={cilEnvelopeOpen} size="lg" />
             </CNavLink>
           </CNavItem>
-        </CHeaderNav>
+*/}
+          </CHeaderNav>
         <CHeaderNav className="ms-3">
           <AppHeaderDropdown />
         </CHeaderNav>
