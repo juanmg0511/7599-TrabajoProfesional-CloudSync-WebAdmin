@@ -51,6 +51,7 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 // CloudSync
+const AdminProfile = React.lazy(() => import('./views/admin-profile'))
 const AdminUsers = React.lazy(() => import('./views/admin-users'))
 const Users = React.lazy(() => import('./views/users'))
 const Sessions = React.lazy(() => import('./views/sessions'))
@@ -105,6 +106,7 @@ const routes = [
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
   // CloudSync
+  { path: '/admin-profile', name: 'Admin Profile', element: AdminProfile },
   { path: '/admin-users', name: 'Admin Users', element: AdminUsers },
   { path: '/users', name: 'Users', element: Users },
   { path: '/sessions', name: 'Sessions', element: Sessions },
