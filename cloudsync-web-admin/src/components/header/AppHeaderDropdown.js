@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   CAvatar,
   CDropdown,
@@ -14,7 +14,7 @@ import {
   cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import avatar8 from './../../assets/images/avatars/8.jpg'
+import { getUsername } from '../../stateapi/auth'
 
 /* Import Constants */
 import { AUTH_LOGOUT } from '../../config'
@@ -24,6 +24,10 @@ import { doLogOut } from '../../webapi'
 const AppHeaderDropdown = () => {
 
   const dispatch = useDispatch()
+  const username = useSelector(getUsername)
+  if (!username)
+    username = 'X'
+
   function logOut () {
     doLogOut()
       .then(_ => {
@@ -44,7 +48,7 @@ const AppHeaderDropdown = () => {
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar color="primary" textColor="white" size="lg">{username.charAt(0).toUpperCase()}</CAvatar>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>

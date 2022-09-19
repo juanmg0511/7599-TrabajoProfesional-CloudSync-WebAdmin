@@ -19,8 +19,10 @@ import { SIDEBAR_ON, SIDEBAR_OFF } from 'src/config'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
-  const username = useSelector(getUsername)
   const sidebarShow = useSelector(getSidebarShow)
+  const username = useSelector(getUsername)
+  if (!username)
+  username = 'X'
 
   return (
     <CHeader position="sticky" className="mb-4">
@@ -35,7 +37,7 @@ const AppHeader = () => {
           <CIcon icon={logoCs} height={48} alt="Logo" />
         </CHeaderBrand>
         <CHeaderNav className="ms-3">
-          <span className="d-none d-md-block" style={{marginTop: '8px'}}>Welcome, {username}</span>
+          <span className="d-none d-md-block" style={{marginTop: '12px'}}>Welcome, {username.charAt(0).toUpperCase() + username.slice(1)}</span>
           <AppHeaderDropdown />
         </CHeaderNav>
        </CContainer>
