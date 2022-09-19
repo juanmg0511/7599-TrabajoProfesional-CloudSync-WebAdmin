@@ -68,7 +68,7 @@ const Login = () => {
         <Navigate to="/"/>) : null }
       <CContainer>
         <CRow className="justify-content-center">
-          <CCol md={8}>
+          <CCol md={9} lg={7} xl={6}>
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
