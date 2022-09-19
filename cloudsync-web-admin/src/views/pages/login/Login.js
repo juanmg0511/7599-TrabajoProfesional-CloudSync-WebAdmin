@@ -17,7 +17,10 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { sygnetCs } from 'src/assets/brand/sygnet-cs'
+import { sygnetCsDev } from 'src/assets/brand/sygnet-cs-dev'
+import { sygnetCsQa } from 'src/assets/brand/sygnet-cs-qa'
+import { sygnetCsProd } from 'src/assets/brand/sygnet-cs-prod'
+import { REACT_APP_ENV, REACT_APP_DEV_COLOR, REACT_APP_QA_COLOR } from '../../../config.js'
 import { cilLockLocked, cilUser, cilWarning } from '@coreui/icons'
 /* Import WebApi */
 import { doAuth } from '../../../webapi'
@@ -74,7 +77,7 @@ const Login = () => {
                 <CCardBody>
                   <CForm>
                     <div>
-                      <CIcon className="sidebar-brand-narrow" icon={sygnetCs} height={50} />
+                      {(REACT_APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsProd} height={50} />) : (REACT_APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsQa} height={50} />) : (<CIcon className="sidebar-brand-narrow" icon={sygnetCsDev} height={50} />)))}
                       <span style={{fontSize: '2.5rem',
                                     fontWeight: '500',
                                     lineHeight: '50px',
@@ -85,7 +88,7 @@ const Login = () => {
                       <p style={{
                             marginLeft: '65px',
                             marginTop: '-5px'}}>
-                        Admin site
+                        {(REACT_APP_ENV == 'PROD' ? (null) : (REACT_APP_ENV == 'QA' ? (<span style={{color: REACT_APP_QA_COLOR, fontWeight: '500'}}>[QA]</span>) : (<span style={{color: REACT_APP_DEV_COLOR, fontWeight: '500'}}>[DEV]</span>)))} Admin site
                       </p>
                     </div>
                     <p className="text-medium-emphasis">Sign In to your account</p>

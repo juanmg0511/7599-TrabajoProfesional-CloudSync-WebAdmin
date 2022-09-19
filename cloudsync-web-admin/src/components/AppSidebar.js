@@ -3,11 +3,14 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { CSidebar, CSidebarBrand, CSidebarNav, CSidebarToggler } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-
+import { logoNegativeCsDev } from 'src/assets/brand/logo-negative-cs-dev'
+import { logoNegativeCsQa } from 'src/assets/brand/logo-negative-cs-qa'
+import { logoNegativeCsProd } from 'src/assets/brand/logo-negative-cs-prod'
+import { sygnetCsDev } from 'src/assets/brand/sygnet-cs-dev'
+import { sygnetCsQa } from 'src/assets/brand/sygnet-cs-qa'
+import { sygnetCsProd } from 'src/assets/brand/sygnet-cs-prod'
+import { REACT_APP_ENV, REACT_APP_DEV_COLOR, REACT_APP_QA_COLOR } from '../config.js'
 import { AppSidebarNav } from './AppSidebarNav'
-
-import { logoNegativeCs } from 'src/assets/brand/logo-negative-cs'
-import { sygnetCs } from 'src/assets/brand/sygnet-cs'
 
 import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
@@ -30,8 +33,8 @@ const AppSidebar = () => {
       visible={sidebarShow}
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
-        <CIcon className="sidebar-brand-full" icon={logoNegativeCs} height={35} />
-        <CIcon className="sidebar-brand-narrow" icon={sygnetCs} height={35} />
+        {(REACT_APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-full" icon={logoNegativeCsProd} height={35} />) : (REACT_APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-full" icon={logoNegativeCsQa} height={35} />) : (<CIcon className="sidebar-brand-full" icon={logoNegativeCsDev} height={35} />)))}
+        {(REACT_APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsProd} height={35} />) : (REACT_APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsQa} height={35} />) : (<CIcon className="sidebar-brand-narrow" icon={sygnetCsDev} height={35} />)))}
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>

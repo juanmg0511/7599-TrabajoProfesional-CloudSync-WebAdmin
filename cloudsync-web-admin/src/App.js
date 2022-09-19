@@ -3,7 +3,19 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import axios from 'axios'
 import { isAuthed, isAuthing } from './stateapi/auth.js'
+import { REACT_APP_ENV } from './config.js'
 import './scss/style.scss'
+
+function getFaviconEl() {
+  return document.getElementById("app-favicon")
+}
+
+const favicon = getFaviconEl()
+if (REACT_APP_ENV == 'QA') {
+  favicon.href = window.location.origin + '/' + 'favicon-cs-qa.ico'
+} else if (REACT_APP_ENV == 'DEV') {
+    favicon.href = window.location.origin + '/' + 'favicon-cs-dev.ico'
+  }
 
 const loading = (
   <div className="pt-3 text-center">
