@@ -3,7 +3,7 @@ import { CFooter } from '@coreui/react'
 
 const AppFooter = () => {
   return (
-    <CFooter position="sticky">
+    <CFooter /*position="sticky"*/>
       <div>
         <span className="ms-1">FIUBA - 75.99 - 1C2022</span>
       </div>

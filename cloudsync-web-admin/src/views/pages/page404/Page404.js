@@ -24,16 +24,18 @@ const Page404 = () => {
                 The page you are looking for was not found.
               </p>
             </div>
-            <CInputGroup className="input-prepend">
-              <CInputGroupText>
-                <CIcon icon={cilMagnifyingGlass} />
-              </CInputGroupText>
-              <CFormInput type="text" placeholder="What are you looking for?" />
-              <CButton color="info">Search</CButton>
-            </CInputGroup>
           </CCol>
         </CRow>
       </CContainer>
+      <div style={{
+        position: 'fixed',
+        left: '50%',
+        bottom: '20px',
+        transform: 'translate(-50%, -50%)',
+        margin: '0 auto'
+      }}>
+        FIUBA - 75.99 - 1C2022
+      </div>
     </div>
   )
 }

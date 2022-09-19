@@ -1,5 +1,8 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Navigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { CSpinner } from '@coreui/react'
+import { CAlert } from '@coreui/react'
 import {
   CButton,
   CCard,
@@ -14,11 +17,55 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+import { sygnetCs } from 'src/assets/brand/sygnet-cs'
+import { cilLockLocked, cilUser, cilWarning } from '@coreui/icons'
+/* Import WebApi */
+import { doAuth } from '../../../webapi'
+/* Import Constants */
+import {
+  AUTH_REQUEST,
+  AUTH_SUCCESS
+} from '../../../config.js'
 
 const Login = () => {
+
+  const [username, changeUsername] = useState('')
+  const [password, changePassword] = useState('')
+  const [authed, changeAuthed] = useState(false)
+  const [authing, changeAuthing] = useState(false)
+  const [authError, changeAuthError] = useState(false)
+
+  const dispatch = useDispatch()
+
+  function onSubmit (e) {
+    e.preventDefault()
+    dispatch({ type: AUTH_REQUEST })
+    changeAuthing(true)
+    doAuth({ username: username, password: password })
+      .then(response => {
+        const { data } = response
+        dispatch({
+          type: AUTH_SUCCESS,
+          payload: {
+            token: data.session_token,
+            username: data.username
+          }
+        })
+        changeAuthing(false)
+        changeAuthed(true)
+        console.log("Authentication succesful. Logged in as: \"" + data.username + "\".")
+      })
+      .catch(_ => {
+        changeAuthing(false)
+        changeAuthError(true)
+        console.log("Authentication failure.")
+      })
+  }
+
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
+      { authed ? (
+        <Navigate to="/"/>) : null }
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8}>
@@ -26,63 +73,82 @@ const Login = () => {
               <CCard className="p-4">
                 <CCardBody>
                   <CForm>
-                    <h1>Login</h1>
+                    <div>
+                      <CIcon className="sidebar-brand-narrow" icon={sygnetCs} height={50} />
+                      <span style={{fontSize: '2.5rem',
+                                    fontWeight: '500',
+                                    lineHeight: '50px',
+                                    position: 'absolute',
+                                    marginLeft: '15px'}}>
+                        FIUBA CloudSync
+                      </span>
+                      <p style={{
+                            marginLeft: '65px',
+                            marginTop: '-5px'}}>
+                        Admin site
+                      </p>
+                    </div>
                     <p className="text-medium-emphasis">Sign In to your account</p>
+                    { authError ? (
+                      <CAlert color="danger">
+                        <CIcon icon={cilWarning} className="flex-shrink-0 me-2" width={24} height={24} />
+                          <span>Invalid login credentials!</span>
+                        </CAlert> ) : null
+                    }
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Username" autoComplete="username" />
+                      <CFormInput
+                        name='username'
+                        placeholder="Username"
+                        autoComplete="username"
+                        onChange={e => changeUsername(e.target.value)}
+                      />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
+                        name='password'
                         type="password"
                         placeholder="Password"
                         autoComplete="current-password"
+                        onChange={e => changePassword(e.target.value)}
                       />
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4" href="#/dashboard">
-                          Login
+                      {authing ? (
+                        <CButton disabled>
+                          <CSpinner component="span" size="sm" aria-hidden="true"/>
                         </CButton>
+                        ) : (
+                        <CButton color="primary" className="px-4" onClick={onSubmit}>
+                          Login
+                        </CButton>)
+                      }
                       </CCol>
                       <CCol xs={6} className="text-right">
-                      {/*  
-                        <CButton color="link" className="px-0">
-                          Forgot password?
-                        </CButton>
-                      */}
                       </CCol>
                     </CRow>
                   </CForm>
-                </CCardBody>
-              </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
-                  <div style={{ marginTop: '30px' }}>
-                    <h2>Welcome</h2>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
-                    </p>
-                    {/*
-                    <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Register Now!
-                      </CButton>
-                    </Link>
-                  */}
-                  </div>
                 </CCardBody>
               </CCard>
             </CCardGroup>
           </CCol>
         </CRow>
       </CContainer>
+      <div style={{
+        position: 'fixed',
+        left: '50%',
+        bottom: '20px',
+        transform: 'translate(-50%, -50%)',
+        margin: '0 auto'
+      }}>
+        FIUBA - 75.99 - 1C2022
+      </div>
     </div>
   )
 }
