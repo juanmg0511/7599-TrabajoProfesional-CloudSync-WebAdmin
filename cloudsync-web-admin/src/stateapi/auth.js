@@ -13,11 +13,3 @@ export function getToken (state) {
 export function getUsername (state) {
   return state.auth.username
 }
-
-export function getSidebarShow (state) {
-  return state.auth.sidebarShow
-}
-
-export function getSidebarUnfoldable (state) {
-  return state.auth.sidebarUnfoldable
-}

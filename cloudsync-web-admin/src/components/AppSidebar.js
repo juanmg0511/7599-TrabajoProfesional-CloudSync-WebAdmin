@@ -15,7 +15,7 @@ import { AppSidebarNav } from './AppSidebarNav'
 import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
 
-import { getSidebarShow, getSidebarUnfoldable } from '../stateapi/auth'
+import { getSidebarShow, getSidebarUnfoldable } from '../stateapi/ui'
 import { UNFOLDABLE_ON, UNFOLDABLE_OFF } from 'src/config'
 
 // sidebar nav config

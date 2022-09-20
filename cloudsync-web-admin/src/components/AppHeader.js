@@ -17,7 +17,8 @@ import { logoCsQa } from 'src/assets/brand/logo-cs-qa'
 import { logoCsProd } from 'src/assets/brand/logo-cs-prod'
 import { REACT_APP_ENV } from '../config.js'
 /* Import StateApi */
-import { getUsername, getSidebarShow } from '../stateapi/auth'
+import { getUsername } from '../stateapi/auth'
+import { getSidebarShow } from '../stateapi/ui'
 import { SIDEBAR_ON, SIDEBAR_OFF } from 'src/config'
 
 const AppHeader = () => {
