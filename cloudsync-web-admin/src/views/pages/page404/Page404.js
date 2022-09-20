@@ -1,17 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useNavigate } from "react-router-dom";
 import {
-  CButton,
+  CLink,
   CCol,
   CContainer,
-  CFormInput,
-  CInputGroup,
-  CInputGroupText,
   CRow,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilMagnifyingGlass } from '@coreui/icons'
 
 const Page404 = () => {
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    document.title = 'FIUBA CloudSync - Admin Site (Not found)';
+  });
+
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -21,7 +23,16 @@ const Page404 = () => {
               <h1 className="float-start display-3 me-4">404</h1>
               <h4 className="pt-3">Oops! You{"'"}re lost.</h4>
               <p className="text-medium-emphasis float-start">
-                The page you are looking for was not found.
+                The page you are looking for was not found.&nbsp;
+                <CLink
+                  style={{
+                    display: 'block',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {navigate("/")}}
+                >
+                  Back to safety.
+                </CLink>
               </p>
             </div>
           </CCol>
