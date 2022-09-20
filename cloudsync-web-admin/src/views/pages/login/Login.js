@@ -68,7 +68,7 @@ const Login = () => {
   }
 
   useEffect(() => {
-    document.title += ' (Login)';
+    document.title = 'FIUBA CloudSync - Admin Site (Login)';
   });
 
   return (
@@ -78,74 +78,72 @@ const Login = () => {
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={9} lg={7} xl={6}>
-            <CCardGroup>
-              <CCard className="p-4">
-                <CCardBody>
-                  <CForm>
-                    <div>
-                      {(REACT_APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsProd} height={50} />) : (REACT_APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsQa} height={50} />) : (<CIcon className="sidebar-brand-narrow" icon={sygnetCsDev} height={50} />)))}
-                      <span style={{fontSize: '2.5rem',
-                                    fontWeight: '500',
-                                    lineHeight: '50px',
-                                    position: 'absolute',
-                                    marginLeft: '15px'}}>
-                        FIUBA CloudSync
-                      </span>
-                      <p style={{
-                            marginLeft: '65px',
-                            marginTop: '-5px'}}>
-                        {(REACT_APP_ENV == 'PROD' ? (null) : (REACT_APP_ENV == 'QA' ? (<span style={{color: REACT_APP_QA_COLOR, fontWeight: '500'}}>[QA]</span>) : (<span style={{color: REACT_APP_DEV_COLOR, fontWeight: '500'}}>[DEV]</span>)))} Admin site
-                      </p>
-                    </div>
-                    <p className="text-medium-emphasis">Sign In to your account</p>
-                    { authError ? (
-                      <CAlert color="danger">
-                        <CIcon icon={cilWarning} className="flex-shrink-0 me-2" width={24} height={24} />
-                          <span>Invalid login credentials!</span>
-                        </CAlert> ) : null
+            <CCard className="p-4">
+              <CCardBody>
+                <CForm>
+                  <div>
+                    {(REACT_APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsProd} height={50} />) : (REACT_APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsQa} height={50} />) : (<CIcon className="sidebar-brand-narrow" icon={sygnetCsDev} height={50} />)))}
+                    <span style={{fontSize: '2.5rem',
+                                  fontWeight: '500',
+                                  lineHeight: '50px',
+                                  position: 'absolute',
+                                  marginLeft: '15px'}}>
+                      FIUBA CloudSync
+                    </span>
+                    <p style={{
+                          marginLeft: '65px',
+                          marginTop: '-5px'}}>
+                      {(REACT_APP_ENV == 'PROD' ? (null) : (REACT_APP_ENV == 'QA' ? (<span style={{color: REACT_APP_QA_COLOR, fontWeight: '500'}}>[QA]</span>) : (<span style={{color: REACT_APP_DEV_COLOR, fontWeight: '500'}}>[DEV]</span>)))} Admin site
+                    </p>
+                  </div>
+                  <p className="text-medium-emphasis">Sign In to your account</p>
+                  { authError ? (
+                    <CAlert color="danger">
+                      <CIcon icon={cilWarning} className="flex-shrink-0 me-2" width={24} height={24} />
+                        <span>Invalid login credentials!</span>
+                      </CAlert> ) : null
+                  }
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText>
+                      <CIcon icon={cilUser} />
+                    </CInputGroupText>
+                    <CFormInput
+                      name='username'
+                      placeholder="Username"
+                      autoComplete="username"
+                      onChange={e => changeUsername(e.target.value)}
+                    />
+                  </CInputGroup>
+                  <CInputGroup className="mb-4">
+                    <CInputGroupText>
+                      <CIcon icon={cilLockLocked} />
+                    </CInputGroupText>
+                    <CFormInput
+                      name='password'
+                      type="password"
+                      placeholder="Password"
+                      autoComplete="current-password"
+                      onChange={e => changePassword(e.target.value)}
+                    />
+                  </CInputGroup>
+                  <CRow>
+                    <CCol xs={6}>
+                    {authing ? (
+                      <CButton disabled>
+                        <CSpinner component="span" size="sm" aria-hidden="true"/>
+                      </CButton>
+                      ) : (
+                      <CButton color="primary" className="px-4" onClick={onSubmit}>
+                        Login
+                      </CButton>)
                     }
-                    <CInputGroup className="mb-3">
-                      <CInputGroupText>
-                        <CIcon icon={cilUser} />
-                      </CInputGroupText>
-                      <CFormInput
-                        name='username'
-                        placeholder="Username"
-                        autoComplete="username"
-                        onChange={e => changeUsername(e.target.value)}
-                      />
-                    </CInputGroup>
-                    <CInputGroup className="mb-4">
-                      <CInputGroupText>
-                        <CIcon icon={cilLockLocked} />
-                      </CInputGroupText>
-                      <CFormInput
-                        name='password'
-                        type="password"
-                        placeholder="Password"
-                        autoComplete="current-password"
-                        onChange={e => changePassword(e.target.value)}
-                      />
-                    </CInputGroup>
-                    <CRow>
-                      <CCol xs={6}>
-                      {authing ? (
-                        <CButton disabled>
-                          <CSpinner component="span" size="sm" aria-hidden="true"/>
-                        </CButton>
-                        ) : (
-                        <CButton color="primary" className="px-4" onClick={onSubmit}>
-                          Login
-                        </CButton>)
-                      }
-                      </CCol>
-                      <CCol xs={6} className="text-right">
-                      </CCol>
-                    </CRow>
-                  </CForm>
-                </CCardBody>
-              </CCard>
-            </CCardGroup>
+                    </CCol>
+                    <CCol xs={6} className="text-right">
+                    </CCol>
+                  </CRow>
+                </CForm>
+              </CCardBody>
+            </CCard>
           </CCol>
         </CRow>
       </CContainer>

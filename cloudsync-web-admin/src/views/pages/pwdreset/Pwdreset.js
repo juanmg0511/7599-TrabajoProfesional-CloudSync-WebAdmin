@@ -70,7 +70,7 @@ const PwdReset = () => {
   }
   
   useEffect(() => {
-    document.title += ' (Password Reset)';
+    document.title = 'FIUBA CloudSync - Admin Site (Password reset)';
     if (key && username) {
       changeValidPage(true)
     }
@@ -81,8 +81,8 @@ const PwdReset = () => {
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={9} lg={7} xl={6}>
-            <CCard className="mx-4">
-              <CCardBody className="p-4">
+            <CCard className="p-4">
+              <CCardBody>
                 <CForm>
                 <div>
                   {(REACT_APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsProd} height={50} />) : (REACT_APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsQa} height={50} />) : (<CIcon className="sidebar-brand-narrow" icon={sygnetCsDev} height={50} />)))}
