@@ -38,15 +38,14 @@ const PrivateRoute = () => {
 
   if (authing) {
     return <Navigate to='/login' />
-    } else if (authed) {
+  } else if (authed) {
       return <DefaultLayout />
-      } else {
+    } else {
         return <Navigate to='/login' />
       }
 }
     
 const App = () => {
-  const authed = useSelector(isAuthed)
   const dispatch = useDispatch()
   const [error, changeError] = useState(false)
 
@@ -59,7 +58,8 @@ const App = () => {
           error.response.data.message.includes('session')
         ) {
           changeError(true)
-          alert('Your session has expired.')
+          console.log('Session expired.')
+          alert('Session expired.')
           dispatch({
             type: AUTH_LOGOUT
           })
@@ -70,21 +70,20 @@ const App = () => {
   }, [dispatch])
 
   return (
-      <BrowserRouter>
-        <Suspense fallback={loading}>
-          <Routes>
-            {/* Private pages and login routing */}
-            <Route path='*' name="Home" element={<PrivateRoute />} />
-            {/* Public pages */}
-            <Route exact path="/pwdreset" name="Password Reset" element={<PwdReset />} />
-            <Route exact path="/login" name="User Login" element={<Login />} />
-            <Route exact path="/404" name="Not Found" element={<Page404 />} />            
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+    <BrowserRouter>
+      <Suspense fallback={loading}>
+        <Routes>
+          {/* Private pages and login routing */}
+          <Route path='*' name="Home" element={<PrivateRoute />} />
+          {/* Public pages */}
+          <Route exact path="/pwdreset" name="Password Reset" element={<PwdReset />} />
+          <Route exact path="/login" name="User Login" element={<Login />} />
+          <Route exact path="/404" name="Not Found" element={<Page404 />} />            
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
 
-      //ToDO: snackbar/notificación de sesion expirada!
-
+    //ToDO: snackbar/notificación de sesion expirada!
   )
 }
 
