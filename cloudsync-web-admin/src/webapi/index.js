@@ -13,5 +13,12 @@ export function doAuth (user) {
 }
 
 export function doLogOut (sessionId) {
-  return axios.delete(REACT_APP_APPSERVER_BASE_URL + '/api/v1/sessions/${sessionId}')
+  return axios.delete(REACT_APP_APPSERVER_BASE_URL + `/api/v1/sessions/${sessionId}`)
+}
+
+export function doRecoveryPassword (key, username, password) {
+  return axios.post(REACT_APP_APPSERVER_BASE_URL + `/api/v1/recovery/${username}`, {
+    recovery_key: key,
+    new_password: password
+  })
 }

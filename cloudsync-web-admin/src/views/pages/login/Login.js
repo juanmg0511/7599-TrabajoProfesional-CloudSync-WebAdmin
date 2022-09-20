@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { CSpinner } from '@coreui/react'
-import { CAlert } from '@coreui/react'
 import {
+  CSpinner,
+  CAlert,
   CButton,
   CCard,
   CCardBody,
@@ -17,11 +17,13 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { cilLockLocked,
+         cilUser,
+         cilWarning } from '@coreui/icons'
 import { sygnetCsDev } from 'src/assets/brand/sygnet-cs-dev'
 import { sygnetCsQa } from 'src/assets/brand/sygnet-cs-qa'
 import { sygnetCsProd } from 'src/assets/brand/sygnet-cs-prod'
 import { REACT_APP_ENV, REACT_APP_DEV_COLOR, REACT_APP_QA_COLOR } from '../../../config.js'
-import { cilLockLocked, cilUser, cilWarning } from '@coreui/icons'
 /* Import WebApi */
 import { doAuth } from '../../../webapi'
 /* Import Constants */
@@ -64,6 +66,10 @@ const Login = () => {
         console.log("Authentication failure.")
       })
   }
+
+  useEffect(() => {
+    document.title += ' (Login)';
+  });
 
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
