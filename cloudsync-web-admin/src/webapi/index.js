@@ -22,3 +22,19 @@ export function doRecoveryPassword (key, username, password) {
     new_password: password
   })
 }
+
+export function getUsers () {
+  return axios.get(REACT_APP_APPSERVER_BASE_URL + '/api/v1/users')
+}
+
+export function getUser (username) {
+  return axios.get(REACT_APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`)
+}
+
+export function saveUser (username, user) {
+  return axios.put(REACT_APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`, user)
+}
+
+export function removeUser (username) {
+  return axios.delete(REACT_APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`)
+}

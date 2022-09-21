@@ -1,0 +1,9 @@
+# CloudSync - Web Admin
+# React App on Nginx
+# .dockerignore
+
+# Directories to ignore
+node_modules
+# Files to ignore
+.dockerignore
+Dockerfile
