@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import qs from 'qs'
 import {
+  CToaster,
   CToast,
   CToastBody,
   CToastClose,
@@ -30,11 +31,23 @@ const PwdReset = () => {
 
   const [oldPassword, changeOldPassword] = useState('')
   const [newPassword, changeNewPassword] = useState('')
-  const [toastMessage, changeToastMessage] = useState('')
-  const [toastColor, changeToastColor] = useState('danger')
-  const [showToast, changeShowToast] = useState(false)
   const [validPage, changeValidPage] = useState(false)
   const [resetting, changeResetting] = useState(false)
+
+  function generateToast(toastColor, toastMessage) {
+    return (
+      <CToast color={toastColor}
+              className="text-white align-items-center"
+      >
+        <div className="d-flex">
+          <CToastBody>{toastMessage}</CToastBody>
+          <CToastClose className="me-2 m-auto" white />
+        </div>
+      </CToast>
+    )
+  }
+  const toaster = useRef()
+  const [toast, addToast] = useState(0)
 
   const { key, username } = qs.parse(location.search, {
     ignoreQueryPrefix: true
@@ -43,27 +56,20 @@ const PwdReset = () => {
   function onSubmit (e) {
     e.preventDefault()
     if (oldPassword != newPassword) {
-      changeToastMessage("Passwords do not match!")
-      changeToastColor("warning")
-      changeShowToast(true)
+      addToast(generateToast("warning","Passwords do not match!"))
       console.log("Passwords do not match.")
     }
     else {
       changeResetting(true)
       doRecoveryPassword(key, username, newPassword)
-        .then(response => {
-          const { data } = response
+        .then(_ => {
           changeResetting(false)
-          changeToastMessage("Password reset succesful!")
-          changeToastColor("success")
-          changeShowToast(true)
+          addToast(generateToast("success","Password reset succesful!"))
           console.log("Password reset succesful.")
         })
         .catch(_ => {
           changeResetting(false)
-          changeToastMessage("Password reset failure!")
-          changeToastColor("danger")
-          changeShowToast(true)
+          addToast(generateToast("danger","Password reset failure!"))
           console.log("Password reset failure.")
         })
     }
@@ -163,20 +169,7 @@ const PwdReset = () => {
       }}>
         FIUBA - 75.99 - 1C2022
       </div>
-        <CToast autohide={true}
-                visible={showToast}
-                onClose={() => {changeShowToast(false)}}
-                color={toastColor}
-                className="text-white align-items-center"
-                style={{position: 'absolute',
-                        right: '20px',
-                        top: '20px'}}
-        >
-          <div className="d-flex">
-            <CToastBody>{toastMessage}</CToastBody>
-            <CToastClose className="me-2 m-auto" white />
-          </div>
-        </CToast>
+      <CToaster ref={toaster} push={toast} placement="top-end" />
     </div>
   )
 }
