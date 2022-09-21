@@ -1,7 +1,13 @@
-import React, { Suspense, useState, useEffect } from 'react'
+import React, { Suspense, useState, useRef, useEffect } from 'react'
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import axios from 'axios'
+import {
+  CToaster,
+  CToast,
+  CToastBody,
+  CToastClose,
+} from '@coreui/react'
 import { isAuthed, isAuthing } from './stateapi/auth.js'
 import { REACT_APP_ENV } from './config.js'
 import './scss/style.scss'
@@ -46,9 +52,23 @@ const PrivateRoute = () => {
 }
     
 const App = () => {
-  const dispatch = useDispatch()
-  const [error, changeError] = useState(false)
 
+  function generateToast(toastColor, toastMessage) {
+    return (
+      <CToast color={toastColor}
+              className="text-white align-items-center"
+      >
+        <div className="d-flex">
+          <CToastBody>{toastMessage}</CToastBody>
+          <CToastClose className="me-2 m-auto" white />
+        </div>
+      </CToast>
+    )
+  }
+  const toaster = useRef()
+  const [toast, addToast] = useState(0)
+
+  const dispatch = useDispatch()
   useEffect(() => {
     axios.interceptors.response.use(
       response => response,
@@ -57,9 +77,7 @@ const App = () => {
           error.response !== 500 &&
           error.response.data.message.includes('session')
         ) {
-          changeError(true)
-          console.log('Session expired.')
-          alert('Session expired.')
+          addToast(generateToast("danger","Your session has expired!"))
           dispatch({
             type: AUTH_LOGOUT
           })
@@ -70,20 +88,21 @@ const App = () => {
   }, [dispatch])
 
   return (
-    <BrowserRouter>
-      <Suspense fallback={loading}>
-        <Routes>
-          {/* Private pages and login routing */}
-          <Route path='*' name="Home" element={<PrivateRoute />} />
-          {/* Public pages */}
-          <Route exact path="/pwdreset" name="Password Reset" element={<PwdReset />} />
-          <Route exact path="/login" name="User Login" element={<Login />} />
-          <Route exact path="/404" name="Not Found" element={<Page404 />} />            
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
-
-    //ToDO: snackbar/notificación de sesion expirada!
+    <>
+      <BrowserRouter>
+        <Suspense fallback={loading}>
+          <Routes>
+            {/* Private pages and login routing */}
+            <Route path='*' name="Home" element={<PrivateRoute />} />
+            {/* Public pages */}
+            <Route exact path="/pwdreset" name="Password Reset" element={<PwdReset />} />
+            <Route exact path="/login" name="User Login" element={<Login />} />
+            <Route exact path="/404" name="Not Found" element={<Page404 />} />            
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+      <CToaster ref={toaster} push={toast} placement="top-end" />
+    </>
   )
 }
 
