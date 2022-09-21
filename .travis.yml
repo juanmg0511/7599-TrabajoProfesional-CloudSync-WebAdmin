@@ -20,16 +20,16 @@ before_install:
   # login to docker registries (dockerhub + heroku)
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
-  - cd cloudsync-web-admin
-install:
+  #- cd cloudsync-web-admin
+#install:
   # install requirements
-  - npm install
-script:
+  #- npm install
+#script:
   # run tests
-  - npm run test -- --coverage
-after_success:
+  #- npm run test -- --coverage
+#after_success:
   # submit results to coveralls, on success
-  - cat ./coverage/lcov.info | coveralls
+  #- cat ./coverage/lcov.info | coveralls
 branches:
   # include ONLY these branches
   only:
