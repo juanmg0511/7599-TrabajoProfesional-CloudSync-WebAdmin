@@ -38,7 +38,7 @@ ENV NODE_ENV production
 COPY --from=cloudsync-web-admin-builder /app/build /usr/share/nginx/html
 # Adding custom nginx.conf
 COPY cloudsync-web-admin/nginx/nginx.conf /etc/nginx/conf.d/default.conf
-# Exposeing port
-EXPOSE 80
+# Exposing port
+EXPOSE 3000
 # Starting nginx
 CMD ["nginx", "-g", "daemon off;"]
