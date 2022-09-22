@@ -87,6 +87,7 @@ const App = () => {
     )
   }, [dispatch])
 
+  //Main App
   return (
     <>
       <BrowserRouter>
