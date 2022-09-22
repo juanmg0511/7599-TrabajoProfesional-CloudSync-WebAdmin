@@ -36,9 +36,11 @@ ENV NODE_ENV production
 # Bundling static assets with nginx
 # Copying built assets from builder image
 COPY --from=cloudsync-web-admin-builder /app/build /usr/share/nginx/html
-# Adding custom nginx.conf
-COPY cloudsync-web-admin/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# Adding custom default.conf
+COPY cloudsync-web-admin/nginx/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 # Exposing port
 EXPOSE 3000
 # Starting nginx
-CMD ["nginx", "-g", "daemon off;"]
+#CMD ["nginx", "-g", "daemon off;"]
+#COPY ./nginx.conf.template /nginx.conf.template
+CMD ["/bin/sh" , "-c" , "envsubst \\$PORT < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
