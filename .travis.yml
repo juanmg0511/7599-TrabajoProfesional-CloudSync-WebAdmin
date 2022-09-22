@@ -14,16 +14,16 @@ node_js:
   - 16
 services:
   - docker
-before_install:
+#before_install:
   # install heroku CLI
-  - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+  #- wget -qO- https://toolbelt.heroku.com/install.sh | sh
   # login to docker registries (dockerhub + heroku)
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
+  #- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  #- echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
   #- cd cloudsync-web-admin
-install:
+# install:
   # install requirements
-  - npm install
+  # - npm install
 #script:
   # run tests
   #- npm run test -- --coverage
@@ -35,6 +35,12 @@ branches:
   only:
     - qa
     - master
+before_deploy:
+  # install heroku CLI
+  - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+  # login to docker registries (dockerhub + heroku)
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
 deploy:
   - provider: script
     script:
