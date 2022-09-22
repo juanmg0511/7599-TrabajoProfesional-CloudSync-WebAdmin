@@ -92,7 +92,7 @@ const PwdReset = () => {
                 <CForm>
                 <div>
                   {(APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsProd} height={50} />) : (APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsQa} height={50} />) : (<CIcon className="sidebar-brand-narrow" icon={sygnetCsDev} height={50} />)))}
-                  <span style={{fontSize: '2.5rem',
+                  <span style={{fontSize: '1.75rem',
                                 fontWeight: '500',
                                 lineHeight: '50px',
                                 position: 'absolute',
@@ -159,13 +159,14 @@ const PwdReset = () => {
             </CCard>
           </CCol>
         </CRow>
-      </CContainer>     
-      <div style={{
-        position: 'fixed',
-        left: '50%',
-        bottom: '20px',
-        transform: 'translate(-50%, -50%)',
-        margin: '0 auto'
+      </CContainer>
+      <div className="d-none d-sm-block"
+        style={{
+          position: 'fixed',
+          left: '50%',
+          bottom: '20px',
+          transform: 'translate(-50%, -50%)',
+          margin: '0 auto'
       }}>
         FIUBA - 75.99 - 1C2022
       </div>
