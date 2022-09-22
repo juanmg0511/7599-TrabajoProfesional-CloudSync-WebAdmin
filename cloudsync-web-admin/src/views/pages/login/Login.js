@@ -146,7 +146,7 @@ const Login = () => {
           </CCol>
         </CRow>
       </CContainer>
-      <div className=".d-none .d-sm-block"
+      <div className="d-none d-sm-block"
         style={{
           position: 'fixed',
           left: '50%',
