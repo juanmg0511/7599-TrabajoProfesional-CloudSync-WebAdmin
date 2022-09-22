@@ -9,7 +9,7 @@ import {
   CToastClose,
 } from '@coreui/react'
 import { isAuthed, isAuthing } from './stateapi/auth.js'
-import { REACT_APP_ENV } from './config.js'
+import { APP_ENV } from './config.js'
 import './scss/style.scss'
 
 function getFaviconEl() {
@@ -17,9 +17,9 @@ function getFaviconEl() {
 }
 
 const favicon = getFaviconEl()
-if (REACT_APP_ENV == 'QA') {
+if (APP_ENV == 'QA') {
   favicon.href = window.location.origin + '/' + 'favicon-cs-qa.ico'
-} else if (REACT_APP_ENV == 'DEV') {
+} else if (APP_ENV == 'DEV') {
     favicon.href = window.location.origin + '/' + 'favicon-cs-dev.ico'
   }
 

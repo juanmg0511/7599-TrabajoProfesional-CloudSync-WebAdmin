@@ -22,7 +22,7 @@ import { cilLockLocked,
 import { sygnetCsDev } from 'src/assets/brand/sygnet-cs-dev'
 import { sygnetCsQa } from 'src/assets/brand/sygnet-cs-qa'
 import { sygnetCsProd } from 'src/assets/brand/sygnet-cs-prod'
-import { REACT_APP_ENV, REACT_APP_DEV_COLOR, REACT_APP_QA_COLOR } from '../../../config.js'
+import { APP_ENV, APP_DEV_COLOR, APP_QA_COLOR } from '../../../config.js'
 /* Import WebApi */
 import { doAuth } from '../../../webapi'
 /* Import Constants */
@@ -81,7 +81,7 @@ const Login = () => {
               <CCardBody>
                 <CForm>
                   <div>
-                    {(REACT_APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsProd} height={50} />) : (REACT_APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsQa} height={50} />) : (<CIcon className="sidebar-brand-narrow" icon={sygnetCsDev} height={50} />)))}
+                    {(APP_ENV == 'PROD' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsProd} height={50} />) : (APP_ENV == 'QA' ? (<CIcon className="sidebar-brand-narrow" icon={sygnetCsQa} height={50} />) : (<CIcon className="sidebar-brand-narrow" icon={sygnetCsDev} height={50} />)))}
                     <span style={{fontSize: '2.5rem',
                                   fontWeight: '500',
                                   lineHeight: '50px',
@@ -92,7 +92,7 @@ const Login = () => {
                     <p style={{
                           marginLeft: '65px',
                           marginTop: '-5px'}}>
-                      {(REACT_APP_ENV == 'PROD' ? (null) : (REACT_APP_ENV == 'QA' ? (<span style={{color: REACT_APP_QA_COLOR, fontWeight: '500'}}>[QA]</span>) : (<span style={{color: REACT_APP_DEV_COLOR, fontWeight: '500'}}>[DEV]</span>)))} Admin site
+                      {(APP_ENV == 'PROD' ? (null) : (APP_ENV == 'QA' ? (<span style={{color: APP_QA_COLOR, fontWeight: '500'}}>[QA]</span>) : (<span style={{color: APP_DEV_COLOR, fontWeight: '500'}}>[DEV]</span>)))} Admin site
                     </p>
                   </div>
                   <p className="text-medium-emphasis">Sign In to your account</p>

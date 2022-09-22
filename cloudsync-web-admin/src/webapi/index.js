@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '../store.js'
-import { REACT_APP_APPSERVER_BASE_URL } from '../config.js'
+import { APP_APPSERVER_BASE_URL } from '../config.js'
   
 axios.interceptors.request.use(config => {
   config.headers['X-Admin'] = 'true'
@@ -9,32 +9,32 @@ axios.interceptors.request.use(config => {
 })
 
 export function doAuth (user) {
-    return axios.post(REACT_APP_APPSERVER_BASE_URL + '/api/v1/sessions', user)
+    return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/sessions', user)
 }
 
 export function doLogOut (sessionId) {
-  return axios.delete(REACT_APP_APPSERVER_BASE_URL + `/api/v1/sessions/${sessionId}`)
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/sessions/${sessionId}`)
 }
 
 export function doRecoveryPassword (key, username, password) {
-  return axios.post(REACT_APP_APPSERVER_BASE_URL + `/api/v1/recovery/${username}`, {
+  return axios.post(APP_APPSERVER_BASE_URL + `/api/v1/recovery/${username}`, {
     recovery_key: key,
     new_password: password
   })
 }
 
 export function getUsers () {
-  return axios.get(REACT_APP_APPSERVER_BASE_URL + '/api/v1/users')
+  return axios.get(APP_APPSERVER_BASE_URL + '/api/v1/users')
 }
 
 export function getUser (username) {
-  return axios.get(REACT_APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`)
+  return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`)
 }
 
 export function saveUser (username, user) {
-  return axios.put(REACT_APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`, user)
+  return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`, user)
 }
 
 export function removeUser (username) {
-  return axios.delete(REACT_APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`)
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`)
 }

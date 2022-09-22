@@ -15,7 +15,7 @@ import { AppHeaderDropdown } from './header/index'
 import { logoCsDev } from 'src/assets/brand/logo-cs-dev'
 import { logoCsQa } from 'src/assets/brand/logo-cs-qa'
 import { logoCsProd } from 'src/assets/brand/logo-cs-prod'
-import { REACT_APP_ENV } from '../config.js'
+import { APP_ENV } from '../config.js'
 /* Import StateApi */
 import { getUsername } from '../stateapi/auth'
 import { getSidebarShow } from '../stateapi/ui'
@@ -38,7 +38,7 @@ const AppHeader = () => {
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
         <CHeaderBrand className="mx-auto d-md-none" to="/">
-          {(REACT_APP_ENV == 'PROD' ? (<CIcon icon={logoCsProd} height={48} alt="Logo" />) : (REACT_APP_ENV == 'QA' ? (<CIcon icon={logoCsQa} height={48} alt="Logo" />) : (<CIcon icon={logoCsDev} height={48} alt="Logo" />)))}
+          {(APP_ENV == 'PROD' ? (<CIcon icon={logoCsProd} height={48} alt="Logo" />) : (APP_ENV == 'QA' ? (<CIcon icon={logoCsQa} height={48} alt="Logo" />) : (<CIcon icon={logoCsDev} height={48} alt="Logo" />)))}
         </CHeaderBrand>
         <CHeaderNav className="ms-3">
           <span className="d-none d-md-block" style={{marginTop: '12px'}}>Welcome, {username.charAt(0).toUpperCase() + username.slice(1)}</span>
