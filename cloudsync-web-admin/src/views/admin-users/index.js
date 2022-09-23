@@ -36,13 +36,12 @@ const AdminUsers = (props) => {
         <CCol xs={12}>
           <CCallout color="info" className="bg-white">
             <p>Welcome to the <strong>Administrators</strong> listing!</p>
-            <p>From this page you can manage all FIUBA CloudSync administrators:
-              <ul>
-                  <li>Create new admins</li>
-                  <li>View or Edit a particular admin's details</li>
-                  <li>Close an admin's account</li>
-              </ul>
-            </p>
+            <p>From this page you can manage all FIUBA CloudSync administrators:</p>
+            <ul>
+                <li>Create new admins</li>
+                <li>View or Edit a particular admin's details</li>
+                <li>Close an admin's account</li>
+            </ul>
           </CCallout>
         </CCol>
         <CCol xs={12}>
@@ -168,7 +167,7 @@ const AdminUsers = (props) => {
                     records per page.
                   </CFormText>
                   <p className='text-dark'>
-                    Showing records 1 to 3 out of a total of 3 entries.
+                    Showing records 1 to 5 out of a total of 5 entries.
                   </p>
                 </CCol>
                 <CCol>
