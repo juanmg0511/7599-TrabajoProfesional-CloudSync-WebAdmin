@@ -17,4 +17,4 @@ export const SIDEBAR_OFF = 'SIDEBAR_OFF'
 export const UNFOLDABLE_ON = 'UNFOLDABLE_ON'
 export const UNFOLDABLE_OFF = 'UNFOLDABLE_OFF'
 
-export const UNDELETABLE_ADMIN_NAME = 'cloudsyndgod'
+export const UNDELETABLE_ADMIN_NAME = 'cloudsyncgod'
