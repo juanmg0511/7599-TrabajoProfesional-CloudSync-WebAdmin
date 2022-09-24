@@ -9,7 +9,7 @@ import {
   CToastClose,
 } from '@coreui/react'
 import { isAuthed, isAuthing } from './stateapi/auth.js'
-import { APP_ENV } from './config.js'
+import { APP_ENV, AUTH_LOGOUT } from './config.js'
 import './scss/style.scss'
 
 function getFaviconEl() {
@@ -75,7 +75,8 @@ const App = () => {
       error => {
         if (
           error.response !== 500 &&
-          error.response.data.message.includes('session')
+          error.response.data.message.toLowerCase().includes('session') &&
+          error.response.data.message.toLowerCase().includes('expired')
         ) {
           addToast(generateToast("danger","Your session has expired!"))
           dispatch({
