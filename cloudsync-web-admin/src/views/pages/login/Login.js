@@ -132,7 +132,7 @@ const Login = () => {
                         <CSpinner component="span" size="sm" aria-hidden="true"/>
                       </CButton>
                       ) : (
-                      <CButton color="primary" className="px-4" onClick={onSubmit}>
+                      <CButton type="submit" color="primary" className="px-4" onClick={onSubmit}>
                         Login
                       </CButton>)
                     }

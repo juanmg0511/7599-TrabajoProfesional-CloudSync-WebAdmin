@@ -147,7 +147,7 @@ const PwdReset = () => {
                             Reset password
                           </CButton>
                         ) : (
-                          <CButton color="primary" onClick={onSubmit}>
+                          <CButton type="submit" color="primary" onClick={onSubmit}>
                             Reset password
                           </CButton>
                         )
