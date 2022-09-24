@@ -29,7 +29,7 @@ import {
     CTooltip,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilUserPlus, cilPenAlt, cilTrash, cilWarning } from '@coreui/icons';
+  import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload } from '@coreui/icons';
   import { getAdminUsers, getUserAdminSessions, removeAdminUser } from '../../webapi'
   import { UNDELETABLE_ADMIN_NAME } from '../../config'
   import { getUsername } from '../../stateapi/auth'
@@ -43,7 +43,7 @@ const AdminUsers = () => {
 
   const [showClosed, changeShowClosed] = useState(true)
   const [start, changeStart] = useState(0)
-  const [pageSize, changePageSize] = useState(25)
+  const [pageSize, changePageSize] = useState(1)
   const [resultsSize, changeResultsSize] = useState(0)
 
   const [total, changeTotal] = useState(0)
@@ -63,9 +63,67 @@ const AdminUsers = () => {
   const toaster = useRef()
   const [toast, addToast] = useState(0)
 
+  function buildPageSizeControl() {
+
+    return (
+      <CFormText className='text-secondary' component="span">
+        Table size:&nbsp;
+        {(pageSize === 25 ? (<strong>25</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changePageSize(25)}}>25</CLink>))},&nbsp;
+        {(pageSize === 50 ? (<strong>50</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changePageSize(50)}}>50</CLink>))},&nbsp;
+        {(pageSize === 100 ? (<strong>100</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changePageSize(100)}}>100</CLink>))}&nbsp;
+        records per page.
+      </CFormText>
+    )
+  }
+
+  function buildPagingControl() {
+
+    const totalPages = Math.ceil(total/pageSize)
+    const activePage = (start/pageSize) + 1
+
+    return (
+      <CPagination style={{float: 'right'}} aria-label="Table navigation">
+        <CPaginationItem aria-label="Previous" onClick={() => {changeStart(start - pageSize)}} disabled={(start <= 0 ? true : false)}>
+          <span aria-hidden="true">&laquo;</span>
+        </CPaginationItem>
+        {
+          Array.apply(0, Array(totalPages)).map(function (x, i) {
+            return (
+              <CPaginationItem key={i+1} onClick={() => {changeStart((i) * pageSize)}} active={(activePage == (i + 1) ? true : false)}>{i + 1}</CPaginationItem>
+            )
+          })
+        }
+        <CPaginationItem aria-label="Next" onClick={() => {changeStart(start + pageSize)}} disabled={(start >= ((totalPages - 1) * pageSize) ? true : false)}>
+          <span aria-hidden="true">&raquo;</span>
+        </CPaginationItem>
+      </CPagination>
+
+    )
+  }
+
+  function addUser() {
+
+    console.log('do something!')
+  }
+
+  function reloadTable() {
+    changeEmptyUsers(false)
+    changeUsers(null)
+    changeStart(0)
+
+    refresh()
+  }
+
+  function changePage() {
+    changeEmptyUsers(false)
+    changeUsers(null)
+
+    refresh()
+  }
+
   function refresh () {
+
     const usersPromise = new Promise((resolve, reject) => {
-      console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize)
       getAdminUsers(showClosed, start, pageSize)
         .then(response => {
           const { data } = response
@@ -82,8 +140,6 @@ const AdminUsers = () => {
           } else {
             changeUsers(null)
             changeEmptyUsers(true)
-            changeResultsSize(0)
-            changeTotal(0)
           }
           resolve(u)
         })
@@ -151,13 +207,9 @@ const AdminUsers = () => {
     .catch(_ => {})
   } 
   
-  useEffect(
-    () => {
-      refresh()
-    },
-    []
-  )
-
+  //useEffect(() => {refresh()}, [])
+  useEffect(() => {reloadTable()}, [showClosed, pageSize])
+  useEffect(() => {changePage()}, [start])
   return (
     <CRow>
       <CCol xs={12}>
@@ -178,12 +230,16 @@ const AdminUsers = () => {
               <CCol>
                 <strong>Administrators list</strong>
                 <small>
-                  <CFormCheck id="flexCheckChecked" label="Show closed accounts" defaultChecked />
+                  <CFormCheck id="flexCheckChecked" label="Show closed accounts" defaultChecked onChange={(e) => {changeShowClosed(e.target.checked)}}/>
                 </small>
               </CCol>
               <CCol>
-              <CButton style={{float: 'right', marginTop: '7px'}}>
-                <CIcon icon={cilUserPlus} style={{color: 'white'}} size="lg"/>New Admin</CButton>
+              <CButton style={{float: 'right', marginTop: '7px'}} onClick={addUser}>
+                <CIcon icon={cilUserPlus} style={{color: 'white'}} size="lg"/>&nbsp;New Admin
+              </CButton>
+              <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={reloadTable}>
+                <CIcon icon={cilReload} style={{color: 'white'}} size="lg"/>
+              </CButton>
               </CCol>
             </CRow>
           </CCardHeader>
@@ -216,7 +272,7 @@ const AdminUsers = () => {
                         <CButton color="secondary">
                           <CIcon icon={cilPenAlt} style={{color: 'white'}} size="sm"/>
                         </CButton>
-                        {((user.username !== UNDELETABLE_ADMIN_NAME) && (user.username !== loggedUser) ? (
+                        {((user.username !== UNDELETABLE_ADMIN_NAME) && (user.username !== loggedUser) && (!user.account_closed) ? (
                           <CButton color="danger">
                             <CIcon icon={cilTrash} style={{color: 'white'}} size="sm"/>
                           </CButton>
@@ -246,29 +302,13 @@ const AdminUsers = () => {
             {users ? (
               <CRow>
                   <CCol>
-                    <CFormText className='text-secondary' component="span">
-                      Table size:&nbsp;
-                      <strong>25</strong>,&nbsp; 
-                      <CLink href="#">50</CLink>,&nbsp;
-                      <CLink href="#">100</CLink>&nbsp;
-                      records per page.
-                    </CFormText>
+                    {buildPageSizeControl()}
                     <p className='text-dark'>
                       Showing records {start + 1} to {start + resultsSize} out of a total of {total} entries.
                     </p>
                   </CCol>
                   <CCol>
-                    <CPagination style={{float: 'right'}} aria-label="Table navigation">
-                      <CPaginationItem aria-label="Previous" disabled>
-                        <span aria-hidden="true">&laquo;</span>
-                      </CPaginationItem>
-                      <CPaginationItem active>1</CPaginationItem>
-                      <CPaginationItem>2</CPaginationItem>
-                      <CPaginationItem>3</CPaginationItem>
-                      <CPaginationItem aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                      </CPaginationItem>
-                    </CPagination>
+                    {buildPagingControl()}
                   </CCol>
                 </CRow>)           
               : (
