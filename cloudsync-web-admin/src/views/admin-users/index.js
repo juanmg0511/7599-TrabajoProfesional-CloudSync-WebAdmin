@@ -31,7 +31,7 @@ import {
   import CIcon from '@coreui/icons-react'
   import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload } from '@coreui/icons';
   import { getAdminUsers, getUserAdminSessions, removeAdminUser } from '../../webapi'
-  import { UNDELETABLE_ADMIN_NAME } from '../../config'
+  import { UNDELETABLE_ADMIN_NAME, PAGE_SIZES } from '../../config'
   import { getUsername } from '../../stateapi/auth'
 
 const AdminUsers = () => {
@@ -43,7 +43,7 @@ const AdminUsers = () => {
 
   const [showClosed, changeShowClosed] = useState(true)
   const [start, changeStart] = useState(0)
-  const [pageSize, changePageSize] = useState(1)
+  const [pageSize, changePageSize] = useState(PAGE_SIZES[0])
   const [resultsSize, changeResultsSize] = useState(0)
 
   const [total, changeTotal] = useState(0)
@@ -68,9 +68,18 @@ const AdminUsers = () => {
     return (
       <CFormText className='text-secondary' component="span">
         Table size:&nbsp;
-        {(pageSize === 25 ? (<strong>25</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changePageSize(25)}}>25</CLink>))},&nbsp;
-        {(pageSize === 50 ? (<strong>50</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changePageSize(50)}}>50</CLink>))},&nbsp;
-        {(pageSize === 100 ? (<strong>100</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changePageSize(100)}}>100</CLink>))}&nbsp;
+        {
+          PAGE_SIZES.map(function(size, i){
+            return (
+              <>
+                {
+                  (pageSize === size ? (<strong>{size}</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changePageSize(size)}}>{size}</CLink>))
+                }
+                ,&nbsp;
+              </>
+            )
+          })
+        }
         records per page.
       </CFormText>
     )
@@ -207,9 +216,10 @@ const AdminUsers = () => {
     .catch(_ => {})
   } 
   
-  //useEffect(() => {refresh()}, [])
-  useEffect(() => {reloadTable()}, [showClosed, pageSize])
-  useEffect(() => {changePage()}, [start])
+  useEffect(() => {reloadTable()}, [])
+  //useEffect(() => {reloadTable()}, [showClosed, pageSize])
+  //useEffect(() => {changePage()}, [start])
+  
   return (
     <CRow>
       <CCol xs={12}>
