@@ -91,7 +91,7 @@ const AdminUsers = () => {
     const activePage = (start/pageSize) + 1
 
     return (
-      <CPagination style={{float: 'right'}} aria-label="Table navigation">
+      <CPagination style={{float: 'right', cursor: 'pointer'}} aria-label="Table navigation">
         <CPaginationItem aria-label="Previous" onClick={() => {changeStart(start - pageSize)}} disabled={(start <= 0 ? true : false)}>
           <span aria-hidden="true">&laquo;</span>
         </CPaginationItem>
