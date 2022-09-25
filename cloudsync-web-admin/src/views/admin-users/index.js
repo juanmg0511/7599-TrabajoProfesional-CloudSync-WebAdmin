@@ -71,12 +71,12 @@ const AdminUsers = () => {
         {
           PAGE_SIZES.map(function(size, i){
             return (
-              <>
+              <span key={'pageSizeOption' + i}>
                 {
-                  (pageSize === size ? (<strong>{size}</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changePageSize(size)}}>{size}</CLink>))
+                  (pageSize === size ? (<strong>{size}</strong>) : (<CLink style={{cursor: 'pointer'}} onClick={() => {changeStart(0); changePageSize(size)}}>{size}</CLink>))
                 }
                 ,&nbsp;
-              </>
+              </span>
             )
           })
         }
@@ -116,14 +116,6 @@ const AdminUsers = () => {
   }
 
   function reloadTable() {
-    changeEmptyUsers(false)
-    changeUsers(null)
-    changeStart(0)
-
-    refresh()
-  }
-
-  function changePage() {
     changeEmptyUsers(false)
     changeUsers(null)
 
@@ -216,10 +208,7 @@ const AdminUsers = () => {
     .catch(_ => {})
   } 
   
-  useEffect(() => {reloadTable()}, [])
-  //useEffect(() => {reloadTable()}, [showClosed, pageSize])
-  //useEffect(() => {changePage()}, [start])
-  
+  useEffect(() => {reloadTable()}, [start, showClosed, pageSize])  
   return (
     <CRow>
       <CCol xs={12}>
@@ -240,14 +229,14 @@ const AdminUsers = () => {
               <CCol>
                 <strong>Administrators list</strong>
                 <small>
-                  <CFormCheck id="flexCheckChecked" label="Show closed accounts" defaultChecked onChange={(e) => {changeShowClosed(e.target.checked)}}/>
+                  <CFormCheck id="flexCheckChecked" label="Show closed accounts" defaultChecked onChange={(e) => {changeStart(0); changeShowClosed(e.target.checked)}}/>
                 </small>
               </CCol>
               <CCol>
               <CButton style={{float: 'right', marginTop: '7px'}} onClick={addUser}>
                 <CIcon icon={cilUserPlus} style={{color: 'white'}} size="lg"/>&nbsp;New Admin
               </CButton>
-              <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={reloadTable}>
+              <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={() => {changeStart(0); reloadTable()}}>
                 <CIcon icon={cilReload} style={{color: 'white'}} size="lg"/>
               </CButton>
               </CCol>
