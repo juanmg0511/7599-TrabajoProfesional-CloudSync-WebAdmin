@@ -12,6 +12,7 @@ import {
 import {
   cilAccountLogout,
   cilUser,
+  cilCoffee,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { getUsername } from '../../stateapi/auth'
@@ -55,6 +56,10 @@ const AppHeaderDropdown = () => {
         <CDropdownItem href="/admin-profile">
           <CIcon icon={cilUser} className="me-2" />
           Profile
+        </CDropdownItem>
+        <CDropdownItem href="/#">
+          <CIcon icon={cilCoffee} className="me-2" />
+          About...
         </CDropdownItem>
       <CDropdownDivider />
         <CDropdownItem onClick={() => logOut()}> 

@@ -55,6 +55,7 @@ const AdminProfile = React.lazy(() => import('./views/admin-profile'))
 const AdminUsers = React.lazy(() => import('./views/admin-users'))
 const Users = React.lazy(() => import('./views/users'))
 const Sessions = React.lazy(() => import('./views/sessions'))
+const Recovery = React.lazy(() => import('./views/recovery'))
 const GameProgress = React.lazy(() => import('./views/game-progress'))
 const Highscores = React.lazy(() => import('./views/highscores'))
 const RequestLog = React.lazy(() => import('./views/request-log'))
@@ -110,6 +111,7 @@ const routes = [
   { path: '/admin-users', name: 'Admin Users', element: AdminUsers },
   { path: '/users', name: 'Users', element: Users },
   { path: '/sessions', name: 'Sessions', element: Sessions },
+  { path: '/recovery', name: 'Recovery', element: Recovery },
   { path: '/game-progress', name: 'Game Progress', element: GameProgress },
   { path: '/highscores', name: 'Highscores', element: Highscores },
   { path: '/request-log', name: 'Request Log', element: RequestLog },

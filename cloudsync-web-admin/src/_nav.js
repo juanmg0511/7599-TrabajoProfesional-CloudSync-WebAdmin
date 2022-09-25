@@ -16,6 +16,7 @@ import {
   cilNotes,
   cilPencil,
   cilPuzzle,
+  cilLockUnlocked,
 } from "@coreui/icons";
 import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react";
 
@@ -25,10 +26,6 @@ const _nav = [
     name: "Dashboard",
     to: "/dashboard",
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    /* badge: {
-      color: 'info',
-      text: 'NEW',
-    }, */
   },
   {
     component: CNavTitle,
@@ -52,6 +49,12 @@ const _nav = [
     to: "/sessions",
     icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
   },
+  {
+    component: CNavItem,
+    name: "Recovery",
+    to: "/recovery",
+    icon: <CIcon icon={cilLockUnlocked} customClassName="nav-icon" />,
+  },  
   {
     component: CNavTitle,
     name: "Game",
@@ -78,7 +81,9 @@ const _nav = [
     to: "/request-log",
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
-  /*
+
+/**********/
+/*
   {
     component: CNavTitle,
     name: "Theme",
@@ -94,7 +99,7 @@ const _nav = [
     name: "Typography",
     to: "/theme/typography",
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
-  },*/
+  },
   {
     component: CNavTitle,
     name: "Components",
@@ -347,6 +352,8 @@ const _nav = [
       },
     ],
   },
+*/
+
 ];
 
 export default _nav;
