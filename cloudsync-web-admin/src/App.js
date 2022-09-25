@@ -75,8 +75,7 @@ const App = () => {
       error => {
         if (
           error.response !== 500 &&
-          error.response.data.message.toLowerCase().includes('session') &&
-          error.response.data.message.toLowerCase().includes('expired')
+          error.response.data.message.toLowerCase().includes('session')
         ) {
           addToast(generateToast("danger","Your session has expired!"))
           dispatch({
