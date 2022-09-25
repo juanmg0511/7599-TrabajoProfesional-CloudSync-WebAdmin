@@ -17,6 +17,6 @@ export const SIDEBAR_OFF = 'SIDEBAR_OFF'
 export const UNFOLDABLE_ON = 'UNFOLDABLE_ON'
 export const UNFOLDABLE_OFF = 'UNFOLDABLE_OFF'
 
-export const PAGE_SIZES = ['1', '25', '50', '100']
+export const PAGE_SIZES = ['25', '50', '100']
 
 export const UNDELETABLE_ADMIN_NAME = 'cloudsyncgod'
