@@ -102,23 +102,66 @@ const AdminUsers = () => {
     const totalPages = Math.ceil(total/pageSize)
     const activePage = (start/pageSize) + 1
 
+    let placeHolderBefore = false
+    let placeHolderAfter = false
+
     return (
-      <CPagination style={{float: 'right', cursor: 'pointer'}} aria-label="Table navigation">
-        <CPaginationItem aria-label="Previous" onClick={() => {changeStart(start - pageSize)}} disabled={(start <= 0 ? true : false)}>
+      <CPagination style={{float: 'right', cursor: 'pointer'}}
+                   aria-label="Table navigation">
+        <CPaginationItem aria-label="Previous"
+                         onClick={() => {changeStart(start - pageSize)}}
+                         disabled={(start <= 0 ? true : false)}>
           <span aria-hidden="true">&laquo;</span>
         </CPaginationItem>
         {
           Array.apply(0, Array(totalPages)).map(function (x, i) {
-            return (
-              <CPaginationItem key={i+1} onClick={() => {changeStart((i) * pageSize)}} active={(activePage == (i + 1) ? true : false)}>{i + 1}</CPaginationItem>
-            )
+
+            if (i==0 ||
+                i==(activePage - 2) ||
+                i==(activePage - 1) ||
+                i==(activePage) || 
+                i==(totalPages - 1))
+            {
+              return (
+                <CPaginationItem key={i+1}
+                                 onClick={() => {changeStart((i) * pageSize)}}
+                                 active={(activePage == (i + 1) ? true : false)}>
+                  {i + 1}
+                </CPaginationItem>
+              )
+            } else {
+              if (i < activePage &&
+                  placeHolderBefore == false)
+              {
+                placeHolderBefore = true
+                return (
+                  <CPaginationItem key={i+1}>
+                    &#183;&#183;&#183;
+                  </CPaginationItem>
+                )
+              } else {
+                if (i > activePage &&
+                    placeHolderAfter == false)
+                {
+                  placeHolderAfter = true
+                  return (
+                    <CPaginationItem key={i+1}>
+                      &#183;&#183;&#183;
+                    </CPaginationItem>
+                  )
+                } else {
+                  return null
+                }
+              }
+            }
           })
         }
-        <CPaginationItem aria-label="Next" onClick={() => {changeStart(start + pageSize)}} disabled={(start >= ((totalPages - 1) * pageSize) ? true : false)}>
+        <CPaginationItem aria-label="Next"
+                         onClick={() => {changeStart(parseInt(start) + parseInt(pageSize))}}
+                         disabled={(start >= ((totalPages - 1) * pageSize) ? true : false)}>
           <span aria-hidden="true">&raquo;</span>
         </CPaginationItem>
       </CPagination>
-
     )
   }
 
@@ -170,7 +213,7 @@ const AdminUsers = () => {
   function refresh () {
 
     const usersPromise = new Promise((resolve, reject) => {
-      // console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
+      console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
       getAdminUsers(showClosed, start, pageSize, filterText)
         .then(response => {
           const { data } = response
