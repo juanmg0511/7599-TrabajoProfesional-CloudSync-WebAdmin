@@ -26,8 +26,12 @@ export function doRecoveryPassword (key, username, password) {
 }
 
 // Admin Users - Listing
-export function getAdminUsers (show_closed, start, limit) {
-  return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/adminusers?show_closed=${show_closed}&start=${start}&limit=${limit}`)
+export function getAdminUsers (show_closed, start, limit, user_filter) {
+  let url = APP_APPSERVER_BASE_URL + `/api/v1/adminusers?show_closed=${show_closed}&start=${start}&limit=${limit}`
+  if (user_filter) {
+    url += `&user_filter=${user_filter}`
+  }
+  return axios.get(url)
 }
 
 export function getUserAdminSessions (username) {

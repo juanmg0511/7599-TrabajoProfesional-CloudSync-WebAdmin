@@ -20,3 +20,4 @@ export const UNFOLDABLE_OFF = 'UNFOLDABLE_OFF'
 export const PAGE_SIZES = ['25', '50', '100']
 
 export const UNDELETABLE_ADMIN_NAME = 'cloudsyncgod'
+export const usernameRegex = /^[a-zA-Z0-9_.]+$/
