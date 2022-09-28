@@ -7,6 +7,8 @@ import {
     CToastClose,
     CAvatar,
     CLink,
+    CInputGroup,
+    CFormInput,
     CFormText,
     CFormCheck,
     CButton,
@@ -17,6 +19,11 @@ import {
     CCardHeader,
     CCol,
     CRow,
+    CModal,
+    CModalHeader,
+    CModalTitle,
+    CModalBody,
+    CModalFooter,
     CTable,
     CTableBody,
     CTableDataCell,
@@ -29,17 +36,22 @@ import {
     CTooltip,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload } from '@coreui/icons';
+  import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX } from '@coreui/icons';
   import { getAdminUsers, getUserAdminSessions, removeAdminUser } from '../../webapi'
-  import { UNDELETABLE_ADMIN_NAME, PAGE_SIZES } from '../../config'
+  import { UNDELETABLE_ADMIN_NAME, PAGE_SIZES, usernameRegex } from '../../config'
   import { getUsername } from '../../stateapi/auth'
 
 const AdminUsers = () => {
 
   const loggedUser = useSelector(getUsername)
 
+  const [selectedUser, changeSelectedUser] = useState({})
   const [users, changeUsers] = useState()
   const [usersEmpty, changeEmptyUsers] = useState()
+
+  const [deleteVisible, changeDeleteVisible] = useState(false)
+  const [filterActive, changeFilterActive] = useState(false)
+  const [filterText, changeFilterText] = useState("")
 
   const [showClosed, changeShowClosed] = useState(true)
   const [start, changeStart] = useState(0)
@@ -115,6 +127,39 @@ const AdminUsers = () => {
     console.log('do something!')
   }
 
+  function handleFilterActive() {
+
+    if (usernameRegex.test(filterText)) {
+
+      changeStart(0)
+      if (filterActive) {
+
+        changeFilterText("")
+      }
+      changeFilterActive(!filterActive)
+    } else {
+
+      addToast(generateToast("warning","Invalid filter value!"))
+    }
+  }
+
+  function closeAccount() {
+
+    removeAdminUser(selectedUser.username)
+      .then(_ => {
+
+        changeDeleteVisible(false)
+        addToast(generateToast("success","User account closed succesfully!"))
+        reloadTable()
+      })
+      .catch(_ => {
+
+        changeDeleteVisible(false)
+        addToast(generateToast("danger","Error closing user account!"))
+        reloadTable()        
+      })
+  }
+
   function reloadTable() {
     changeEmptyUsers(false)
     changeUsers(null)
@@ -125,7 +170,8 @@ const AdminUsers = () => {
   function refresh () {
 
     const usersPromise = new Promise((resolve, reject) => {
-      getAdminUsers(showClosed, start, pageSize)
+      // console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
+      getAdminUsers(showClosed, start, pageSize, filterText)
         .then(response => {
           const { data } = response
           const u = {}
@@ -208,9 +254,26 @@ const AdminUsers = () => {
     .catch(_ => {})
   } 
   
-  useEffect(() => {reloadTable()}, [start, showClosed, pageSize])  
+  useEffect(() => {reloadTable()}, [start, showClosed, pageSize, filterActive])
   return (
     <CRow>
+      <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Close account</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <strong>Warning!</strong>&nbsp;You are about to close the administrative account for user <strong>"{selectedUser.username}"</strong> ({selectedUser.email}).<br /><br />This action cannot be undone. Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}} color="secondary" onClick={() => changeDeleteVisible(false)}>
+            Cancel
+          </CButton>
+          <CButton style={{color: 'white'}} color="danger" onClick={() => {changeStart(0); closeAccount(false)}}>
+            <CIcon icon={cilTrash}/>
+            &nbsp;Close account
+          </CButton>
+        </CModalFooter>
+      </CModal>
       <CCol xs={12}>
         <CCallout color="info" className="bg-white">
           <p>Welcome to the <strong>Administrators</strong> listing!</p>
@@ -233,12 +296,27 @@ const AdminUsers = () => {
                 </small>
               </CCol>
               <CCol>
-              <CButton style={{float: 'right', marginTop: '7px'}} onClick={addUser}>
-                <CIcon icon={cilUserPlus} style={{color: 'white'}} size="lg"/>&nbsp;New Admin
-              </CButton>
-              <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={() => {changeStart(0); reloadTable()}}>
-                <CIcon icon={cilReload} style={{color: 'white'}} size="lg"/>
-              </CButton>
+              <CInputGroup style={{ marginTop: '7px'}}>
+                <CFormInput
+                  value={filterText}
+                  onKeyPress={(e) => {(e.key === 'Enter' ? (handleFilterActive()) : null )}}
+                  onChange={e => changeFilterText(e.target.value)}
+                  disabled={filterActive ? true : false}
+                  type="text"
+                  placeholder="Filter by 'Username'..."
+                />
+                <CButton color={(filterActive ? "secondary" : "primary")} onClick={() => {handleFilterActive()}}>
+                  <CIcon icon={(filterActive ? cilFilterX : cilFilter)} style={{color: 'white'}} size="lg"/>
+                </CButton>
+                </CInputGroup>
+              </CCol>
+              <CCol>
+                  <CButton style={{float: 'right', marginTop: '7px'}} onClick={addUser}>
+                    <CIcon icon={cilUserPlus} style={{color: 'white'}} size="lg"/>&nbsp;New Admin
+                  </CButton>
+                  <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={() => {changeStart(0); reloadTable()}}>
+                    <CIcon icon={cilReload} style={{color: 'white'}} size="lg"/>
+                  </CButton>
               </CCol>
             </CRow>
           </CCardHeader>
@@ -272,7 +350,7 @@ const AdminUsers = () => {
                           <CIcon icon={cilPenAlt} style={{color: 'white'}} size="sm"/>
                         </CButton>
                         {((user.username !== UNDELETABLE_ADMIN_NAME) && (user.username !== loggedUser) && (!user.account_closed) ? (
-                          <CButton color="danger">
+                          <CButton color="danger" onClick={() => {changeSelectedUser(user); changeDeleteVisible(true)}}>
                             <CIcon icon={cilTrash} style={{color: 'white'}} size="sm"/>
                           </CButton>
                         ) : (null))}
