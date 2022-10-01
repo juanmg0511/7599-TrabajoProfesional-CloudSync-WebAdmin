@@ -65,7 +65,7 @@ const About = (props) => {
               <h5>Tutor</h5>
               <ul className="text-medium-emphasis small">
                 <li>
-                  Leandro Ferrigno (<a href="lferrigno@fi.uba.ar">lferrigno@fi.uba.ar</a>)
+                  Leandro Ferrigno (<a href="mailto:lferrigno@fi.uba.ar">lferrigno@fi.uba.ar</a>)
                 </li>
               </ul>
               <p style={{marginTop: '50px'}} className="text-medium-emphasis small">
