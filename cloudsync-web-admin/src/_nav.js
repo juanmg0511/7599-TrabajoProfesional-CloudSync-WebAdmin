@@ -8,17 +8,9 @@ import {
   cilVideogame,
   cilBarChart,
   cilClipboard,
-  cilBell,
-  cilCalculator,
-  cilChartPie,
-  cilCursor,
-  cilDrop,
-  cilNotes,
-  cilPencil,
-  cilPuzzle,
   cilLockUnlocked,
 } from "@coreui/icons";
-import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react";
+import { CNavItem, CNavTitle } from "@coreui/react";
 
 const _nav = [
   {

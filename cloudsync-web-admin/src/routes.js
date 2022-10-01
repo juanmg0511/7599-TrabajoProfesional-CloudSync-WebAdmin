@@ -59,7 +59,7 @@ const Recovery = React.lazy(() => import('./views/recovery'))
 const GameProgress = React.lazy(() => import('./views/game-progress'))
 const Highscores = React.lazy(() => import('./views/highscores'))
 const RequestLog = React.lazy(() => import('./views/request-log'))
-
+const About = React.lazy(() => import('./views/about'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -115,6 +115,7 @@ const routes = [
   { path: '/game-progress', name: 'Game Progress', element: GameProgress },
   { path: '/highscores', name: 'Highscores', element: Highscores },
   { path: '/request-log', name: 'Request Log', element: RequestLog },
+  { path: '/about', name: 'About', element: About },
 ]
 
 export default routes
