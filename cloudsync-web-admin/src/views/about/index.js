@@ -26,23 +26,32 @@ const About = (props) => {
           <CCard className="mb-4">
             <CCardBody>
               <div style={{marginTop:'20px', textAlign: 'center'}}>
-                {(APP_ENV == 'PROD' ?
+                <a target="_blank"
+                   href="https://github.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin">
+                  {(APP_ENV == 'PROD' ?
                     (<CIcon icon={logoCsProd} height={60} alt="Logo CS" />) :
                     (APP_ENV == 'QA' ?
-                        (<CIcon icon={logoCsQa} height={60} alt="Logo CS" />) :
-                        (<CIcon icon={logoCsDev} height={60} alt="Logo CS" />)
+                      (<CIcon icon={logoCsQa} height={60} alt="Logo CS" />) :
+                      (<CIcon icon={logoCsDev} height={60} alt="Logo CS" />)
                     )
-                )}
-                <img src={"data:image/png;base64," + logoFiuba}
-                     className="d-sm-none d-md-none  d-lg-inline-block d-xl-inline-block d-xxl-inline-block"
-                     style={{verticalAlign: 'inherit', marginLeft: '50px'}}
-                     height={60}
-                     alt="Logo Fiuba" />
-                <img src={"data:image/png;base64," + logoFiuba}
-                     className="d-sm-block d-md-block d-lg-none d-xl-none d-xxl-none"
-                     style={{marginLeft: 'auto', marginRight: 'auto', marginTop: '20px'}}
-                     height={60}
-                     alt="Logo Fiuba" />
+                  )}
+                </a>
+                <a target="_blank"
+                   href="http://fi.uba.ar"
+                   className="d-sm-none d-md-none  d-lg-inline-block d-xl-inline-block d-xxl-inline-block">
+                  <img src={"data:image/png;base64," + logoFiuba}
+                       style={{verticalAlign: 'inherit', marginLeft: '50px'}}
+                       height={60}
+                       alt="Logo Fiuba" />
+                </a>
+                <a target="_blank"
+                   href="http://fi.uba.ar"
+                   className="d-sm-block d-md-block d-lg-none d-xl-none d-xxl-none">
+                  <img src={"data:image/png;base64," + logoFiuba}
+                       style={{marginLeft: 'auto', marginRight: 'auto', marginTop: '20px'}}
+                       height={60}
+                       alt="Logo Fiuba" />
+                </a>
               </div>
               <h3 style={{marginTop: '50px'}}>FIUBA CloudSync</h3>
               <p className="text-medium-emphasis small">
