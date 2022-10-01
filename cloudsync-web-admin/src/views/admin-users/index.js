@@ -213,7 +213,7 @@ const AdminUsers = () => {
   function refresh () {
 
     const usersPromise = new Promise((resolve, reject) => {
-      console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
+      //console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
       getAdminUsers(showClosed, start, pageSize, filterText)
         .then(response => {
           const { data } = response

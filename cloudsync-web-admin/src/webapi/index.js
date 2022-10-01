@@ -88,3 +88,17 @@ export function getUser (username) {
 export function saveUser (username, user) {
   return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`, user)
 }
+
+// Request Log
+export function getAppReqLog(server, lastWeek, today, reqid) {
+
+  let serverEndpoint = (server == "AppServer" ? "requestlog" : "requestlogauthserver")
+  let url = APP_APPSERVER_BASE_URL +
+            `/api/v1/` + serverEndpoint +
+            `?` +
+            `startdate=${lastWeek}&` +
+            `enddate=${today}&` +
+            `filter={\"comparator\":\"eq\",\"field\":\"request_id\",\"value\":\"${reqid}\"}`
+  
+  return axios.get(url)
+}

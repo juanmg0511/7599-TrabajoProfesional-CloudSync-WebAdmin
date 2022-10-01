@@ -21,3 +21,4 @@ export const PAGE_SIZES = ['25', '50', '100']
 
 export const UNDELETABLE_ADMIN_NAME = 'cloudsyncgod'
 export const usernameRegex = /^[a-zA-Z0-9_.]+$/
+export const guidRegex = /^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$/
