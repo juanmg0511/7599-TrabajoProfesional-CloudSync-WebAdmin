@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom';
 import {
     CToaster,
     CToast,
@@ -43,6 +44,7 @@ import {
 
 const AdminUsers = () => {
 
+  let navigate = useNavigate();
   const loggedUser = useSelector(getUsername)
 
   const [selectedUser, changeSelectedUser] = useState({})
@@ -163,11 +165,6 @@ const AdminUsers = () => {
         </CPaginationItem>
       </CPagination>
     )
-  }
-
-  function addUser() {
-
-    console.log('do something!')
   }
 
   function handleFilterActive() {
@@ -354,7 +351,7 @@ const AdminUsers = () => {
                 </CInputGroup>
               </CCol>
               <CCol>
-                  <CButton style={{float: 'right', marginTop: '7px'}} onClick={addUser}>
+                  <CButton style={{float: 'right', marginTop: '7px'}} onClick={() => {navigate("/admin-users/edit?mode=new")}}>
                     <CIcon icon={cilUserPlus} style={{color: 'white'}} size="lg"/>&nbsp;New Admin
                   </CButton>
                   <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={() => {changeStart(0); reloadTable()}}>
@@ -389,7 +386,7 @@ const AdminUsers = () => {
                       <CTableDataCell>{(user.account_closed ? 'Yes' : 'No')}</CTableDataCell>
                       <CTableDataCell>
                       <CButtonGroup>
-                        <CButton color="secondary">
+                        <CButton color="secondary" onClick={() => {changeSelectedUser(user); navigate("/admin-users/edit?username=" + user.username + "&mode=view")}}>
                           <CIcon icon={cilPenAlt} style={{color: 'white'}} size="sm"/>
                         </CButton>
                         {((user.username !== UNDELETABLE_ADMIN_NAME) && (user.username !== loggedUser) && (!user.account_closed) ? (
