@@ -44,7 +44,6 @@ import {
 
 const AdminUsers = () => {
 
-  let navigate = useNavigate();
   const loggedUser = useSelector(getUsername)
 
   const [selectedUser, changeSelectedUser] = useState({})
@@ -76,6 +75,14 @@ const AdminUsers = () => {
   }
   const toaster = useRef()
   const [toast, addToast] = useState(0)
+
+  const [editUrl, changeEditUrl] = useState(null)
+  let navigate = useNavigate();
+  function navigateToEdit() {
+
+    if (editUrl)
+      navigate(editUrl)
+  }
 
   function buildPageSizeControl() {
 
@@ -295,6 +302,7 @@ const AdminUsers = () => {
   } 
   
   useEffect(() => {reloadTable()}, [start, showClosed, pageSize, filterActive])
+  useEffect(() => {navigateToEdit()}, [editUrl])
   return (
     <CRow>
       <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
@@ -351,7 +359,7 @@ const AdminUsers = () => {
                 </CInputGroup>
               </CCol>
               <CCol>
-                  <CButton style={{float: 'right', marginTop: '7px'}} onClick={() => {navigate("/admin-users/edit?mode=new")}}>
+                  <CButton style={{float: 'right', marginTop: '7px'}} onClick={() => {changeEditUrl("/admin-users/edit?mode=new")}}>
                     <CIcon icon={cilUserPlus} style={{color: 'white'}} size="lg"/>&nbsp;New Admin
                   </CButton>
                   <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={() => {changeStart(0); reloadTable()}}>
@@ -386,7 +394,7 @@ const AdminUsers = () => {
                       <CTableDataCell>{(user.account_closed ? 'Yes' : 'No')}</CTableDataCell>
                       <CTableDataCell>
                       <CButtonGroup>
-                        <CButton color="secondary" onClick={() => {changeSelectedUser(user); navigate("/admin-users/edit?username=" + user.username + "&mode=view")}}>
+                        <CButton color="secondary" onClick={() => {changeSelectedUser(user); changeEditUrl("/admin-users/edit?username=" + user.username + "&mode=view")}}>
                           <CIcon icon={cilPenAlt} style={{color: 'white'}} size="sm"/>
                         </CButton>
                         {((user.username !== UNDELETABLE_ADMIN_NAME) && (user.username !== loggedUser) && (!user.account_closed) ? (
