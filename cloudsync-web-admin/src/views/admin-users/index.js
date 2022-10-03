@@ -310,7 +310,7 @@ const AdminUsers = () => {
             </CRow>
           </CCardHeader>
           <CCardBody>
-            <CTable striped align="middle" style={{textAlign: 'center'}}>
+            <CTable striped align="middle" style={{textAlign: 'center'}} responsive>
               <CTableHead color="dark">
                 <CTableRow>
                   <CTableHeaderCell scope="col">Username</CTableHeaderCell>
