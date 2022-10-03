@@ -216,91 +216,32 @@ const AdminUsers = () => {
 
   function refresh () {
 
-    const usersPromise = new Promise((resolve, reject) => {
-      //console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
-      getAdminUsers(showClosed, start, pageSize, filterText)
-        .then(response => {
-          const { data } = response
-          const u = {}
-          const resultsLength = data.results.length
-          if ( resultsLength > 0 ) {
-            data.results.forEach(user => {
-              u[user.username] = user
-            })
-            changeUsers(u)
-            changeEmptyUsers(false)
-            changeResultsSize(resultsLength)
-            changeTotal(data.total)
-          } else {
-            changeUsers(null)
-            changeEmptyUsers(true)
-          }
-          resolve(u)
-        })
-        .catch(err => {
+    //console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
+    getAdminUsers(showClosed, start, pageSize, filterText)
+      .then(response => {
+        const { data } = response
+        const u = {}
+        const resultsLength = data.results.length
+        if ( resultsLength > 0 ) {
+          data.results.forEach(user => {
+            u[user.username] = user
+          })
+          changeUsers(u)
+          changeEmptyUsers(false)
+          changeResultsSize(resultsLength)
+          changeTotal(data.total)
+        } else {
           changeUsers(null)
           changeEmptyUsers(true)
-          addToast(generateToast("danger","Error fetching data!"))
-          reject(err)
-        })
-    })
-    usersPromise
-    .then(users => {
-      Object.keys(users).forEach(username => {
-        if (!users[username].account_closed) {
-          getUserAdminSessions(username).then(response => {
-            const { data } = response
-            const activeState =
-              data.results.length > 0 ? (
-                <CTooltip content="User is online">
-                  <CAvatar color="success" size="sm" style={{width: "1rem", height:"1rem", marginTop: "-4px"}} />
-                </CTooltip>
-              ) : (
-                <CTooltip content="User is offline">
-                  <CAvatar color="danger" size="sm" style={{width: "1rem", height:"1rem", marginTop: "-4px"}} />
-                </CTooltip>
-              )
-            users = {
-              ...users,
-              [username]: {
-                ...users[username],
-                activeState
-              }
-            }
-            changeUsers(users)
-          })
-          .catch(_ => {
-            const activeState =
-              <CAvatar color="dark" size="sm" style={{width: "1rem", height:"1rem", marginTop: "-4px"}} />
-            users = {
-              ...users,
-              [username]: {
-                ...users[username],
-                activeState
-              }
-            }
-            changeUsers(users)
-            addToast(generateToast("warning","Error fetching online status data!"))
-          })
-        } else {
-          const activeState =
-            <CTooltip content="User account is marked as closed">
-              <CAvatar color="dark" size="sm" style={{width: "1rem", height:"1rem", marginTop: "-4px"}} />
-            </CTooltip>
-          users = {
-            ...users,
-            [username]: {
-              ...users[username],
-              activeState
-            }
-        }
-        changeUsers(users)
         }
       })
-    })
-    .catch(_ => {})
-  } 
-  
+      .catch(err => {
+        changeUsers(null)
+        changeEmptyUsers(true)
+        addToast(generateToast("danger","Error fetching data!"))
+      })
+  }
+
   useEffect(() => {reloadTable()}, [start, showClosed, pageSize, filterActive])
   useEffect(() => {navigateToEdit()}, [editUrl])
   return (
@@ -390,7 +331,16 @@ const AdminUsers = () => {
                       <CTableDataCell>{user.first_name}</CTableDataCell>
                       <CTableDataCell>{user.last_name}</CTableDataCell>
                       <CTableDataCell>{user.email}</CTableDataCell>
-                      <CTableDataCell>{user.activeState || <CSpinner color="dark" variant="grow" size="sm" />}</CTableDataCell>
+                      <CTableDataCell>
+                        <CTooltip content={(user.online ? "User is online" : (user.account_closed ? "User account is marked as closed" : "User is offline"))}>
+                          <CAvatar color={(user.online ? "success" : (user.account_closed ? "dark" : "danger"))}
+                                   size="sm"
+                                   style={{width: "1rem",
+                                           height:"1rem",
+                                           marginTop: "-4px"}}
+                          />
+                        </CTooltip>
+                      </CTableDataCell>
                       <CTableDataCell>{(user.account_closed ? 'Yes' : 'No')}</CTableDataCell>
                       <CTableDataCell>
                       <CButtonGroup>
