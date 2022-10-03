@@ -38,7 +38,7 @@ const About = (props) => {
                 </a>
                 <a target="_blank"
                    href="http://fi.uba.ar"
-                   className="d-sm-none d-md-none  d-lg-inline-block d-xl-inline-block d-xxl-inline-block">
+                   className="d-none d-sm-none d-md-none d-lg-inline-block d-xl-inline-block d-xxl-inline-block">
                   <img src={"data:image/png;base64," + logoFiuba}
                        style={{verticalAlign: 'inherit', marginLeft: '50px'}}
                        height={60}

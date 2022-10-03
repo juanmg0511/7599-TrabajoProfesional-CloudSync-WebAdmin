@@ -105,7 +105,7 @@ const RequestLog = () => {
             const { data } = response
             const r = {}
             const resultsLength = data.records_retrieved
-            console.log(resultsLength)
+            //console.log(resultsLength)
             if ( resultsLength > 0 ) {
             data.request_log.forEach(record => {
                 r[record.request_id] = record
