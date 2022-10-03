@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import qs from 'qs'
 import {
@@ -6,7 +7,8 @@ import {
   CToaster,
   CToast,
   CToastBody,
-  CToastClose,    
+  CToastClose,  
+  CTooltip,
   CCallout,
   CButtonToolbar,
   CButtonGroup,
@@ -25,6 +27,11 @@ import {
   CFormText,
   CInputGroup,
   CInputGroupText,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
   CSpinner,
   CRow,
 } from '@coreui/react'
@@ -38,13 +45,20 @@ import { getUsername } from '../../../stateapi/auth'
 const AdminEdit = () => {
 
   let navigate = useNavigate();
+  const loggedUser = useSelector(getUsername)
   const { mode, username } = qs.parse(location.search, {
     ignoreQueryPrefix: true
   })
   const [formMode, changeFormMode] = useState(mode)
+  const [deleteVisible, changeDeleteVisible] = useState(false)
 
   const [record, changeRecord] = useState(null)
   const [recordEmpty, changeRecordEmpty] = useState(false)
+
+  const [formUsername, changeFormUsername] = useState("")
+  const [formFirstName, changeFormFirstName] = useState("")
+  const [formLastName, changeFormLastName] = useState("")
+  const [formEmail, changeFormEmail] = useState("")
 
   function generateToast(toastColor, toastMessage) {
     return (
@@ -97,6 +111,10 @@ const AdminEdit = () => {
         const resultsLength = data.username.length
         if ( resultsLength > 0 ) {
           changeRecord(data)
+          changeFormUsername(data.username)
+          changeFormFirstName(data.first_name)
+          changeFormLastName(data.last_name)
+          changeFormEmail(data.email)
         } else {
           changeRecord(null)
           changeRecordEmpty(true)
@@ -109,13 +127,52 @@ const AdminEdit = () => {
     })
   }
 
+  function closeAccount() {
+
+    removeAdminUser(record.username)
+      .then(_ => {
+
+        changeDeleteVisible(false)
+        addToast(generateToast("success","User account closed succesfully!"))
+        getData()
+      })
+      .catch(_ => {
+
+        changeDeleteVisible(false)
+        addToast(generateToast("danger","Error closing user account!"))
+        getData()
+      })
+  }
+
+  function parseTimestamp(timestamp) {
+    const date = new Date(timestamp)
+    return date.toUTCString()
+  }  
+
   useEffect(() => {setupForm()}, [])
   return (
     <CRow>
+      <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Close account</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <strong>Warning!</strong>&nbsp;You are about to close the administrative account for user <strong>"{formUsername}"</strong> ({formEmail}).<br /><br />This action cannot be undone. Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}} color="secondary" onClick={() => changeDeleteVisible(false)}>
+            Cancel
+          </CButton>
+          <CButton style={{color: 'white'}} color="danger" onClick={() => {closeAccount(false)}}>
+            <CIcon icon={cilTrash}/>
+            &nbsp;Close account
+          </CButton>
+        </CModalFooter>
+      </CModal>
       <CCol style={{marginLeft: 'auto', marginRight: 'auto'}} xs={10}>
         <CCallout color="info" className="bg-white">
-          <p>Welcome to the <strong>Administrators</strong> listing!</p>
-          <p>From this page you can manage all FIUBA CloudSync administrators:</p>
+          <p>Welcome to the <strong>Administrator details</strong> page!</p>
+          <p>From this page you can create, view or edit a FIUBA CloudSync administrator:</p>
           <ul>
               <li>Create new admins</li>
               <li>View or Edit a particular admin's details</li>
@@ -139,8 +196,8 @@ const AdminEdit = () => {
                               type="text"
                               id="validationCustom01"
                               placeholder="please enter a user name"
-                              value={(formMode == "new" ? "" : record.username)}
-                              //onChange={e => changePassword(e.target.value)}
+                              value={formUsername}
+                              onChange={e => changeFormUsername(e.target.value)}
                               disabled={( formMode == "new" ? false : true )}
                               required={true} />
                             <CFormFeedback valid>Looks good!</CFormFeedback>
@@ -154,7 +211,8 @@ const AdminEdit = () => {
                               type="text"
                               id="validationCustom02"
                               placeholder="your first name"
-                              value={(formMode == "new" ? "" : record.first_name)}
+                              value={formFirstName}
+                              onChange={e => changeFormFirstName(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
                               required={true} />
                             <CFormFeedback valid>Looks good!</CFormFeedback>
@@ -168,7 +226,8 @@ const AdminEdit = () => {
                               type="text"
                               id="validationCustom03"
                               placeholder="your last name"
-                              value={(formMode == "new" ? "" : record.last_name)}
+                              value={formLastName}
+                              onChange={e => changeFormLastName(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
                               required={true} />
                             <CFormFeedback valid>Looks good!</CFormFeedback>
@@ -182,7 +241,8 @@ const AdminEdit = () => {
                               type="text"
                               id="validationCustom04"
                               placeholder="enter a valid email address"
-                              value={(formMode == "new" ? "" : record.email)}
+                              value={formEmail}
+                              onChange={e => changeFormEmail(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
                               required={true} />
                             <CFormFeedback valid>Looks good!</CFormFeedback>
@@ -195,11 +255,13 @@ const AdminEdit = () => {
                           <CCol>
                             <CFormInput
                               type="password"
+                              placeholder="please choose a password"
                               id="validationCustom05"
                               disabled={( formMode == "new" ? false : true )}
                               required={( formMode == "new" ? true : false )} />
                             <CFormFeedback valid>Looks good!</CFormFeedback>
                             <CFormFeedback invalid>Looks bad!</CFormFeedback>
+                            <CFormText>Passwords must be 8 characters in lenght or greater, have 1 uppercase letter, 1 number and 1 symbol.</CFormText>
                           </CCol>
                         </div>
                         <div className="mb-3"
@@ -208,6 +270,7 @@ const AdminEdit = () => {
                           <CCol>
                             <CFormInput
                               type="password"
+                              placeholder="please re-type your password"
                               id="validationCustom06"
                               disabled={( formMode == "new" ? false : true )}
                               required={( formMode == "new" ? true : false )} />
@@ -217,11 +280,23 @@ const AdminEdit = () => {
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel htmlFor="validationCustom07">Database Id</CFormLabel>
+                          <CFormLabel htmlFor="validationCustom07">Account Closed?</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
                               id="validationCustom07"
+                              value={(formMode == "new" ? "" : (record.account_closed == true ? "Yes" : "No"))}
+                              disabled={true}
+                              required={false} />
+                          </CCol>
+                        </div>
+                        <div className="mb-3"
+                              style={{display: (formMode == "new" ? "none" : null)}}>
+                          <CFormLabel htmlFor="validationCustom08">Database Id</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="validationCustom08"
                               value={(formMode == "new" ? "" : record.id)}
                               disabled={true}
                               required={false} />
@@ -229,24 +304,24 @@ const AdminEdit = () => {
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel htmlFor="validationCustom08">Date Created</CFormLabel>
+                          <CFormLabel htmlFor="validationCustom09">Date Created</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom08"
-                              value={(formMode == "new" ? "" : record.date_created)}
+                              id="validationCustom09"
+                              value={(formMode == "new" ? "" : parseTimestamp(record.date_created))}
                               disabled={true}
                               required={false} />
                           </CCol>
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel htmlFor="validationCustom09">Date Updated</CFormLabel>
+                          <CFormLabel htmlFor="validationCustom10">Date Updated</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom09"
-                              value={(formMode == "new" ? "" : (record.date_updated ? record.date_updated : "None"))}
+                              id="validationCustom10"
+                              value={(formMode == "new" ? "" : (record.date_updated ? parseTimestamp(record.date_updated) : "None"))}
                               disabled={true}
                               required={false} />
                           </CCol>
@@ -260,32 +335,38 @@ const AdminEdit = () => {
                                 Cancel
                               </CButton>
                               <CButton
-                                color="primary"
-                                style={{ display: ( formMode == "view" ? null : 'none' ) }}
-                                onClick={() => {changeFormMode("edit")}}>
-                                Edit
+                                    color="primary"
+                                    type="submit"
+                                    style={{ display: ( formMode != "view" ? null : 'none' )}}
+                                    onClick={() => {handleSubmit()}}>
+                                    Save
                               </CButton>
-                              <CButton
-                                color="primary"
-                                type="submit"
-                                style={{ display: ( formMode != "view" ? null : 'none' )}}
-                                onClick={() => {handleSubmit()}}>
-                                Save
-                              </CButton>
-                              <CButton
-                                color="primary"
-                                style={{ display: ( formMode == "view" ? null : 'none' )}}
-                                onClick={() => {handleChangePassword()}}>
-                                Change Password
-                              </CButton>
-                              <CButton
-                                color="danger"
-                                style={{ color: 'white',
-                                        display: ( formMode == "view" ? null : 'none' )}}
-                                onClick={() => {handleCloseAccount()}}>
-                                <CIcon icon={cilTrash}/>
-                                &nbsp;Close account
-                              </CButton>
+                              {formMode == "view" ? (
+                                <>
+                                <CButton
+                                    color="primary"
+                                    style={{ display: ( (!record.account_closed) ? null : 'none' )}}
+                                    onClick={() => {changeFormMode("edit")}}>
+                                    Edit
+                                </CButton>
+                                <CButton
+                                    color="primary"
+                                    style={{ display: ( (!record.account_closed) ? null : 'none' )}}
+                                    onClick={() => {changePassword()}}>
+                                    Change Password
+                                </CButton>
+                                <CButton
+                                    color="danger"
+                                    style={{ color: 'white',
+                                            display: ( ((record.username !== UNDELETABLE_ADMIN_NAME) && (record.username !== loggedUser) && (!record.account_closed)) ? null : 'none' )}}
+                                    onClick={() => {changeDeleteVisible(true)}}>
+                                    <CIcon icon={cilTrash}/>
+                                    &nbsp;Close account
+                                </CButton>
+                                </>
+                              ) : (
+                                null
+                              )}
                             </div>
                         </CCol>
                       </CRow>
@@ -301,9 +382,15 @@ const AdminEdit = () => {
                              fontSize: '4.5rem',
                              width: '150px',
                              height: '150px',
-                             marginTop: '25px',
-                             paddingLeft: '5px' }}>
+                             marginTop: '25px' }}>
                       {(formMode == "new" ? "" : record.username.charAt(0).toUpperCase())}
+                      <CTooltip content="User account is marked as closed"
+                                placement="bottom">
+                        <span className="avatar-status bg-dark"
+                              style = {{ width: '50px',
+                                         height: '50px' }}>
+                        </span>
+                      </CTooltip>
                   </CAvatar>
                   <div style={{ display: ( formMode == "new" ? 'none' : null ),
                                 fontWeight: 'bold',
