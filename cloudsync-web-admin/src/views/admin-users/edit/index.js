@@ -78,14 +78,21 @@ const AdminEdit = () => {
 
   const [validated, setValidated] = useState(false)
   const handleSubmit = (event) => {
-    const form = event.currentTarget
-  
-    if (form.checkValidity() === false) {
-    
-      event.preventDefault()
-      event.stopPropagation()
-    }
-    setValidated(true)
+
+    try {
+      const form = event.currentTarget
+      if (form.checkValidity() === false) {
+
+        event.preventDefault()
+        event.stopPropagation()
+        addToast(generateToast("warning","Please review your input!"))
+     } else {
+
+        addToast(generateToast("success","Operation successful!"))
+     }
+      setValidated(true)
+      //navigate("/admin-users")  
+    } catch { }
   }
 
   function setupForm() {
@@ -375,28 +382,33 @@ const AdminEdit = () => {
                 <CCol md="4"
                       style={{ textAlign: 'center' }}
                       className="d-none d-xl-block d-xxl-block">
-                  <CAvatar
-                    color="primary"
-                    textColor="white"
-                    style={{ display: ( formMode == "new" ? 'none' : null ),
-                             fontSize: '4.5rem',
-                             width: '150px',
-                             height: '150px',
-                             marginTop: '25px' }}>
-                      {(formMode == "new" ? "" : record.username.charAt(0).toUpperCase())}
-                      <CTooltip content="User account is marked as closed"
-                                placement="bottom">
-                        <span className="avatar-status bg-dark"
-                              style = {{ width: '50px',
-                                         height: '50px' }}>
-                        </span>
-                      </CTooltip>
-                  </CAvatar>
-                  <div style={{ display: ( formMode == "new" ? 'none' : null ),
-                                fontWeight: 'bold',
-                                marginTop: '10px' }}>
-                    {(formMode == "new" ? "" : record.username)}
-                  </div>
+                  { formMode != "new" ? (
+                    <>
+                    <CAvatar
+                      color="primary"
+                      textColor="white"
+                      style={{ fontSize: '4.5rem',
+                               width: '150px',
+                               height: '150px',
+                               marginTop: '25px' }}>
+                        {record.username.charAt(0).toUpperCase()}
+                        <CTooltip content={(record.online ? "User is online" : (record.account_closed ? "User account is marked as closed" : "User is offline"))}
+                                  placement="bottom">
+                          <span className={"avatar-status " + (record.online ? "bg-success" : (record.account_closed ? "bg-dark" : "bg-danger"))}
+                                style = {{ width: '50px',
+                                          height: '50px' }}>
+                          </span>
+                        </CTooltip>
+                    </CAvatar>
+                    <div style={{ fontWeight: 'bold',
+                                  marginTop: '10px' }}>
+                      {record.username}
+                    </div>
+                    </>
+                  ) : (
+                    null
+                    )
+                  }
                 </CCol>
               </CRow> 
             ) : (
