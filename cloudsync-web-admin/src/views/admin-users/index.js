@@ -38,7 +38,7 @@ import {
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
   import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX } from '@coreui/icons';
-  import { getAdminUsers, getUserAdminSessions, removeAdminUser } from '../../webapi'
+  import { getAdminUsers, removeAdminUser } from '../../webapi'
   import { UNDELETABLE_ADMIN_NAME, PAGE_SIZES, usernameRegex } from '../../config'
   import { getUsername } from '../../stateapi/auth'
 
@@ -50,6 +50,7 @@ const AdminUsers = () => {
   const [users, changeUsers] = useState()
   const [usersEmpty, changeEmptyUsers] = useState()
 
+  const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
   const [filterActive, changeFilterActive] = useState(false)
   const [filterText, changeFilterText] = useState("")
@@ -192,16 +193,19 @@ const AdminUsers = () => {
 
   function closeAccount() {
 
+    changeDeleting(true)
     removeAdminUser(selectedUser.username)
       .then(_ => {
 
         changeDeleteVisible(false)
+        changeDeleting(false)
         addToast(generateToast("success","User account closed succesfully!"))
         reloadTable()
       })
       .catch(_ => {
 
         changeDeleteVisible(false)
+        changeDeleting(false)
         addToast(generateToast("danger","Error closing user account!"))
         reloadTable()        
       })
@@ -246,6 +250,7 @@ const AdminUsers = () => {
   useEffect(() => {navigateToEdit()}, [editUrl])
   return (
     <CRow>
+      { deleteVisible ? (
       <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
         <CModalHeader>
           <CModalTitle>Close account</CModalTitle>
@@ -254,15 +259,28 @@ const AdminUsers = () => {
           <strong>Warning!</strong>&nbsp;You are about to close the administrative account for user <strong>"{selectedUser.username}"</strong> ({selectedUser.email}).<br /><br />This action cannot be undone. Are you sure?
         </CModalBody>
         <CModalFooter>
-          <CButton style={{color: 'white'}} color="secondary" onClick={() => changeDeleteVisible(false)}>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={deleting}
+                   onClick={() => changeDeleteVisible(false)}>
             Cancel
           </CButton>
-          <CButton style={{color: 'white'}} color="danger" onClick={() => {changeStart(0); closeAccount(false)}}>
-            <CIcon icon={cilTrash}/>
-            &nbsp;Close account
-          </CButton>
+          {deleting ? (
+            <CButton style={{color: 'white'}} color="danger" disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton style={{color: 'white'}} color="danger" onClick={() => {changeStart(0); closeAccount(false)}}>
+                <CIcon icon={cilTrash}/>
+                &nbsp;Close account
+              </CButton>
+            )
+          }
         </CModalFooter>
       </CModal>
+      ) : (
+        null
+      )}      
       <CCol xs={12}>
         <CCallout color="info" className="bg-white">
           <p>Welcome to the <strong>Administrators</strong> listing!</p>
@@ -301,7 +319,7 @@ const AdminUsers = () => {
               </CCol>
               <CCol>
                   <CButton style={{float: 'right', marginTop: '7px'}} onClick={() => {changeEditUrl("/admin-users/edit?mode=new")}}>
-                    <CIcon icon={cilUserPlus} style={{color: 'white'}} size="lg"/>&nbsp;New Admin
+                    <CIcon icon={cilUserPlus} style={{color: 'white', marginRight: '10px'}} size="lg"/>New Admin
                   </CButton>
                   <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={() => {changeStart(0); reloadTable()}}>
                     <CIcon icon={cilReload} style={{color: 'white'}} size="lg"/>

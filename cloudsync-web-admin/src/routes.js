@@ -121,7 +121,7 @@ const routes = [
   { path: '/recovery', name: 'Recovery', element: Recovery },
   { path: '/recovery/edit', name: 'Recovery Edit', element: RecoveryEdit },
   { path: '/game-progress', name: 'Game Progress', element: GameProgress },
-  { path: '/game-progress/Edit', name: 'Game Progress Edit', element: GameProgressEdit },
+  { path: '/game-progress/edit', name: 'Game Progress Edit', element: GameProgressEdit },
   { path: '/highscores', name: 'Highscores', element: Highscores },
   { path: '/highscores/edit', name: 'Highscore Edit', element: HighscoresEdit },
   { path: '/request-log', name: 'Request Log', element: RequestLog },

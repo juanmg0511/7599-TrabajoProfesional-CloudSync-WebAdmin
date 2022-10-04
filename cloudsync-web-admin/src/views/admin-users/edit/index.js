@@ -50,6 +50,7 @@ const AdminEdit = () => {
     ignoreQueryPrefix: true
   })
   const [formMode, changeFormMode] = useState(mode)
+  const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
 
   const [record, changeRecord] = useState(null)
@@ -136,16 +137,19 @@ const AdminEdit = () => {
 
   function closeAccount() {
 
+    changeDeleting(true)
     removeAdminUser(record.username)
       .then(_ => {
 
         changeDeleteVisible(false)
+        changeDeleting(false)
         addToast(generateToast("success","User account closed succesfully!"))
         getData()
       })
       .catch(_ => {
 
         changeDeleteVisible(false)
+        changeDeleting(false)
         addToast(generateToast("danger","Error closing user account!"))
         getData()
       })
@@ -159,6 +163,7 @@ const AdminEdit = () => {
   useEffect(() => {setupForm()}, [])
   return (
     <CRow>
+      { deleteVisible ? (
       <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
         <CModalHeader>
           <CModalTitle>Close account</CModalTitle>
@@ -167,15 +172,28 @@ const AdminEdit = () => {
           <strong>Warning!</strong>&nbsp;You are about to close the administrative account for user <strong>"{formUsername}"</strong> ({formEmail}).<br /><br />This action cannot be undone. Are you sure?
         </CModalBody>
         <CModalFooter>
-          <CButton style={{color: 'white'}} color="secondary" onClick={() => changeDeleteVisible(false)}>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={deleting}
+                   onClick={() => changeDeleteVisible(false)}>
             Cancel
           </CButton>
-          <CButton style={{color: 'white'}} color="danger" onClick={() => {closeAccount(false)}}>
-            <CIcon icon={cilTrash}/>
-            &nbsp;Close account
-          </CButton>
+          {deleting ? (
+            <CButton style={{color: 'white'}} color="danger" disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton style={{color: 'white'}} color="danger" onClick={() => {closeAccount(false)}}>
+                <CIcon icon={cilTrash}/>
+                &nbsp;Close account
+              </CButton>
+            )
+          }
         </CModalFooter>
       </CModal>
+      ) : (
+        null
+      )}
       <CCol style={{marginLeft: 'auto', marginRight: 'auto'}} xs={10}>
         <CCallout color="info" className="bg-white">
           <p>Welcome to the <strong>Administrator details</strong> page!</p>

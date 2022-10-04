@@ -8,6 +8,7 @@ axios.interceptors.request.use(config => {
   return config
 })
 
+
 // Authentication
 export function doAuth (user) {
     return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/sessions', user)
@@ -17,6 +18,7 @@ export function doLogOut (sessionId) {
   return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/sessions/${sessionId}`)
 }
 
+
 // Password recovery
 export function doRecoveryPassword (key, username, password) {
   return axios.post(APP_APPSERVER_BASE_URL + `/api/v1/recovery/${username}`, {
@@ -24,6 +26,7 @@ export function doRecoveryPassword (key, username, password) {
     new_password: password
   })
 }
+
 
 // Admin Users - Listing
 export function getAdminUsers (show_closed, start, limit, user_filter) {
@@ -71,9 +74,14 @@ export function saveAdminUser (username, user) {
   return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/adminusers/${username}`, user)
 }
 
+
 // Users - Listing
-export function getUsers () {
-  return axios.get(APP_APPSERVER_BASE_URL + '/api/v1/users')
+export function getUsers (show_closed, start, limit, user_filter) {
+  let url = APP_APPSERVER_BASE_URL + `/api/v1/users?show_closed=${show_closed}&start=${start}&limit=${limit}`
+  if (user_filter) {
+    url += `&user_filter=${user_filter}`
+  }
+  return axios.get(url)
 }
 
 export function removeUser (username) {
@@ -89,6 +97,7 @@ export function saveUser (username, user) {
   return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`, user)
 }
 
+
 // Request Log
 export function getAppReqLog(server, lastWeek, today, reqid) {
 
@@ -101,4 +110,54 @@ export function getAppReqLog(server, lastWeek, today, reqid) {
             `filter={\"comparator\":\"eq\",\"field\":\"request_id\",\"value\":\"${reqid}\"}`
   
   return axios.get(url)
+}
+
+// Sessions - Listing
+export function getSessions (start, limit, user_filter) {
+  let url = APP_APPSERVER_BASE_URL + `/api/v1/sessions?start=${start}&limit=${limit}`
+  if (user_filter) {
+    url += `&user_filter=${user_filter}`
+  }
+  return axios.get(url)
+}
+
+export function removeSession (token) {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/sessions/${token}`)
+}
+
+
+// Recovery - Listing
+export function getRecoveries (start, limit, user_filter) {
+  let url = APP_APPSERVER_BASE_URL + `/api/v1/recovery?start=${start}&limit=${limit}`
+  if (user_filter) {
+    url += `&user_filter=${user_filter}`
+  }
+  return axios.get(url)
+}
+
+
+// Game Progress - Listing
+export function getGameProgress (start, limit, user_filter) {
+  let url = APP_APPSERVER_BASE_URL + `/api/v1/gameprogress?start=${start}&limit=${limit}`
+  if (user_filter) {
+    url += `&user_filter=${user_filter}`
+  }
+  return axios.get(url)
+}
+
+export function removeGameProgress (username) {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/gameprogress/${username}`)
+}
+
+// High Scores - Listing
+export function getHighScores (start, limit, user_filter) {
+  let url = APP_APPSERVER_BASE_URL + `/api/v1/highscores?start=${start}&limit=${limit}`
+  if (user_filter) {
+    url += `&user_filter=${user_filter}`
+  }
+  return axios.get(url)
+}
+
+export function removeHighScore (username) {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/highscores/${username}`)
 }
