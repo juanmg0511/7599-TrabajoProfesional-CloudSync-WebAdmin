@@ -41,12 +41,6 @@ export function getUserAdminSessions (username) {
   return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/adminusers/${username}/sessions`)
 }
 
-export function createAdminUser (token, user) {
-  return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/adminusers', user, {
-    headers: { 'X-Auth-Token': token }
-  })
-}
-
 export function removeAdminUser (username) {
   return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/adminusers/${username}`)
 }
@@ -70,9 +64,15 @@ export function doChangeAdminPassword (token, username, password) {
   )
 }
 
+export function createAdminUser (user) {
+  return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/adminusers', user)
+}
+
 export function saveAdminUser (username, user) {
   return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/adminusers/${username}`, user)
 }
+
+
 
 
 // Users - Listing

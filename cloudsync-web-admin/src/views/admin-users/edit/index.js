@@ -10,23 +10,15 @@ import {
   CToastClose,  
   CTooltip,
   CCallout,
-  CButtonToolbar,
-  CButtonGroup,
   CButton,
   CCard,
   CCardBody,
-  CCardHeader,
   CCol,
   CForm,
-  CFormCheck,
   CFormInput,
   CFormFeedback,
   CFormLabel,
-  CFormSelect,
-  CFormTextarea,
   CFormText,
-  CInputGroup,
-  CInputGroupText,
   CModal,
   CModalHeader,
   CModalTitle,
@@ -36,9 +28,9 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX } from '@coreui/icons';
-import { getAdminUser, getAdminUsers, getUserAdminSessions, removeAdminUser } from '../../../webapi'
-import { UNDELETABLE_ADMIN_NAME, PAGE_SIZES, usernameRegex } from '../../../config'
+import { cilTrash, cilWarning } from '@coreui/icons';
+import { getAdminUser, createAdminUser, saveAdminUser, removeAdminUser } from '../../../webapi'
+import { UNDELETABLE_ADMIN_NAME } from '../../../config'
 import { getUsername } from '../../../stateapi/auth'
 
 
@@ -50,6 +42,7 @@ const AdminEdit = () => {
     ignoreQueryPrefix: true
   })
   const [formMode, changeFormMode] = useState(mode)
+  const [submitting, changeSubmitting] = useState(false)
   const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
 
@@ -60,6 +53,8 @@ const AdminEdit = () => {
   const [formFirstName, changeFormFirstName] = useState("")
   const [formLastName, changeFormLastName] = useState("")
   const [formEmail, changeFormEmail] = useState("")
+  const [formPassword, changeFormPassword] = useState("")
+  const [formPasswordConfirm, changeFormPasswordConfirm] = useState("")
 
   function generateToast(toastColor, toastMessage) {
     return (
@@ -80,20 +75,54 @@ const AdminEdit = () => {
   const [validated, setValidated] = useState(false)
   const handleSubmit = (event) => {
 
-    try {
-      const form = event.currentTarget
-      if (form.checkValidity() === false) {
+    const form = event.currentTarget
+    event.preventDefault()
+    event.stopPropagation()
 
-        event.preventDefault()
-        event.stopPropagation()
-        addToast(generateToast("warning","Please review your input!"))
-     } else {
+    if (form.checkValidity() === false) {
 
-        addToast(generateToast("success","Operation successful!"))
-     }
-      setValidated(true)
-      //navigate("/admin-users")  
-    } catch { }
+      addToast(generateToast("warning","Please review your input!"))
+
+    } else {
+
+      changeSubmitting(true)
+ 
+      const modifiedUser = {
+        first_name: formFirstName,
+        last_name: formLastName,
+        email: formEmail
+      }
+      const newUser = {
+        username: formUsername,
+        password: formPassword,
+        first_name: formFirstName,
+        last_name: formLastName,
+        email: formEmail,
+      }  
+
+      const operation = (formMode == "new" ? createAdminUser(newUser) : saveAdminUser(formUsername, modifiedUser))      
+      operation                 
+      .then(_ => {
+
+        if (formMode == "new") {
+          navigate('/admin-users')
+        } else {
+          changeSubmitting(false)
+          changeFormMode("view")
+          getData()
+        }
+        addToast(generateToast("success","User operation successful!"))
+      })
+      .catch(_ => {
+        if (formMode == "edit") {
+          changeFormMode("view")
+          getData()
+        }
+        changeSubmitting(false)
+        addToast(generateToast("danger","Error during user operation!"))
+      })
+    }
+    setValidated(true)
   }
 
   function setupForm() {
@@ -215,101 +244,99 @@ const AdminEdit = () => {
                     validated={validated}
                     onSubmit={handleSubmit}>
                         <CRow className="mb-3">
-                          <CFormLabel htmlFor="validationCustom01">Username</CFormLabel>
+                          <CFormLabel>Username</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom01"
+                              id="adminFormUsername"
                               placeholder="please enter a user name"
                               value={formUsername}
                               onChange={e => changeFormUsername(e.target.value)}
                               disabled={( formMode == "new" ? false : true )}
                               required={true} />
-                            <CFormFeedback valid>Looks good!</CFormFeedback>
-                            <CFormFeedback invalid>Looks bad!</CFormFeedback>
+                            <CFormFeedback invalid>Please enter a username</CFormFeedback>
                           </CCol>
                         </CRow>
                         <CRow className="mb-3">
-                          <CFormLabel htmlFor="validationCustom02">First Name</CFormLabel>
+                          <CFormLabel>First Name</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom02"
+                              id="adminFormFirstName"
                               placeholder="your first name"
                               value={formFirstName}
                               onChange={e => changeFormFirstName(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
                               required={true} />
-                            <CFormFeedback valid>Looks good!</CFormFeedback>
-                            <CFormFeedback invalid>Looks bad!</CFormFeedback>
+                            <CFormFeedback invalid>Please enter a first name</CFormFeedback>
                           </CCol>
                         </CRow>
                         <CRow className="mb-3">
-                          <CFormLabel htmlFor="validationCustom03">Last Name</CFormLabel>
+                          <CFormLabel>Last Name</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom03"
+                              id="adminFormLastName"
                               placeholder="your last name"
                               value={formLastName}
                               onChange={e => changeFormLastName(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
                               required={true} />
-                            <CFormFeedback valid>Looks good!</CFormFeedback>
-                            <CFormFeedback invalid>Looks bad!</CFormFeedback>
+                            <CFormFeedback invalid>Please enter a last name</CFormFeedback>
                           </CCol>
                         </CRow>
                         <CRow className="mb-3">
-                          <CFormLabel htmlFor="validationCustom04">Email</CFormLabel>
+                          <CFormLabel>Email</CFormLabel>
                           <CCol>
                             <CFormInput
-                              type="text"
-                              id="validationCustom04"
+                              type="email"
+                              id="adminFormEmail"
                               placeholder="enter a valid email address"
                               value={formEmail}
                               onChange={e => changeFormEmail(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
                               required={true} />
-                            <CFormFeedback valid>Looks good!</CFormFeedback>
-                            <CFormFeedback invalid>Looks bad!</CFormFeedback>
+                            <CFormFeedback invalid>Please enter a valid email address</CFormFeedback>
                           </CCol>
                         </CRow>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? null : "none")}}>
-                          <CFormLabel htmlFor="validationCustom05">Password</CFormLabel>
+                          <CFormLabel>Password</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="password"
                               placeholder="please choose a password"
-                              id="validationCustom05"
+                              id="adminFormPassword"
+                              value={formPassword}
+                              onChange={e => changeFormPassword(e.target.value)}
                               disabled={( formMode == "new" ? false : true )}
                               required={( formMode == "new" ? true : false )} />
-                            <CFormFeedback valid>Looks good!</CFormFeedback>
-                            <CFormFeedback invalid>Looks bad!</CFormFeedback>
+                            <CFormFeedback invalid>Please enter a valid email password</CFormFeedback>
                             <CFormText>Passwords must be 8 characters in lenght or greater, have 1 uppercase letter, 1 number and 1 symbol.</CFormText>
                           </CCol>
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? null : "none")}}>
-                          <CFormLabel htmlFor="validationCustom06">Reenter Password</CFormLabel>
+                          <CFormLabel>Reenter Password</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="password"
                               placeholder="please re-type your password"
-                              id="validationCustom06"
+                              id="adminFormPasswordConfirmation"
+                              value={formPasswordConfirm}
+                              onChange={e => changeFormPasswordConfirm(e.target.value)}
                               disabled={( formMode == "new" ? false : true )}
                               required={( formMode == "new" ? true : false )} />
-                            <CFormFeedback valid>Looks good!</CFormFeedback>
-                            <CFormFeedback invalid>Looks bad!</CFormFeedback>
+                            <CFormFeedback invalid>Passwords do not match!</CFormFeedback>
                           </CCol>
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel htmlFor="validationCustom07">Account Closed?</CFormLabel>
+                          <CFormLabel>Account Closed?</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom07"
+                              id="adminFormAccountClosed"
                               value={(formMode == "new" ? "" : (record.account_closed == true ? "Yes" : "No"))}
                               disabled={true}
                               required={false} />
@@ -317,11 +344,11 @@ const AdminEdit = () => {
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel htmlFor="validationCustom08">Database Id</CFormLabel>
+                          <CFormLabel>Database Id</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom08"
+                              id="adminFormId"
                               value={(formMode == "new" ? "" : record.id)}
                               disabled={true}
                               required={false} />
@@ -329,11 +356,11 @@ const AdminEdit = () => {
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel htmlFor="validationCustom09">Date Created</CFormLabel>
+                          <CFormLabel>Date Created</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom09"
+                              id="adminFormCreated"
                               value={(formMode == "new" ? "" : parseTimestamp(record.date_created))}
                               disabled={true}
                               required={false} />
@@ -341,11 +368,11 @@ const AdminEdit = () => {
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel htmlFor="validationCustom10">Date Updated</CFormLabel>
+                          <CFormLabel>Date Updated</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="validationCustom10"
+                              id="adminFormExpired"
                               value={(formMode == "new" ? "" : (record.date_updated ? parseTimestamp(record.date_updated) : "None"))}
                               disabled={true}
                               required={false} />
@@ -354,18 +381,26 @@ const AdminEdit = () => {
                         <CRow className="mb-3">
                           <CCol style={{ marginTop: "50px"}}>
                             <div className="d-grid gap-2 d-sm-flex">
-                              <CButton
-                                color="secondary"
+                              <CButton style={{color: 'white'}}
+                                ccolor="secondary"
+                                disabled={submitting}
                                 onClick={() => {navigate("/admin-users")}}>
                                 Cancel
                               </CButton>
-                              <CButton
+                              {submitting ? (
+                                <CButton disabled>
+                                  <CSpinner component="span" size="sm" aria-hidden="true"/>
+                                </CButton>
+                                ) : (
+                                  <CButton
                                     color="primary"
                                     type="submit"
                                     style={{ display: ( formMode != "view" ? null : 'none' )}}
-                                    onClick={() => {handleSubmit()}}>
-                                    Save
-                              </CButton>
+                                    >
+                                  Save
+                                  </CButton>
+                                )
+                              }
                               {formMode == "view" ? (
                                 <>
                                 <CButton
