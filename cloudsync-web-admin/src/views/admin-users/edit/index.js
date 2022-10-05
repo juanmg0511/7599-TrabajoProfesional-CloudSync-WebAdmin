@@ -29,8 +29,8 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilTrash, cilWarning } from '@coreui/icons';
-import { getAdminUser, createAdminUser, saveAdminUser, removeAdminUser } from '../../../webapi'
-import { UNDELETABLE_ADMIN_NAME } from '../../../config'
+import { getAdminUser, createAdminUser, saveAdminUser, removeAdminUser, doChangeAdminPassword } from '../../../webapi'
+import { UNDELETABLE_ADMIN_NAME, usernameRegex, nameRegex, emailRegex, passwordRegex } from '../../../config'
 import { getUsername } from '../../../stateapi/auth'
 
 
@@ -45,9 +45,14 @@ const AdminEdit = () => {
   const [submitting, changeSubmitting] = useState(false)
   const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
+  const [changingPassword, changeChangingPassword] = useState(false)
+  const [cPasswordVisible, changeCPasswordVisible] = useState(false)
 
   const [record, changeRecord] = useState(null)
   const [recordEmpty, changeRecordEmpty] = useState(false)
+
+  const [modalPassword, changeModalPassword] = useState("")
+  const [modalPasswordConfirm, changeModalPasswordConfirm] = useState("")
 
   const [formUsername, changeFormUsername] = useState("")
   const [formFirstName, changeFormFirstName] = useState("")
@@ -55,6 +60,7 @@ const AdminEdit = () => {
   const [formEmail, changeFormEmail] = useState("")
   const [formPassword, changeFormPassword] = useState("")
   const [formPasswordConfirm, changeFormPasswordConfirm] = useState("")
+  const [formPasswordConfirmInvalid, changeFormPasswordConfirmInvalid] = useState(false)
 
   function generateToast(toastColor, toastMessage) {
     return (
@@ -79,7 +85,8 @@ const AdminEdit = () => {
     event.preventDefault()
     event.stopPropagation()
 
-    if (form.checkValidity() === false) {
+    const passwordMissMatch = (formPassword != formPasswordConfirm ? changeFormPasswordConfirmInvalid(true) : changeFormPasswordConfirmInvalid(false))
+    if (form.checkValidity() === false || passwordMissMatch) {
 
       addToast(generateToast("warning","Please review your input!"))
 
@@ -113,13 +120,18 @@ const AdminEdit = () => {
         }
         addToast(generateToast("success","User operation successful!"))
       })
-      .catch(_ => {
+      .catch(err => {
+
+        let message = "Error during user operation!"
+        if (err.response.data.message)
+          message = "Error: " + err.response.data.message
+
         if (formMode == "edit") {
           changeFormMode("view")
           getData()
         }
         changeSubmitting(false)
-        addToast(generateToast("danger","Error during user operation!"))
+        addToast(generateToast("danger",message))
       })
     }
     setValidated(true)
@@ -184,6 +196,36 @@ const AdminEdit = () => {
       })
   }
 
+  function changePassword() {
+
+    if (modalPassword != modalPasswordConfirm) {
+      addToast(generateToast("warning","Passwords do not match!"))
+    }
+    else {
+      if (!passwordRegex.test(modalPassword)) {
+        addToast(generateToast("warning","Wrong password format!"))
+      }
+      else {
+
+        changeChangingPassword(true)
+        doChangeAdminPassword(username, modalPassword)
+          .then(_ => {
+            changeChangingPassword(false)
+            changeCPasswordVisible(false)
+            addToast(generateToast("success","Password change succesful!"))
+          })
+          .catch(err => {
+            let message = "Password change failure!"
+            if (err.response.data.message)
+              message = "Error: " + err.response.data.message  
+
+            changeChangingPassword(false)
+            addToast(generateToast("danger", message))
+          })
+      }
+    }
+  }
+
   function parseTimestamp(timestamp) {
       const date = new Date(timestamp)
       const utcDate = new Date(date.getTime() - (date.getTimezoneOffset()*60000))
@@ -194,6 +236,61 @@ const AdminEdit = () => {
   useEffect(() => {setupForm()}, [])
   return (
     <CRow>
+      { cPasswordVisible ? (
+      <CModal alignment="center" visible={cPasswordVisible} onClose={() => changeCPasswordVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Change user password</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow className="mb-3">
+            <CCol>
+              <strong>Warning!</strong>&nbsp;You are about to change the password for user <strong>"{formUsername}"</strong> ({formEmail}).<br /><br />This action cannot be undone. Are you sure?
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput
+                type="password"
+                placeholder="Please choose a password"
+                value={modalPassword}
+                onChange={e => changeModalPassword(e.target.value)}
+              />
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput
+                type="password"
+                value={modalPasswordConfirm}
+                placeholder="Please re-type the password"
+                onChange={e => changeModalPasswordConfirm(e.target.value)}
+              />
+              <CFormText>Passwords must be 8 characters in lenght or greater, have 1 uppercase letter, 1 number and 1 symbol.</CFormText>
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={changingPassword}
+                   onClick={() => changeCPasswordVisible(false)}>
+            Cancel
+          </CButton>
+          {changingPassword ? (
+            <CButton disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton onClick={() => {changePassword()}}>
+                &nbsp;Change password
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
       { deleteVisible ? (
       <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
         <CModalHeader>
@@ -255,7 +352,9 @@ const AdminEdit = () => {
                               value={formUsername}
                               onChange={e => changeFormUsername(e.target.value)}
                               disabled={( formMode == "new" ? false : true )}
-                              required={true} />
+                              required={true} 
+                              pattern={usernameRegex.toString().slice(1, -1)}
+                            />
                             <CFormFeedback invalid>Please enter a username</CFormFeedback>
                           </CCol>
                         </CRow>
@@ -269,7 +368,9 @@ const AdminEdit = () => {
                               value={formFirstName}
                               onChange={e => changeFormFirstName(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
-                              required={true} />
+                              required={true}
+                              pattern={nameRegex.toString().slice(1, -1)}
+                            />
                             <CFormFeedback invalid>Please enter a first name</CFormFeedback>
                           </CCol>
                         </CRow>
@@ -283,7 +384,9 @@ const AdminEdit = () => {
                               value={formLastName}
                               onChange={e => changeFormLastName(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
-                              required={true} />
+                              required={true}
+                              pattern={nameRegex.toString().slice(1, -1)}
+                            />
                             <CFormFeedback invalid>Please enter a last name</CFormFeedback>
                           </CCol>
                         </CRow>
@@ -291,13 +394,15 @@ const AdminEdit = () => {
                           <CFormLabel>Email</CFormLabel>
                           <CCol>
                             <CFormInput
-                              type="email"
+                              type="text"
                               id="adminFormEmail"
                               placeholder="enter a valid email address"
                               value={formEmail}
                               onChange={e => changeFormEmail(e.target.value)}
                               disabled={( formMode == "view" ? true : false )}
-                              required={true} />
+                              required={true}
+                              pattern={emailRegex.toString().slice(1, -1)}
+                            />
                             <CFormFeedback invalid>Please enter a valid email address</CFormFeedback>
                           </CCol>
                         </CRow>
@@ -312,8 +417,10 @@ const AdminEdit = () => {
                               value={formPassword}
                               onChange={e => changeFormPassword(e.target.value)}
                               disabled={( formMode == "new" ? false : true )}
-                              required={( formMode == "new" ? true : false )} />
-                            <CFormFeedback invalid>Please enter a valid email password</CFormFeedback>
+                              required={( formMode == "new" ? true : false )}
+                              pattern={passwordRegex.toString().slice(1, -1)}
+                            />
+                            <CFormFeedback invalid>Please enter a valid password</CFormFeedback>
                             <CFormText>Passwords must be 8 characters in lenght or greater, have 1 uppercase letter, 1 number and 1 symbol.</CFormText>
                           </CCol>
                         </div>
@@ -328,7 +435,11 @@ const AdminEdit = () => {
                               value={formPasswordConfirm}
                               onChange={e => changeFormPasswordConfirm(e.target.value)}
                               disabled={( formMode == "new" ? false : true )}
-                              required={( formMode == "new" ? true : false )} />
+                              required={( formMode == "new" ? true : false )}
+                              pattern={passwordRegex.toString().slice(1, -1)}
+                              invalid={formPasswordConfirmInvalid}
+                              noValidate
+                            />
                             <CFormFeedback invalid>Passwords do not match!</CFormFeedback>
                           </CCol>
                         </div>
@@ -341,7 +452,9 @@ const AdminEdit = () => {
                               id="adminFormAccountClosed"
                               value={(formMode == "new" ? "" : (record.account_closed == true ? "Yes" : "No"))}
                               disabled={true}
-                              required={false} />
+                              required={false}
+                              noValidate
+                            />
                           </CCol>
                         </div>
                         <div className="mb-3"
@@ -353,7 +466,9 @@ const AdminEdit = () => {
                               id="adminFormId"
                               value={(formMode == "new" ? "" : record.id)}
                               disabled={true}
-                              required={false} />
+                              required={false}
+                              noValidate
+                            />
                           </CCol>
                         </div>
                         <div className="mb-3"
@@ -365,7 +480,9 @@ const AdminEdit = () => {
                               id="adminFormCreated"
                               value={(formMode == "new" ? "" : parseTimestamp(record.date_created))}
                               disabled={true}
-                              required={false} />
+                              required={false}
+                              noValidate
+                            />
                           </CCol>
                         </div>
                         <div className="mb-3"
@@ -377,7 +494,9 @@ const AdminEdit = () => {
                               id="adminFormExpired"
                               value={(formMode == "new" ? "" : (record.date_updated ? parseTimestamp(record.date_updated) : "None"))}
                               disabled={true}
-                              required={false} />
+                              required={false}
+                              noValidate
+                            />
                           </CCol>
                         </div>
                         <CRow className="mb-3">
@@ -386,7 +505,7 @@ const AdminEdit = () => {
                               <CButton style={{color: 'white'}}
                                 ccolor="secondary"
                                 disabled={submitting}
-                                onClick={() => {navigate("/admin-users")}}>
+                                onClick={(formMode == "edit" ? () => {changeFormMode("view"); getData()} : () => {navigate("/admin-users")} )}>
                                 Cancel
                               </CButton>
                               {submitting ? (
@@ -414,7 +533,7 @@ const AdminEdit = () => {
                                 <CButton
                                     color="primary"
                                     style={{ display: ( (!record.account_closed) ? null : 'none' )}}
-                                    onClick={() => {changePassword()}}>
+                                    onClick={() => {changeCPasswordVisible(true)}}>
                                     Change Password
                                 </CButton>
                                 <CButton

@@ -20,5 +20,11 @@ export const UNFOLDABLE_OFF = 'UNFOLDABLE_OFF'
 export const PAGE_SIZES = [10, 25, 50, 75, 100]
 
 export const UNDELETABLE_ADMIN_NAME = 'cloudsyncgod'
-export const usernameRegex = /^[a-zA-Z0-9_.]+$/
+
+// Field validation regular expressions
 export const guidRegex = /^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$/
+
+export const usernameRegex = /^[a-zA-Z0-9_.]+$/
+export const nameRegex = /(.|\s)*\S(.|\s)*/
+export const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+export const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/

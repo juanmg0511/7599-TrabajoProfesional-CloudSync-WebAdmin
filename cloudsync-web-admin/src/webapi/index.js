@@ -50,16 +50,13 @@ export function getAdminUser (username) {
   return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/adminusers/${username}`)
 }
 
-export function doChangeAdminPassword (token, username, password) {
+export function doChangeAdminPassword (username, password) {
   return axios.patch(
     APP_APPSERVER_BASE_URL + `/api/v1/adminusers/${username}`,
     {
       op: 'replace',
       path: '/password',
       value: password
-    },
-    {
-      headers: { 'X-Auth-Token': token }
     }
   )
 }
