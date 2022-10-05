@@ -15,7 +15,7 @@ import {
   cilCoffee,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { getUsername } from '../../stateapi/auth'
+import { getUsername, getToken } from '../../stateapi/auth'
 
 /* Import Constants */
 import { AUTH_LOGOUT } from '../../config'
@@ -26,11 +26,15 @@ const AppHeaderDropdown = () => {
 
   const dispatch = useDispatch()
   const username = useSelector(getUsername)
+  const sessionToken = useSelector(getToken)
+  if (!sessionToken)
+  sessionToken = ''
   if (!username)
     username = 'X'
 
-  function logOut () {
-    doLogOut()
+  function logOut() {
+
+    doLogOut(sessionToken)
       .then(_ => {
         dispatch({
           type: AUTH_LOGOUT
@@ -62,7 +66,7 @@ const AppHeaderDropdown = () => {
           About...
         </CDropdownItem>
       <CDropdownDivider />
-        <CDropdownItem onClick={() => logOut()}> 
+        <CDropdownItem onClick={() => logOut()} style={{cursor: 'pointer'}}> 
           <CIcon icon={cilAccountLogout} className="me-2" />
           Logout
         </CDropdownItem>
