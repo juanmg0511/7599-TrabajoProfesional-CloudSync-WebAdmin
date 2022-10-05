@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import {
@@ -14,6 +14,10 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CToaster,
+  CToast,
+  CToastBody,
+  CToastClose,  
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked,
@@ -41,29 +45,53 @@ const Login = () => {
 
   const dispatch = useDispatch()
 
+  function generateToast(toastColor, toastMessage) {
+    return (
+      <CToast color={toastColor}
+              className="text-white align-items-center"
+      >
+      <div className="d-flex">
+        <CToastBody>{toastMessage}</CToastBody>
+        <CToastClose className="me-2 m-auto" white />
+      </div>
+      </CToast>
+    )
+  }
+  const toaster = useRef()
+  const [toast, addToast] = useState(0)
+
   function onSubmit (e) {
     e.preventDefault()
-    dispatch({ type: AUTH_REQUEST })
-    changeAuthing(true)
-    doAuth({ username: username, password: password })
-      .then(response => {
-        const { data } = response
-        dispatch({
-          type: AUTH_SUCCESS,
-          payload: {
-            token: data.session_token,
-            username: data.username
-          }
+
+    if (!username || !password) {
+
+      addToast(generateToast("warning","Please verify your input!"))
+    }
+    else {
+
+      dispatch({ type: AUTH_REQUEST })
+      changeAuthing(true)
+      doAuth({ username: username, password: password })
+        .then(response => {
+          const { data } = response
+          dispatch({
+            type: AUTH_SUCCESS,
+            payload: {
+              token: data.session_token,
+              username: data.username
+            }
+          })
+          changeAuthing(false)
+          changeAuthed(true)
+          console.log("Authentication succesful. Logged in as: \"" + data.username + "\".")
         })
-        changeAuthing(false)
-        changeAuthed(true)
-        console.log("Authentication succesful. Logged in as: \"" + data.username + "\".")
-      })
-      .catch(_ => {
-        changeAuthing(false)
-        changeAuthError(true)
-        console.log("Authentication failure.")
-      })
+        .catch(_ => {
+
+          changeAuthing(false)
+          changeAuthError(true)
+          console.log("Authentication failure.")
+        })
+    }
   }
 
   useEffect(() => {
@@ -156,6 +184,7 @@ const Login = () => {
       }}>
         FIUBA - 75.99 - 1C2022
       </div>
+      <CToaster ref={toaster} push={toast} placement="top-end" />
     </div>
   )
 }
