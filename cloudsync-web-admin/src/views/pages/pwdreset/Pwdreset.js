@@ -7,6 +7,7 @@ import {
   CToastClose,
   CAlert,
   CSpinner,
+  CFormText,
   CButton,
   CCard,
   CCardBody,
@@ -23,7 +24,7 @@ import { cilLockLocked, cilWarning } from '@coreui/icons'
 import { sygnetCsDev } from 'src/assets/brand/sygnet-cs-dev'
 import { sygnetCsQa } from 'src/assets/brand/sygnet-cs-qa'
 import { sygnetCsProd } from 'src/assets/brand/sygnet-cs-prod'
-import { APP_ENV, APP_DEV_COLOR, APP_QA_COLOR } from '../../../config.js'
+import { APP_ENV, APP_DEV_COLOR, APP_QA_COLOR, passwordRegex } from '../../../config.js'
 /* Import WebApi */
 import { doRecoveryPassword } from '../../../webapi'
 
@@ -60,18 +61,29 @@ const PwdReset = () => {
       console.log("Passwords do not match.")
     }
     else {
-      changeResetting(true)
-      doRecoveryPassword(key, username, newPassword)
-        .then(_ => {
-          changeResetting(false)
-          addToast(generateToast("success","Password reset succesful!"))
-          console.log("Password reset succesful.")
-        })
-        .catch(_ => {
-          changeResetting(false)
-          addToast(generateToast("danger","Password reset failure!"))
-          console.log("Password reset failure.")
-        })
+      if (!passwordRegex.test(oldPassword)) {
+        addToast(generateToast("warning","Wrong password format!"))
+        console.log("Wrong password format.")  
+      }
+      else {
+
+        changeResetting(true)
+        doRecoveryPassword(key, username, newPassword)
+          .then(_ => {
+            changeResetting(false)
+            addToast(generateToast("success","Password reset succesful!"))
+            console.log("Password reset succesful.")
+          })
+          .catch(err => {
+            let message = "Password reset failure!"
+            if (err.response.data.message)
+              message = "Error: " + err.response.data.message  
+
+            changeResetting(false)
+            addToast(generateToast("danger", message))
+            console.log("Password reset failure.")
+          })
+      }
     }
   }
   
@@ -135,6 +147,7 @@ const PwdReset = () => {
                       autoComplete="new-password"
                       onChange={e => changeNewPassword(e.target.value)}
                     />
+                    <CFormText>Passwords must be 8 characters in lenght or greater, have 1 uppercase letter, 1 number and 1 symbol.</CFormText>
                   </CInputGroup>
                   <div className="d-grid">
                     {resetting ? (
