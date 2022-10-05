@@ -32,7 +32,7 @@ import { cilTrash, cilWarning } from '@coreui/icons';
 import { getAdminUser, createAdminUser, saveAdminUser, removeAdminUser, doChangeAdminPassword } from '../../../webapi'
 import { UNDELETABLE_ADMIN_NAME, usernameRegex, nameRegex, emailRegex, passwordRegex } from '../../../config'
 import { getUsername } from '../../../stateapi/auth'
-
+import { parseTimestamp } from 'src/helpers';
 
 const AdminEdit = () => {
 
@@ -224,13 +224,6 @@ const AdminEdit = () => {
           })
       }
     }
-  }
-
-  function parseTimestamp(timestamp) {
-      const date = new Date(timestamp)
-      const utcDate = new Date(date.getTime() - (date.getTimezoneOffset()*60000))
-
-    return utcDate.toUTCString()
   }
 
   useEffect(() => {setupForm()}, [])

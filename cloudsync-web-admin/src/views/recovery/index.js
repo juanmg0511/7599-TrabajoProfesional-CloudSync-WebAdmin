@@ -33,6 +33,8 @@ import {
   import { cilPenAlt, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd } from '@coreui/icons';
   import { getRecoveries } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
+  import { parseTimestamp } from 'src/helpers';
+
 
 const Recovery = () => {
 
@@ -211,13 +213,6 @@ const Recovery = () => {
         changeEmptyRecords(true)
         addToast(generateToast("danger","Error fetching data!"))
       })
-  }
-
-  function parseTimestamp(timestamp) {
-    const date = new Date(timestamp)
-    const utcDate = new Date(date.getTime() - (date.getTimezoneOffset()*60000))
-
-    return utcDate.toUTCString()
   }
 
   useEffect(() => {reloadTable()}, [start, pageSize, filterActive])

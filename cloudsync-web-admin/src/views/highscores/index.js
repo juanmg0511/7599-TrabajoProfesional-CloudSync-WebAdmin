@@ -38,6 +38,7 @@ import {
   import { getHighScores, removeHighScore } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
   import { getUsername } from '../../stateapi/auth'
+  import { parseTimestamp } from 'src/helpers';
 
 const Highscores = () => {
 
@@ -242,12 +243,6 @@ const Highscores = () => {
       })
   }
 
-  function parseTimestamp(timestamp) {
-    const date = new Date(timestamp)
-    const utcDate = new Date(date.getTime() - (date.getTimezoneOffset()*60000))
-
-    return utcDate.toUTCString()
-  }
 
   useEffect(() => {reloadTable()}, [start, pageSize, filterActive])
   useEffect(() => {navigateToEdit()}, [editUrl])
