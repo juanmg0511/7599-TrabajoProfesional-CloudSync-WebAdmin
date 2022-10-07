@@ -295,6 +295,7 @@ const Sessions = () => {
                 placeholder={"1 to " + Math.ceil(total/pageSize) + "..."}
                 value={modalGotoPate}
                 onChange={e => changeModalGotoPate(e.target.value)}
+                onKeyPress={(e) => {(e.key === 'Enter' ? (handleGotoPage()) : null )}}
               />
             </CCol>
           </CRow>
