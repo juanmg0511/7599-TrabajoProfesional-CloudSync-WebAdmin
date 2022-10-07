@@ -122,6 +122,10 @@ export function removeSession (token) {
   return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/sessions/${token}`)
 }
 
+export function removeAllSessions () {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/sessions`)
+}
+
 
 // Recovery - Listing
 export function getRecoveries (start, limit, user_filter) {

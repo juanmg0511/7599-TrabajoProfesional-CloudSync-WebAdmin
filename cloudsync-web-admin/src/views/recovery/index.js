@@ -18,6 +18,11 @@ import {
     CCardHeader,
     CCol,
     CRow,
+    CModal,
+    CModalHeader,
+    CModalTitle,
+    CModalBody,
+    CModalFooter,
     CTable,
     CTableBody,
     CTableDataCell,
@@ -30,7 +35,7 @@ import {
     CTooltip,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilPenAlt, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd } from '@coreui/icons';
+  import { cilPenAlt, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd, cilArrowThickFromBottom } from '@coreui/icons';
   import { getRecoveries } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
   import { parseTimestamp } from 'src/helpers';
@@ -41,6 +46,9 @@ const Recovery = () => {
   const [selectedRecord, changeSelectedRecord] = useState({})
   const [records, changeRecords] = useState()
   const [recordsEmpty, changeEmptyRecords] = useState()
+
+  const [gotoPageVisible, changeGotoPageVisible] = useState(false)
+  const [modalGotoPate, changeModalGotoPate] = useState("")
 
   const [filterActive, changeFilterActive] = useState(false)
   const [filterText, changeFilterText] = useState("")
@@ -134,7 +142,8 @@ const Recovery = () => {
               {
                 placeHolderBefore = true
                 return (
-                  <CPaginationItem key={i+1}>
+                  <CPaginationItem onClick={() => {changeGotoPageVisible(true)}}
+                                   key={i+1}>
                     &#183;&#183;&#183;
                   </CPaginationItem>
                 )
@@ -144,7 +153,8 @@ const Recovery = () => {
                 {
                   placeHolderAfter = true
                   return (
-                    <CPaginationItem key={i+1}>
+                    <CPaginationItem onClick={() => {changeGotoPageVisible(true)}}
+                                     key={i+1}>
                       &#183;&#183;&#183;
                     </CPaginationItem>
                   )
@@ -178,6 +188,25 @@ const Recovery = () => {
 
       addToast(generateToast("warning","Invalid filter value!"))
     }
+  }
+
+  function handleGotoPage() {
+
+    let input = 0
+    if ((typeof modalGotoPate == "string") && !isNaN(modalGotoPate) && !isNaN(parseInt(modalGotoPate))) {
+      input = parseInt(modalGotoPate)
+    }
+
+    if (input < 1 || input > Math.ceil(total/pageSize)) {
+
+      addToast(generateToast("warning","Please verify your input!"))
+    }
+    else {
+
+      changeStart((input - 1) * pageSize)
+      changeGotoPageVisible(false)
+      changeModalGotoPate("")  
+    }    
   }
 
   function reloadTable() {
@@ -219,6 +248,43 @@ const Recovery = () => {
   useEffect(() => {navigateToEdit()}, [editUrl])
   return (
     <CRow>
+      { gotoPageVisible ? (
+      <CModal alignment="center" visible={gotoPageVisible} onClose={() => {changeModalGotoPate(""); changeGotoPageVisible(false)}}>
+        <CModalHeader>
+          <CModalTitle>Go to page</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow className="mb-3">
+            <CCol>
+              Pleaase enter the page number you'd like to navigate to:
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput
+                type="text"
+                placeholder={"1 to " + Math.ceil(total/pageSize) + "..."}
+                value={modalGotoPate}
+                onChange={e => changeModalGotoPate(e.target.value)}
+              />
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   onClick={() => {changeModalGotoPate(""); changeGotoPageVisible(false)}}>
+            Cancel
+          </CButton>
+          <CButton style={{color: 'white'}} color="success" onClick={() => {handleGotoPage()}}>
+            <CIcon icon={cilArrowThickFromBottom}/>
+            &nbsp;Go to page
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}       
       <CCol xs={12}>
         <CCallout color="info" className="bg-white">
           <p>Welcome to the <strong>Recovery</strong> listing!</p>

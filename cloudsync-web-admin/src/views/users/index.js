@@ -36,7 +36,7 @@ import {
     CTooltip,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX } from '@coreui/icons';
+  import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilArrowThickFromBottom } from '@coreui/icons';
   import { getUsers, removeUser } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
 
@@ -45,6 +45,9 @@ const Users = () => {
   const [selectedUser, changeSelectedUser] = useState({})
   const [users, changeUsers] = useState()
   const [usersEmpty, changeEmptyUsers] = useState()
+
+  const [gotoPageVisible, changeGotoPageVisible] = useState(false)
+  const [modalGotoPate, changeModalGotoPate] = useState("")
 
   const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
@@ -141,7 +144,8 @@ const Users = () => {
               {
                 placeHolderBefore = true
                 return (
-                  <CPaginationItem key={i+1}>
+                  <CPaginationItem onClick={() => {changeGotoPageVisible(true)}}
+                                   key={i+1}>
                     &#183;&#183;&#183;
                   </CPaginationItem>
                 )
@@ -151,7 +155,8 @@ const Users = () => {
                 {
                   placeHolderAfter = true
                   return (
-                    <CPaginationItem key={i+1}>
+                    <CPaginationItem onClick={() => {changeGotoPageVisible(true)}}
+                                     key={i+1}>
                       &#183;&#183;&#183;
                     </CPaginationItem>
                   )
@@ -185,6 +190,25 @@ const Users = () => {
 
       addToast(generateToast("warning","Invalid filter value!"))
     }
+  }
+
+  function handleGotoPage() {
+
+    let input = 0
+    if ((typeof modalGotoPate == "string") && !isNaN(modalGotoPate) && !isNaN(parseInt(modalGotoPate))) {
+      input = parseInt(modalGotoPate)
+    }
+
+    if (input < 1 || input > Math.ceil(total/pageSize)) {
+
+      addToast(generateToast("warning","Please verify your input!"))
+    }
+    else {
+
+      changeStart((input - 1) * pageSize)
+      changeGotoPageVisible(false)
+      changeModalGotoPate("")  
+    }    
   }
 
   function closeAccount() {
@@ -246,6 +270,43 @@ const Users = () => {
   useEffect(() => {navigateToEdit()}, [editUrl])
   return (
     <CRow>
+      { gotoPageVisible ? (
+      <CModal alignment="center" visible={gotoPageVisible} onClose={() => {changeModalGotoPate(""); changeGotoPageVisible(false)}}>
+        <CModalHeader>
+          <CModalTitle>Go to page</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow className="mb-3">
+            <CCol>
+              Pleaase enter the page number you'd like to navigate to:
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput
+                type="text"
+                placeholder={"1 to " + Math.ceil(total/pageSize) + "..."}
+                value={modalGotoPate}
+                onChange={e => changeModalGotoPate(e.target.value)}
+              />
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   onClick={() => {changeModalGotoPate(""); changeGotoPageVisible(false)}}>
+            Cancel
+          </CButton>
+          <CButton style={{color: 'white'}} color="success" onClick={() => {handleGotoPage()}}>
+            <CIcon icon={cilArrowThickFromBottom}/>
+            &nbsp;Go to page
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
       { deleteVisible ? (
       <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
         <CModalHeader>
