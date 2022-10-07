@@ -285,7 +285,7 @@ const Sessions = () => {
         <CModalBody>
           <CRow className="mb-3">
             <CCol>
-              Pleaase enter the page number you'd like to navigate to:
+              Please enter the page number you'd like to navigate to:
             </CCol>
           </CRow>
           <CRow className="mb-3">
