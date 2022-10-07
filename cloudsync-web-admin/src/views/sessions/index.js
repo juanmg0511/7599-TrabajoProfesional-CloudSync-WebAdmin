@@ -36,8 +36,8 @@ import {
     CTooltip,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX } from '@coreui/icons';
-  import { getSessions, removeSession } from '../../webapi'
+  import { cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilArrowThickFromBottom } from '@coreui/icons';
+  import { getSessions, removeSession, removeAllSessions } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
   import { getUsername } from '../../stateapi/auth'
   import { parseTimestamp } from 'src/helpers';
@@ -51,8 +51,12 @@ const Sessions = () => {
   const [records, changeRecords] = useState()
   const [recordsEmpty, changeEmptyRecords] = useState()
 
+  const [gotoPageVisible, changeGotoPageVisible] = useState(false)
+  const [modalGotoPate, changeModalGotoPate] = useState("")
+
   const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
+  const [deleteAllVisible, changeDeleteAllVisible] = useState(false)
   const [filterActive, changeFilterActive] = useState(false)
   const [filterText, changeFilterText] = useState("")
 
@@ -145,7 +149,8 @@ const Sessions = () => {
               {
                 placeHolderBefore = true
                 return (
-                  <CPaginationItem key={i+1}>
+                  <CPaginationItem onClick={() => {changeGotoPageVisible(true)}}
+                                   key={i+1}>
                     &#183;&#183;&#183;
                   </CPaginationItem>
                 )
@@ -155,7 +160,8 @@ const Sessions = () => {
                 {
                   placeHolderAfter = true
                   return (
-                    <CPaginationItem key={i+1}>
+                    <CPaginationItem onClick={() => {changeGotoPageVisible(true)}}
+                                     key={i+1}>
                       &#183;&#183;&#183;
                     </CPaginationItem>
                   )
@@ -191,22 +197,43 @@ const Sessions = () => {
     }
   }
 
-  function deleteRecord() {
+  function handleGotoPage() {
+
+    let input = 0
+    if ((typeof modalGotoPate == "string") && !isNaN(modalGotoPate) && !isNaN(parseInt(modalGotoPate))) {
+      input = parseInt(modalGotoPate)
+    }
+
+    if (input < 1 || input > Math.ceil(total/pageSize)) {
+
+      addToast(generateToast("warning","Please verify your input!"))
+    }
+    else {
+
+      changeStart((input - 1) * pageSize)
+      changeGotoPageVisible(false)
+      changeModalGotoPate("")  
+    }    
+  }
+
+  function deleteRecord(delete_all) {
+
+    const operation = (delete_all ? removeAllSessions() : removeSession(selectedRecord.session_token))
 
     changeDeleting(true)
-    removeSession(selectedRecord.session_token)
+    operation
       .then(_ => {
 
         changeDeleteVisible(false)
         changeDeleting(false)
-        addToast(generateToast("success","Session logged out succesfully!"))
+        addToast(generateToast("success",(delete_all ? "All sessions " : "Session ") + "logged out succesfully!"))
         reloadTable()
       })
       .catch(_ => {
 
         changeDeleteVisible(false)
         changeDeleting(false)
-        addToast(generateToast("danger","Error logging out session!"))
+        addToast(generateToast("danger","Error logging out " + (delete_all ? "all sessions" : "session") + "!"))
         reloadTable()        
       })
   }
@@ -250,6 +277,74 @@ const Sessions = () => {
   useEffect(() => {navigateToEdit()}, [editUrl])
   return (
     <CRow>
+      { gotoPageVisible ? (
+      <CModal alignment="center" visible={gotoPageVisible} onClose={() => {changeModalGotoPate(""); changeGotoPageVisible(false)}}>
+        <CModalHeader>
+          <CModalTitle>Go to page</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow className="mb-3">
+            <CCol>
+              Pleaase enter the page number you'd like to navigate to:
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput
+                type="text"
+                placeholder={"1 to " + Math.ceil(total/pageSize) + "..."}
+                value={modalGotoPate}
+                onChange={e => changeModalGotoPate(e.target.value)}
+              />
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   onClick={() => {changeModalGotoPate(""); changeGotoPageVisible(false)}}>
+            Cancel
+          </CButton>
+          <CButton style={{color: 'white'}} color="success" onClick={() => {handleGotoPage()}}>
+            <CIcon icon={cilArrowThickFromBottom}/>
+            &nbsp;Go to page
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}       
+      { deleteAllVisible ? (
+      <CModal alignment="center" visible={deleteAllVisible} onClose={() => changeDeleteAllVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Logout all users</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <strong>Warning!</strong>&nbsp;You are about to logout all users from the application.<br /><br />This action cannot be undone. Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={deleting}
+                   onClick={() => changeDeleteAllVisible(false)}>
+            Cancel
+          </CButton>
+          {deleting ? (
+            <CButton style={{color: 'white'}} color="danger" disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton style={{color: 'white'}} color="danger" onClick={() => {changeStart(0); deleteRecord(true)}}>
+                <CIcon icon={cilTrash}/>
+                &nbsp;Logout all users
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
       { deleteVisible ? (
       <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
         <CModalHeader>
@@ -315,9 +410,12 @@ const Sessions = () => {
                 </CInputGroup>
               </CCol>
               <CCol>
-                  <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={() => {changeStart(0); reloadTable()}}>
-                    <CIcon icon={cilReload} style={{color: 'white'}} size="lg"/>
-                  </CButton>
+                <CButton color="danger" style={{color: 'white', float: 'right', marginTop: '7px'}} onClick={() => {changeDeleteAllVisible(true)}}>
+                  <CIcon icon={cilTrash} style={{color: 'white', marginRight: '10px'}} size="lg"/>Logout all users
+                </CButton>                
+                <CButton style={{float: 'right', marginTop: '7px', marginRight: '10px'}} onClick={() => {changeStart(0); reloadTable()}}>
+                  <CIcon icon={cilReload} style={{color: 'white'}} size="lg"/>
+                </CButton>
               </CCol>
             </CRow>
           </CCardHeader>
