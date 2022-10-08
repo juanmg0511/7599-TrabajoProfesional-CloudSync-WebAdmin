@@ -146,8 +146,8 @@ export function getGameProgress (start, limit, user_filter) {
   return axios.get(url)
 }
 
-export function removeGameProgress (username) {
-  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/gameprogress/${username}`)
+export function removeGameProgress (id) {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/gameprogress/${id}`)
 }
 
 // High Scores - Listing
@@ -159,6 +159,6 @@ export function getHighScores (start, limit, user_filter) {
   return axios.get(url)
 }
 
-export function removeHighScore (username) {
-  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/highscores/${username}`)
+export function removeHighScore (id) {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/highscores/${id}`)
 }

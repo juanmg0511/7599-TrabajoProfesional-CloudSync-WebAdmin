@@ -214,7 +214,7 @@ const GameProgress = () => {
   function deleteRecord() {
 
     changeDeleting(true)
-    removeGameProgress(selectedRecord.username)
+    removeGameProgress(selectedRecord.id)
       .then(_ => {
 
         changeDeleteVisible(false)
@@ -407,7 +407,7 @@ const GameProgress = () => {
                       <CTableDataCell>{record.gold_collected}</CTableDataCell>
                       <CTableDataCell>
                       <CButtonGroup>
-                        <CButton color="secondary" onClick={() => {changeSelectedRecord(record); changeEditUrl("/game-progress/edit?username=" + record.username + "&mode=view")}}>
+                        <CButton color="secondary" onClick={() => {changeSelectedRecord(record); changeEditUrl("/game-progress/edit?id=" + record.id + "&mode=view")}}>
                           <CIcon icon={cilPenAlt} style={{color: 'white'}} size="sm"/>
                         </CButton>
                         {((record.username !== loggedUser) || (record.expired) ? (

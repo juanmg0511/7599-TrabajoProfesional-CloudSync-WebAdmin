@@ -215,7 +215,7 @@ const Highscores = () => {
   function deleteRecord() {
 
     changeDeleting(true)
-    removeHighScore(selectedRecord.username)
+    removeHighScore(selectedRecord.id)
       .then(_ => {
 
         changeDeleteVisible(false)
@@ -413,7 +413,7 @@ const Highscores = () => {
                       <CTableDataCell>{parseTimestamp(record.date_created)}</CTableDataCell>
                       <CTableDataCell>
                       <CButtonGroup>
-                        <CButton color="secondary" onClick={() => {changeSelectedRecord(record); changeEditUrl("/highscores/edit?username=" + record.username + "&mode=view")}}>
+                        <CButton color="secondary" onClick={() => {changeSelectedRecord(record); changeEditUrl("/highscores/edit?id=" + record.id + "&mode=view")}}>
                           <CIcon icon={cilPenAlt} style={{color: 'white'}} size="sm"/>
                         </CButton>
                         {((record.username !== loggedUser) || (record.expired) ? (
