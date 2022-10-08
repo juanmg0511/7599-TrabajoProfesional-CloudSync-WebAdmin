@@ -225,6 +225,7 @@ const Sessions = () => {
       .then(_ => {
 
         changeDeleteVisible(false)
+        changeDeleteAllVisible(false)
         changeDeleting(false)
         addToast(generateToast("success",(delete_all ? "All sessions " : "Session ") + "logged out succesfully!"))
         reloadTable()
@@ -232,6 +233,7 @@ const Sessions = () => {
       .catch(_ => {
 
         changeDeleteVisible(false)
+        changeDeleteAllVisible(false)
         changeDeleting(false)
         addToast(generateToast("danger","Error logging out " + (delete_all ? "all sessions" : "session") + "!"))
         reloadTable()        
