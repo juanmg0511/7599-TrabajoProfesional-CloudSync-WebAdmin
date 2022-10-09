@@ -15,7 +15,7 @@ import {
   cilCoffee,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { getUsername, getToken } from '../../stateapi/auth'
+import { getFirstName, getLastName, getUsername, getToken } from '../../stateapi/auth'
 
 /* Import Constants */
 import { AUTH_LOGOUT } from '../../config'
@@ -25,12 +25,10 @@ import { doLogOut } from '../../webapi'
 const AppHeaderDropdown = () => {
 
   const dispatch = useDispatch()
+  const firstName = useSelector(getFirstName)
+  const lastName = useSelector(getLastName)
   const username = useSelector(getUsername)
   const sessionToken = useSelector(getToken)
-  if (!sessionToken)
-  sessionToken = ''
-  if (!username)
-    username = 'X'
 
   function logOut() {
 
@@ -53,7 +51,7 @@ const AppHeaderDropdown = () => {
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <CAvatar color="primary" textColor="white" size="lg">{username.charAt(0).toUpperCase()}</CAvatar>
+        <CAvatar color="primary" textColor="white" size="lg">{firstName.charAt(0).toUpperCase()+lastName.charAt(0).toUpperCase()}</CAvatar>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>

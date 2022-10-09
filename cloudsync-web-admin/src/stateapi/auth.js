@@ -13,3 +13,15 @@ export function getToken (state) {
 export function getUsername (state) {
   return state.auth.username
 }
+
+export function getFirstName (state) {
+  return state.auth.first_name
+}
+
+export function getLastName (state) {
+  return state.auth.last_name
+}
+
+export function getEmail (state) {
+  return state.auth.email
+}

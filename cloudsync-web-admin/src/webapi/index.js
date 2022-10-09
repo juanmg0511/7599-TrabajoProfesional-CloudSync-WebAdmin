@@ -14,6 +14,16 @@ export function doAuth (user) {
     return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/sessions', user)
 }
 
+export function doAuthGetAdminDetails (username, session_token) {
+
+  const uninterceptedAxiosInstance = axios.create();
+  return uninterceptedAxiosInstance.get(APP_APPSERVER_BASE_URL + `/api/v1/adminusers/${username}`, {
+    headers: {
+      'X-Auth-Token': `${session_token}`
+    }
+  })
+}
+
 export function doLogOut (sessionId) {
   return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/sessions/${sessionId}`)
 }

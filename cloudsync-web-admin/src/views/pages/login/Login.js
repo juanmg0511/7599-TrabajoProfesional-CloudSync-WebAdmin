@@ -28,7 +28,7 @@ import { sygnetCsQa } from 'src/assets/brand/sygnet-cs-qa'
 import { sygnetCsProd } from 'src/assets/brand/sygnet-cs-prod'
 import { APP_ENV, APP_DEV_COLOR, APP_QA_COLOR } from '../../../config.js'
 /* Import WebApi */
-import { doAuth } from '../../../webapi'
+import { doAuth, doAuthGetAdminDetails } from '../../../webapi'
 /* Import Constants */
 import {
   AUTH_REQUEST,
@@ -72,18 +72,33 @@ const Login = () => {
       dispatch({ type: AUTH_REQUEST })
       changeAuthing(true)
       doAuth({ username: username, password: password })
-        .then(response => {
-          const { data } = response
-          dispatch({
-            type: AUTH_SUCCESS,
-            payload: {
-              token: data.session_token,
-              username: data.username
-            }
-          })
-          changeAuthing(false)
-          changeAuthed(true)
-          console.log("Authentication succesful. Logged in as: \"" + data.username + "\".")
+        .then(responseSessionData => {
+          const { data } = responseSessionData
+
+          doAuthGetAdminDetails(data.username, data.session_token)
+            .then(responseAdminData => {
+              const adminData = responseAdminData
+
+              dispatch({
+                type: AUTH_SUCCESS,
+                payload: {
+                  token: data.session_token,
+                  username: data.username,
+                  first_name: adminData.data.first_name,
+                  last_name: adminData.data.last_name,
+                  email: adminData.data.email
+                }
+              })
+              console.log("Authentication succesful. Logged in as: \"" + data.username + "\".")
+              changeAuthing(false)
+              changeAuthed(true)
+            })
+            .catch(_ => {
+
+              changeAuthing(false)
+              changeAuthError(true)
+              console.log("Authentication failure.")
+            })
         })
         .catch(_ => {
 

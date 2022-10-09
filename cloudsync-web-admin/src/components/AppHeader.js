@@ -17,16 +17,17 @@ import { logoCsQa } from 'src/assets/brand/logo-cs-qa'
 import { logoCsProd } from 'src/assets/brand/logo-cs-prod'
 import { APP_ENV } from '../config.js'
 /* Import StateApi */
-import { getUsername } from '../stateapi/auth'
+import { getFirstName, getLastName, getEmail } from '../stateapi/auth'
 import { getSidebarShow } from '../stateapi/ui'
 import { SIDEBAR_ON, SIDEBAR_OFF } from 'src/config'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector(getSidebarShow)
-  const username = useSelector(getUsername)
-  if (!username)
-  username = 'X'
+  const firstName = useSelector(getFirstName)
+  const lastName = useSelector(getLastName)
+  const email = useSelector(getEmail)
+
 
   return (
     <CHeader position="sticky" className="mb-4">
@@ -41,7 +42,10 @@ const AppHeader = () => {
           {(APP_ENV == 'PROD' ? (<CIcon icon={logoCsProd} height={48} alt="Logo" />) : (APP_ENV == 'QA' ? (<CIcon icon={logoCsQa} height={48} alt="Logo" />) : (<CIcon icon={logoCsDev} height={48} alt="Logo" />)))}
         </CHeaderBrand>
         <CHeaderNav className="ms-3">
-          <span className="d-none d-md-block" style={{marginTop: '12px'}}>Welcome, {username.charAt(0).toUpperCase() + username.slice(1)}</span>
+          <div className="d-none d-md-block" style={{marginTop: '5px'}}>
+          <div>Welcome <strong>{lastName + ", " + firstName}</strong>!</div>
+          <div className="d-none d-md-block" style={{float: 'right', fontSize: '12px'}}>{email}</div>
+          </div>
           <AppHeaderDropdown />
         </CHeaderNav>
        </CContainer>
