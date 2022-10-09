@@ -352,22 +352,6 @@ const AdminEdit = () => {
                           </CCol>
                         </CRow>
                         <CRow className="mb-3">
-                          <CFormLabel>First Name</CFormLabel>
-                          <CCol>
-                            <CFormInput
-                              type="text"
-                              id="adminFormFirstName"
-                              placeholder="your first name"
-                              value={formFirstName}
-                              onChange={e => changeFormFirstName(e.target.value)}
-                              disabled={( formMode == "view" ? true : false )}
-                              required={true}
-                              pattern={nameRegex.toString().slice(1, -1)}
-                            />
-                            <CFormFeedback invalid>Please enter a first name</CFormFeedback>
-                          </CCol>
-                        </CRow>
-                        <CRow className="mb-3">
                           <CFormLabel>Last Name</CFormLabel>
                           <CCol>
                             <CFormInput
@@ -381,6 +365,22 @@ const AdminEdit = () => {
                               pattern={nameRegex.toString().slice(1, -1)}
                             />
                             <CFormFeedback invalid>Please enter a last name</CFormFeedback>
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                          <CFormLabel>First Name</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="adminFormFirstName"
+                              placeholder="your first name"
+                              value={formFirstName}
+                              onChange={e => changeFormFirstName(e.target.value)}
+                              disabled={( formMode == "view" ? true : false )}
+                              required={true}
+                              pattern={nameRegex.toString().slice(1, -1)}
+                            />
+                            <CFormFeedback invalid>Please enter a first name</CFormFeedback>
                           </CCol>
                         </CRow>
                         <CRow className="mb-3">
@@ -569,7 +569,7 @@ const AdminEdit = () => {
                     </CAvatar>
                     <div style={{ fontWeight: 'bold',
                                   marginTop: '10px' }}>
-                      {record.username}
+                      {record.last_name + ", " + record.first_name}
                     </div>
                     </>
                   ) : (
