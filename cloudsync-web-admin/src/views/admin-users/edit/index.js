@@ -558,7 +558,7 @@ const AdminEdit = () => {
                                width: '150px',
                                height: '150px',
                                marginTop: '25px' }}>
-                        {record.username.charAt(0).toUpperCase()}
+                        {record.first_name.charAt(0).toUpperCase() + record.last_name.charAt(0).toUpperCase()}
                         <CTooltip content={(record.online ? "User is online" : (record.account_closed ? "User account is marked as closed" : "User is offline"))}
                                   placement="bottom">
                           <span className={"avatar-status " + (record.online ? "bg-success" : (record.account_closed ? "bg-dark" : "bg-danger"))}
