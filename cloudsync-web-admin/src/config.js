@@ -28,3 +28,6 @@ export const usernameRegex = /^[a-zA-Z0-9_.]+$/
 export const nameRegex = /(.|\s)*\S(.|\s)*/
 export const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 export const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+
+// Default URL for avatars
+export const defaultAvatarUrl = "https://ui-avatars.com/api/?name=FirstName+LastName&background=321FDB&color=FFFFFF&size=512"

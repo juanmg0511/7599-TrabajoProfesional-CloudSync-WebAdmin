@@ -70,8 +70,6 @@ export function saveAdminUser (username, user) {
 }
 
 
-
-
 // Users - Listing
 export function getUsers (show_closed, start, limit, user_filter) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/users?show_closed=${show_closed}&start=${start}&limit=${limit}`
@@ -85,9 +83,35 @@ export function removeUser (username) {
   return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`)
 }
 
-// Users - Listing details
+// Users - Listing details and profile page
 export function getUser (username) {
   return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`)
+}
+
+export function doChangeUserPassword (username, password) {
+  return axios.patch(
+    APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`,
+    {
+      op: 'replace',
+      path: '/password',
+      value: password
+    }
+  )
+}
+
+export function doChangeUserAvatar (username, avatar) {
+  return axios.patch(
+    APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`,
+    {
+      op: 'replace',
+      path: '/avatar',
+      value: avatar
+    }
+  )
+}
+
+export function createUser (user) {
+  return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/users', user)
 }
 
 export function saveUser (username, user) {
@@ -108,6 +132,7 @@ export function getAppReqLog(server, lastWeek, today, reqid) {
   
   return axios.get(url)
 }
+
 
 // Sessions - Listing
 export function getSessions (start, limit, user_filter) {

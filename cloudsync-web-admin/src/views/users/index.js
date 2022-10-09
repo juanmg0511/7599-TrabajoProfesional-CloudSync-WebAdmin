@@ -390,8 +390,8 @@ const Users = () => {
               <CTableHead color="dark">
                 <CTableRow>
                   <CTableHeaderCell scope="col">Username</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">First name</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Last name</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">First name</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Email</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Online?</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Login service?</CTableHeaderCell>
@@ -405,8 +405,8 @@ const Users = () => {
                   return (
                     <CTableRow key={user.id}>
                       <CTableHeaderCell scope="row">{user.username}</CTableHeaderCell>
-                      <CTableDataCell>{user.first_name}</CTableDataCell>
                       <CTableDataCell>{user.last_name}</CTableDataCell>
+                      <CTableDataCell>{user.first_name}</CTableDataCell>
                       <CTableDataCell>{user.contact.email}</CTableDataCell>
                       <CTableDataCell>
                         <CTooltip content={(user.online ? "User is online" : (user.account_closed ? "User account is marked as closed" : "User is offline"))}>

@@ -1,15 +1,709 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom';
+import qs from 'qs'
+import {
+  CAvatar,
+  CToaster,
+  CToast,
+  CToastBody,
+  CToastClose,  
+  CTooltip,
+  CCallout,
+  CButton,
+  CCard,
+  CCardBody,
+  CCol,
+  CForm,
+  CFormInput,
+  CFormFeedback,
+  CFormLabel,
+  CFormText,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CSpinner,
+  CRow,
+} from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { cilTrash, cilWarning } from '@coreui/icons';
+import { getUser, createUser, saveUser, removeUser, doChangeUserAvatar, doChangeUserPassword } from '../../../webapi'
+import { usernameRegex, nameRegex, emailRegex, passwordRegex } from '../../../config'
+import { getUsername } from '../../../stateapi/auth'
+import { parseTimestamp, getDefaulAvatartUrl } from 'src/helpers';
 
-/*
+const UsersEdit = () => {
 
-A nice comment
+  let navigate = useNavigate();
+  const loggedUser = useSelector(getUsername)
+  const { mode, username } = qs.parse(location.search, {
+    ignoreQueryPrefix: true
+  })
+  const [formMode, changeFormMode] = useState(mode)
+  const [submitting, changeSubmitting] = useState(false)
+  const [deleting, changeDeleting] = useState(false)
+  const [deleteVisible, changeDeleteVisible] = useState(false)
+  const [changingPassword, changeChangingPassword] = useState(false)
+  const [cPasswordVisible, changeCPasswordVisible] = useState(false)
+  const [changingAvatar, changeChangingAvatar] = useState(false)
+  const [cAvatarVisible, changeCAvatarVisible] = useState(false)
 
-*/
+  const [record, changeRecord] = useState(null)
+  const [recordEmpty, changeRecordEmpty] = useState(false)
 
-const UsersEdit = (props) => {
+  const [modalPassword, changeModalPassword] = useState("")
+  const [modalPasswordConfirm, changeModalPasswordConfirm] = useState("")
 
-    return <div>Hello from "Users Edit"</div>
+  const [formUsername, changeFormUsername] = useState("")
+  const [formFirstName, changeFormFirstName] = useState("")
+  const [formLastName, changeFormLastName] = useState("")
+  const [formEmail, changeFormEmail] = useState("")
+  const [formPassword, changeFormPassword] = useState("")
+  const [formPasswordConfirm, changeFormPasswordConfirm] = useState("")
+  const [formPasswordConfirmInvalid, changeFormPasswordConfirmInvalid] = useState(false)
 
+  function generateToast(toastColor, toastMessage) {
+    return (
+      <CToast color={toastColor}
+              className="text-white align-items-center"
+      >
+      <div className="d-flex">
+        <CToastBody>{toastMessage}</CToastBody>
+        <CToastClose className="me-2 m-auto" white />
+      </div>
+      </CToast>
+    )
+  }
+  const toaster = useRef()
+  const [toast, addToast] = useState(0)
+
+
+  const [validated, setValidated] = useState(false)
+  const handleSubmit = (event) => {
+
+    const form = event.currentTarget
+    event.preventDefault()
+    event.stopPropagation()
+
+    const passwordMissMatch = (formPassword != formPasswordConfirm ? changeFormPasswordConfirmInvalid(true) : changeFormPasswordConfirmInvalid(false))
+    if (form.checkValidity() === false || passwordMissMatch) {
+
+      addToast(generateToast("warning","Please review your input!"))
+
+    } else {
+
+      changeSubmitting(true)
+ 
+      const modifiedUser = {
+        first_name: formFirstName,
+        last_name: formLastName,
+        contact: {
+            email: formEmail,
+            phone: "5555 5555",
+        },
+      }
+      const newUser = {
+        username: formUsername,
+        password: formPassword,
+        first_name: formFirstName,
+        last_name: formLastName,
+        avatar: {
+          isUrl: true,
+          data: getDefaulAvatartUrl(formFirstName,formLastName),
+        },
+        contact: {
+            email: formEmail,
+            phone: "5555 5555"
+        },
+      }  
+
+      const operation = (formMode == "new" ? createUser(newUser) : saveUser(formUsername, modifiedUser))      
+      operation                 
+      .then(_ => {
+
+        if (formMode == "new") {
+          navigate('/users')
+        } else {
+          changeSubmitting(false)
+          changeFormMode("view")
+          getData()
+        }
+        addToast(generateToast("success","User operation successful!"))
+      })
+      .catch(err => {
+
+        let message = "Error during user operation!"
+        if (err.response.data.message)
+          message = "Error: " + err.response.data.message
+
+        if (formMode == "edit") {
+          changeFormMode("view")
+          getData()
+        }
+        changeSubmitting(false)
+        addToast(generateToast("danger",message))
+      })
+    }
+    setValidated(true)
+  }
+
+  function setupForm() {
+
+    if (formMode=="new") {
+      changeFormMode('new')
+    } else {
+      if (formMode == "edit") {
+        changeFormMode('edit')
+        getData()
+      } else {
+        changeFormMode('view')
+        getData()
+      }
+    }
+  }
+
+  function getData() {
+
+    getUser(username)
+    .then(response => {
+        const { data } = response
+        const resultsLength = data.username.length
+        if ( resultsLength > 0 ) {
+          changeRecord(data)
+          changeFormUsername(data.username)
+          changeFormFirstName(data.first_name)
+          changeFormLastName(data.last_name)
+          changeFormEmail(data.contact.email)
+
+          //console.log(data.avatar.isUrl)
+          //console.log(data.avatar.data)
+        } else {
+          changeRecord(null)
+          changeRecordEmpty(true)
+        }
+    })
+    .catch(_ => {
+        changeRecord(null)
+        changeRecordEmpty(true)
+        addToast(generateToast("danger","Error fetching data!"))
+    })
+  }
+
+  function closeAccount() {
+
+    changeDeleting(true)
+    removeUser(record.username)
+      .then(_ => {
+
+        changeDeleteVisible(false)
+        changeDeleting(false)
+        addToast(generateToast("success","User account closed succesfully!"))
+        getData()
+      })
+      .catch(_ => {
+
+        changeDeleteVisible(false)
+        changeDeleting(false)
+        addToast(generateToast("danger","Error closing user account!"))
+        getData()
+      })
+  }
+
+  function changeAvatar() {
+
+    changeChangingAvatar(true)
+    doChangeUserAvatar(username, "")
+      .then(_ => {
+        changeChangingAvatar(false)
+        changeCAvatarVisible(false)
+        addToast(generateToast("success","Avatar change succesful!"))
+      })
+      .catch(err => {
+        let message = "Avatar change failure!"
+        if (err.response.data.message)
+          message = "Error: " + err.response.data.message  
+
+        changeChangingAvatar(false)
+        addToast(generateToast("danger", message))
+      })
+  }
+
+  function changePassword() {
+
+    if (modalPassword != modalPasswordConfirm) {
+      addToast(generateToast("warning","Passwords do not match!"))
+    }
+    else {
+      if (!passwordRegex.test(modalPassword)) {
+        addToast(generateToast("warning","Wrong password format!"))
+      }
+      else {
+
+        changeChangingPassword(true)
+        doChangeUserPassword(username, modalPassword)
+          .then(_ => {
+            changeChangingPassword(false)
+            changeCPasswordVisible(false)
+            addToast(generateToast("success","Password change succesful!"))
+          })
+          .catch(err => {
+            let message = "Password change failure!"
+            if (err.response.data.message)
+              message = "Error: " + err.response.data.message  
+
+            changeChangingPassword(false)
+            addToast(generateToast("danger", message))
+          })
+      }
+    }
+  }
+  
+  function handleBrokenAvatar(e) {
+
+    e.currentTarget.src = getDefaulAvatartUrl(formFirstName, formLastName)
+  }
+
+
+  useEffect(() => {setupForm()}, [])
+  return (
+    <CRow>
+      { cAvatarVisible ? (
+      <CModal alignment="center" visible={cAvatarVisible} onClose={() => changeCAvatarVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Change user avatar</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow className="mb-3">
+            <CCol>
+                Content
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={changingAvatar}
+                   onClick={() => changeCAvatarVisible(false)}>
+            Cancel
+          </CButton>
+          {changingAvatar ? (
+            <CButton disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton onClick={() => {changeAvatar()}}>
+                &nbsp;Change avatar
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
+      { cPasswordVisible ? (
+      <CModal alignment="center" visible={cPasswordVisible} onClose={() => changeCPasswordVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Change user password</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow className="mb-3">
+            <CCol>
+              <strong>Warning!</strong>&nbsp;You are about to change the password for user <strong>"{formUsername}"</strong> ({formEmail}).<br /><br />This action cannot be undone. Are you sure?
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput
+                type="password"
+                placeholder="Please choose a password"
+                value={modalPassword}
+                onChange={e => changeModalPassword(e.target.value)}
+              />
+            </CCol>
+          </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormInput
+                type="password"
+                value={modalPasswordConfirm}
+                placeholder="Please re-type the password"
+                onChange={e => changeModalPasswordConfirm(e.target.value)}
+              />
+              <CFormText>Passwords must be 8 characters in lenght or greater, have 1 uppercase letter, 1 number and 1 symbol.</CFormText>
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={changingPassword}
+                   onClick={() => changeCPasswordVisible(false)}>
+            Cancel
+          </CButton>
+          {changingPassword ? (
+            <CButton disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton onClick={() => {changePassword()}}>
+                &nbsp;Change password
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
+      { deleteVisible ? (
+      <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Close account</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <strong>Warning!</strong>&nbsp;You are about to close the account for user <strong>"{formUsername}"</strong> ({formEmail}).<br /><br />This action cannot be undone. Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={deleting}
+                   onClick={() => changeDeleteVisible(false)}>
+            Cancel
+          </CButton>
+          {deleting ? (
+            <CButton style={{color: 'white'}} color="danger" disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton style={{color: 'white'}} color="danger" onClick={() => {closeAccount(false)}}>
+                <CIcon icon={cilTrash}/>
+                &nbsp;Close account
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
+      <CCol style={{marginLeft: 'auto', marginRight: 'auto'}} xs={10}>
+        <CCallout color="info" className="bg-white">
+          <p>Welcome to the <strong>User details</strong> page!</p>
+          <p>From this page you can create, view or edit a FIUBA CloudSync user:</p>
+          <ul>
+              <li>Create new user</li>
+              <li>View or Edit a particular user's details</li>
+              <li>Close a user's account</li>
+          </ul>
+        </CCallout>
+        <CCard className="mb-4">
+          <CCardBody>
+            {(record || (formMode == 'new')) ? (
+              <CRow>            
+                <CCol>
+                  <CForm
+                    className="needs-validation align-items-center"
+                    noValidate
+                    validated={validated}
+                    onSubmit={handleSubmit}>
+                        <CRow className="mb-3">
+                          <CFormLabel>Username</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormUsername"
+                              placeholder="please enter a user name"
+                              value={formUsername}
+                              onChange={e => changeFormUsername(e.target.value)}
+                              disabled={( formMode == "new" ? false : true )}
+                              required={true} 
+                              pattern={usernameRegex.toString().slice(1, -1)}
+                            />
+                            <CFormFeedback invalid>Please enter a username</CFormFeedback>
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                          <CFormLabel>Last Name</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormLastName"
+                              placeholder="your last name"
+                              value={formLastName}
+                              onChange={e => changeFormLastName(e.target.value)}
+                              disabled={( formMode == "view" ? true : false )}
+                              required={true}
+                              pattern={nameRegex.toString().slice(1, -1)}
+                            />
+                            <CFormFeedback invalid>Please enter a last name</CFormFeedback>
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                          <CFormLabel>First Name</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormFirstName"
+                              placeholder="your first name"
+                              value={formFirstName}
+                              onChange={e => changeFormFirstName(e.target.value)}
+                              disabled={( formMode == "view" ? true : false )}
+                              required={true}
+                              pattern={nameRegex.toString().slice(1, -1)}
+                            />
+                            <CFormFeedback invalid>Please enter a first name</CFormFeedback>
+                          </CCol>
+                        </CRow>
+                        <CRow className="mb-3">
+                          <CFormLabel>Email</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormEmail"
+                              placeholder="enter a valid email address"
+                              value={formEmail}
+                              onChange={e => changeFormEmail(e.target.value)}
+                              disabled={( formMode == "view" ? true : false )}
+                              required={true}
+                              pattern={emailRegex.toString().slice(1, -1)}
+                            />
+                            <CFormFeedback invalid>Please enter a valid email address</CFormFeedback>
+                          </CCol>
+                        </CRow>
+                        <div className="mb-3"
+                              style={{display: (formMode == "new" ? null : "none")}}>
+                          <CFormLabel>Password</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="password"
+                              placeholder="please choose a password"
+                              id="userFormPassword"
+                              value={formPassword}
+                              onChange={e => changeFormPassword(e.target.value)}
+                              disabled={( formMode == "new" ? false : true )}
+                              required={( formMode == "new" ? true : false )}
+                              pattern={passwordRegex.toString().slice(1, -1)}
+                            />
+                            <CFormFeedback invalid>Please enter a valid password</CFormFeedback>
+                            <CFormText>Passwords must be 8 characters in lenght or greater, have 1 uppercase letter, 1 number and 1 symbol.</CFormText>
+                          </CCol>
+                        </div>
+                        <div className="mb-3"
+                              style={{display: (formMode == "new" ? null : "none")}}>
+                          <CFormLabel>Reenter Password</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="password"
+                              placeholder="please re-type your password"
+                              id="userFormPasswordConfirmation"
+                              value={formPasswordConfirm}
+                              onChange={e => changeFormPasswordConfirm(e.target.value)}
+                              disabled={( formMode == "new" ? false : true )}
+                              required={( formMode == "new" ? true : false )}
+                              pattern={passwordRegex.toString().slice(1, -1)}
+                              invalid={formPasswordConfirmInvalid}
+                              noValidate
+                            />
+                            <CFormFeedback invalid>Passwords do not match!</CFormFeedback>
+                          </CCol>
+                        </div>
+                        <div className="mb-3"
+                              style={{display: (formMode == "new" ? "none" : null)}}>
+                          <CFormLabel>Login Service?</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormLoginService"
+                              value={(formMode == "new" ? "" : (record.login_service == true ? "Yes" : "No"))}
+                              disabled={true}
+                              required={false}
+                              noValidate
+                            />
+                          </CCol>
+                        </div>
+                        <div className="mb-3"
+                              style={{display: (formMode == "new" ? "none" : null)}}>
+                          <CFormLabel>Account Closed?</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormAccountClosed"
+                              value={(formMode == "new" ? "" : (record.account_closed == true ? "Yes" : "No"))}
+                              disabled={true}
+                              required={false}
+                              noValidate
+                            />
+                          </CCol>
+                        </div>
+                        <div className="mb-3"
+                              style={{display: (formMode == "new" ? "none" : null)}}>
+                          <CFormLabel>Database Id</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormId"
+                              value={(formMode == "new" ? "" : record.id)}
+                              disabled={true}
+                              required={false}
+                              noValidate
+                            />
+                          </CCol>
+                        </div>
+                        <div className="mb-3"
+                              style={{display: (formMode == "new" ? "none" : null)}}>
+                          <CFormLabel>Date Created</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormCreated"
+                              value={(formMode == "new" ? "" : parseTimestamp(record.date_created))}
+                              disabled={true}
+                              required={false}
+                              noValidate
+                            />
+                          </CCol>
+                        </div>
+                        <div className="mb-3"
+                              style={{display: (formMode == "new" ? "none" : null)}}>
+                          <CFormLabel>Date Updated</CFormLabel>
+                          <CCol>
+                            <CFormInput
+                              type="text"
+                              id="userFormExpired"
+                              value={(formMode == "new" ? "" : (record.date_updated ? parseTimestamp(record.date_updated) : "None"))}
+                              disabled={true}
+                              required={false}
+                              noValidate
+                            />
+                          </CCol>
+                        </div>
+                        <CRow className="mb-3">
+                          <CCol style={{ marginTop: "50px"}}>
+                            <div className="d-grid gap-2 d-sm-flex">
+                              <CButton style={{color: 'white'}}
+                                ccolor="secondary"
+                                disabled={submitting}
+                                onClick={(formMode == "edit" ? () => {changeFormMode("view"); getData()} : () => {navigate("/users")} )}>
+                                Cancel
+                              </CButton>
+                              {submitting ? (
+                                <CButton disabled>
+                                  <CSpinner component="span" size="sm" aria-hidden="true"/>
+                                </CButton>
+                                ) : (
+                                  <CButton
+                                    color="primary"
+                                    type="submit"
+                                    style={{ display: ( formMode != "view" ? null : 'none' )}}
+                                    >
+                                  Save
+                                  </CButton>
+                                )
+                              }
+                              {formMode == "view" ? (
+                                <>
+                                <CButton
+                                    color="primary"
+                                    style={{ display: ((!record.account_closed) ? null : 'none' )}}
+                                    onClick={() => {changeFormMode("edit")}}>
+                                    Edit
+                                </CButton>
+                                <CButton
+                                    color="primary"
+                                    style={{ display: ((!record.account_closed) ? null : 'none' )}}
+                                    onClick={() => {changeCAvatarVisible(true)}}>
+                                    Change Avatar
+                                </CButton>
+                                <CButton
+                                    color="primary"
+                                    style={{ display: (((!record.login_service) && (!record.account_closed)) ? null : 'none' )}}
+                                    onClick={() => {changeCPasswordVisible(true)}}>
+                                    Change Password
+                                </CButton>
+                                <CButton
+                                    color="danger"
+                                    style={{ color: 'white',
+                                            display: ((!record.account_closed) ? null : 'none' )}}
+                                    onClick={() => {changeDeleteVisible(true)}}>
+                                    <CIcon icon={cilTrash}/>
+                                    &nbsp;Close account
+                                </CButton>
+                                </>
+                              ) : (
+                                null
+                              )}
+                            </div>
+                        </CCol>
+                      </CRow>
+                  </CForm>
+                </CCol>
+                <CCol md="4"
+                      style={{ textAlign: 'center' }}
+                      className="d-none d-xl-block d-xxl-block">
+                  { formMode != "new" ? (
+                    <>
+                    <CAvatar
+                      style={{ fontSize: '4.5rem',
+                               width: '150px',
+                               height: '150px',
+                               marginTop: '25px' }}>
+                        <img className="avatar-img"
+                             onError={(e) => {handleBrokenAvatar(e)}}
+                             src={(record.avatar.isUrl ? record.avatar.data : "data:" + record.avatar.data)}
+                        />
+                        <CTooltip content={(record.online ? "User is online" : (record.account_closed ? "User account is marked as closed" : "User is offline"))}
+                                  placement="bottom">
+                          <span className={"avatar-status " + (record.online ? "bg-success" : (record.account_closed ? "bg-dark" : "bg-danger"))}
+                                style = {{ width: '50px',
+                                          height: '50px' }}>
+                          </span>
+                        </CTooltip>
+                    </CAvatar>
+                    <div style={{ fontWeight: 'bold',
+                                  marginTop: '10px' }}>
+                      {record.last_name + ", " + record.first_name}
+                    </div>
+                    </>
+                  ) : (
+                    null
+                    )
+                  }
+                </CCol>
+              </CRow> 
+            ) : (
+              recordEmpty ? (
+                <CRow>
+                  <CCol style={{ textAlign: 'center',
+                                 padding: '20px',
+                                 marginLeft: '20px',
+                                 marginRight: '20px' }}>
+                    <CIcon icon={cilWarning} size="lg"/>
+                    <span style={{ marginLeft:"10px" }}>
+                      Error fetching user data.
+                    </span>
+                  </CCol>
+                </CRow>                 
+              ) : (
+                <CRow>
+                  <CCol style={{ textAlign: 'center',
+                                 padding: '20px',
+                                 marginLeft: '20px',
+                                 marginRight: '20px' }}>
+                    <CSpinner color="dark" size="sm" />
+                  </CCol>
+                </CRow>
+              )
+            )
+          }
+          </CCardBody>
+        </CCard>
+      </CCol>
+      <CToaster ref={toaster} push={toast} placement="top-end" />
+    </CRow>
+  )
 };
 
 export default UsersEdit;
