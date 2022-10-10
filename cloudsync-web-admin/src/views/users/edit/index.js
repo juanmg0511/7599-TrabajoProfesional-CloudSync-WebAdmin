@@ -431,7 +431,7 @@ const UsersEdit = () => {
                           <CFormInput
                             type="text"
                             id="userFormLastName"
-                            placeholder="your last name"
+                            placeholder="please enter your last name"
                             value={formLastName}
                             onChange={e => changeFormLastName(e.target.value)}
                             disabled={( formMode == "view" ? true : false )}
@@ -447,7 +447,7 @@ const UsersEdit = () => {
                           <CFormInput
                             type="text"
                             id="userFormFirstName"
-                            placeholder="your first name"
+                            placeholder="please enter your first name"
                             value={formFirstName}
                             onChange={e => changeFormFirstName(e.target.value)}
                             disabled={( formMode == "view" ? true : false )}
@@ -463,7 +463,7 @@ const UsersEdit = () => {
                           <CFormInput
                             type="text"
                             id="userFormEmail"
-                            placeholder="enter a valid email address"
+                            placeholder="please enter a valid email address"
                             value={formEmail}
                             onChange={e => changeFormEmail(e.target.value)}
                             disabled={( formMode == "view" ? true : false )}

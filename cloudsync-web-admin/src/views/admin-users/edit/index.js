@@ -357,7 +357,7 @@ const AdminEdit = () => {
                           <CFormInput
                             type="text"
                             id="adminFormLastName"
-                            placeholder="your last name"
+                            placeholder="please enter your last name"
                             value={formLastName}
                             onChange={e => changeFormLastName(e.target.value)}
                             disabled={( formMode == "view" ? true : false )}
@@ -373,7 +373,7 @@ const AdminEdit = () => {
                           <CFormInput
                             type="text"
                             id="adminFormFirstName"
-                            placeholder="your first name"
+                            placeholder="please enter your first name"
                             value={formFirstName}
                             onChange={e => changeFormFirstName(e.target.value)}
                             disabled={( formMode == "view" ? true : false )}
@@ -389,7 +389,7 @@ const AdminEdit = () => {
                           <CFormInput
                             type="text"
                             id="adminFormEmail"
-                            placeholder="enter a valid email address"
+                            placeholder="please enter a valid email address"
                             value={formEmail}
                             onChange={e => changeFormEmail(e.target.value)}
                             disabled={( formMode == "view" ? true : false )}
