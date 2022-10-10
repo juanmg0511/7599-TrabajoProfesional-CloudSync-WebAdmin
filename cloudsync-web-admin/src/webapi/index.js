@@ -185,6 +185,20 @@ export function removeGameProgress (id) {
   return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/gameprogress/${id}`)
 }
 
+// Game Progress - Listing details and profile page
+export function createGameProgress (progress) {
+  return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/gameprogress', progress)
+}
+
+export function getGameProgress (id) {
+  return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/gameprogress/${id}`)
+}
+
+export function saveGameProgress (id, progress) {
+  return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/gameprogress/${id}`, progress)
+}
+
+
 // High Scores - Listing
 export function getHighScores (start, limit, user_filter) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/highscores?start=${start}&limit=${limit}`
@@ -196,4 +210,17 @@ export function getHighScores (start, limit, user_filter) {
 
 export function removeHighScore (id) {
   return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/highscores/${id}`)
+}
+
+// High Scores - Listing details and profile page
+export function createHighScore (highscore) {
+  return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/highscores', highscore)
+}
+
+export function getHighScore (id) {
+  return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/highscores/${id}`)
+}
+
+export function saveHighScore (id, highscore) {
+  return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/highscores/${id}`, highscore)
 }
