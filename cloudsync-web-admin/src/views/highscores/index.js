@@ -316,7 +316,7 @@ const Highscores = () => {
           <CModalTitle>Delete game progress</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <strong>Warning!</strong>&nbsp;You are about to delete this highscore record for user <strong>"{selectedRecord.username}"</strong>.<br /><br />This action cannot be undone. Are you sure?
+          <strong>Warning!</strong>&nbsp;You are about to delete the highscore record with id <strong>"{selectedRecord.id}"</strong>, belonging to user <strong>"{selectedRecord.username}"</strong>.<br /><br />This action cannot be undone. Are you sure?
         </CModalBody>
         <CModalFooter>
           <CButton style={{color: 'white'}}
