@@ -29,6 +29,8 @@ const AppHeaderDropdown = () => {
   const lastName = useSelector(getLastName)
   const username = useSelector(getUsername)
   const sessionToken = useSelector(getToken)
+  const displayNameInitials = (firstName ? firstName.charAt(0).toUpperCase() : "X") +
+                              (lastName ? lastName.charAt(0).toUpperCase() : "X")
 
   function logOut() {
 
@@ -51,7 +53,7 @@ const AppHeaderDropdown = () => {
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <CAvatar color="primary" textColor="white" size="lg">{firstName.charAt(0).toUpperCase()+lastName.charAt(0).toUpperCase()}</CAvatar>
+        <CAvatar color="primary" textColor="white" size="lg">{displayNameInitials}</CAvatar>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>

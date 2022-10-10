@@ -24,9 +24,9 @@ import { SIDEBAR_ON, SIDEBAR_OFF } from 'src/config'
 const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector(getSidebarShow)
-  const firstName = useSelector(getFirstName)
-  const lastName = useSelector(getLastName)
-  const email = useSelector(getEmail)
+  const firstName = (useSelector(getFirstName) ? useSelector(getFirstName) : "X")
+  const lastName = (useSelector(getLastName) ? useSelector(getLastName) : "X")
+  const email = (useSelector(getEmail) ? useSelector(getEmail) : "X")
 
 
   return (
