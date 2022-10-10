@@ -173,7 +173,7 @@ export function getRecoveries (start, limit, user_filter) {
 
 
 // Game Progress - Listing
-export function getGameProgress (start, limit, user_filter) {
+export function getAllGameProgress (start, limit, user_filter) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/gameprogress?start=${start}&limit=${limit}`
   if (user_filter) {
     url += `&user_filter=${user_filter}`

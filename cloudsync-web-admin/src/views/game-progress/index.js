@@ -35,7 +35,7 @@ import {
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
   import { cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd, cilArrowThickFromBottom } from '@coreui/icons';
-  import { getGameProgress, removeGameProgress } from '../../webapi'
+  import { getAllGameProgress, removeGameProgress } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
   import { getUsername } from '../../stateapi/auth'
 
@@ -241,7 +241,7 @@ const GameProgress = () => {
   function refresh () {
 
     //console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
-    getGameProgress(start, pageSize, filterText)
+    getAllGameProgress(start, pageSize, filterText)
       .then(response => {
         const { data } = response
         const r = {}
