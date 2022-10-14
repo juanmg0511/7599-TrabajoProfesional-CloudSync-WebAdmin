@@ -291,8 +291,8 @@ const Recovery = () => {
           <p>Welcome to the <strong>Recovery</strong> listing!</p>
           <p>From this page you can manage all FIUBA CloudSync password recovery requests:</p>
           <ul>
-              <li>View a particular request's details</li>
               <li>Send a new request to a user</li>
+              <li>View a particular request's details</li>
           </ul>
         </CCallout>
       </CCol>

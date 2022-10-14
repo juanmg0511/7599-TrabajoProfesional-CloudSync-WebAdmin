@@ -171,6 +171,15 @@ export function getRecoveries (start, limit, user_filter) {
   return axios.get(url)
 }
 
+// Recovery - Listing details and profile page
+export function createRecovery (user) {
+  return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/recovery', user)
+}
+
+export function getRecovery (username) {
+  return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/recovery/${username}`)
+}
+
 
 // Game Progress - Listing
 export function getAllGameProgress (start, limit, user_filter) {
