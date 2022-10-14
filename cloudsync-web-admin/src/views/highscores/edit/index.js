@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import qs from 'qs'
 import {
@@ -29,7 +28,6 @@ import CIcon from '@coreui/icons-react'
 import { cilTrash, cilWarning } from '@coreui/icons';
 import { getHighScore, createHighScore, saveHighScore, removeHighScore } from '../../../webapi'
 import { usernameRegex, levelRegex, scoreRegex, timeElapsedRegex } from '../../../config'
-import { getUsername } from '../../../stateapi/auth'
 import { parseTimestamp } from 'src/helpers';
 
 const HighscoresEdit = () => {
@@ -226,6 +224,15 @@ const HighscoresEdit = () => {
             <li>Delete a user's highscore record</li>
           </ul>
         </CCallout>
+        { formMode == "new" ? (
+          <CCallout color="warning" className="bg-white">
+            <p><strong>Notice</strong></p>
+            <p>Usernames entered in this form are not validated against the <strong>User</strong> database. This means you can create <strong>Highscore</strong> records for inexisting users. This could be useful for a variety of reasons, for example generating "benchmark" or "record" scores, in order to ecourage players.</p>
+          </CCallout>
+        ) : (
+          null
+        )
+        }
         <CCard className="mb-4">
           <CCardBody>
             {(record || (formMode == 'new')) ? (
