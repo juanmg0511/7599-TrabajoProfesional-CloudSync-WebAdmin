@@ -230,7 +230,7 @@ const AdminEdit = () => {
   return (
     <CRow>
       { cPasswordVisible ? (
-      <CModal alignment="center" visible={cPasswordVisible} onClose={() => changeCPasswordVisible(false)}>
+      <CModal alignment="center" visible={cPasswordVisible} onClose={() => {changeModalPassword(""); changeModalPasswordConfirm(""); changeCPasswordVisible(false)}}>
         <CModalHeader>
           <CModalTitle>Change user password</CModalTitle>
         </CModalHeader>
@@ -266,7 +266,7 @@ const AdminEdit = () => {
           <CButton style={{color: 'white'}}
                    ccolor="secondary"
                    disabled={changingPassword}
-                   onClick={() => changeCPasswordVisible(false)}>
+                   onClick={() => {changeModalPassword(""); changeModalPasswordConfirm(""); changeCPasswordVisible(false)}}>
             Cancel
           </CButton>
           {changingPassword ? (
