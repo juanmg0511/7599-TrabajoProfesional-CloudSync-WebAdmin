@@ -314,7 +314,15 @@ const Users = () => {
           <CModalTitle>Close account</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <strong>Warning!</strong>&nbsp;You are about to close the account for user <strong>"{selectedUser.username}"</strong> ({selectedUser.contact.email}).<br /><br />This action cannot be undone. Are you sure?
+          <strong>Warning!</strong>&nbsp;You are about to close the account for user <strong>"{selectedUser.username}"</strong> ({selectedUser.contact.email}).
+          <br /><br />This will:
+          <ul>
+            <li>Mark the account as closed.</li>
+            <li>Log out the user.</li>
+            <li>Delete the user's password recovery request, if exists.</li>
+            <li>Delete the user's game progress record, if exists.</li>
+          </ul>
+          This action cannot be undone. Are you sure?
         </CModalBody>
         <CModalFooter>
           <CButton style={{color: 'white'}}

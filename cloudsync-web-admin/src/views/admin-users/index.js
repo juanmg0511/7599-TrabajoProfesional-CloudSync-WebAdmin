@@ -318,7 +318,13 @@ const AdminUsers = () => {
           <CModalTitle>Close account</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <strong>Warning!</strong>&nbsp;You are about to close the administrative account for user <strong>"{selectedUser.username}"</strong> ({selectedUser.email}).<br /><br />This action cannot be undone. Are you sure?
+          <strong>Warning!</strong>&nbsp;You are about to close the administrative account for user <strong>"{selectedUser.username}"</strong> ({selectedUser.email}).
+          <br /><br />This will:
+          <ul>
+            <li>Mark the account as closed.</li>
+            <li>Log out the user.</li>
+          </ul>
+          This action cannot be undone. Are you sure?
         </CModalBody>
         <CModalFooter>
           <CButton style={{color: 'white'}}
