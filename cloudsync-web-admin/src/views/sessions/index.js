@@ -384,8 +384,9 @@ const Sessions = () => {
           <p>Welcome to the <strong>Sessions</strong> listing!</p>
           <p>From this page you can manage all FIUBA CloudSync user's sessions:</p>
           <ul>
-              <li>View or Edit a particular session's details</li>
+              <li>View a particular session's details</li>
               <li>Delete a session (logout the user)</li>
+              <li>Delete all but current sessions (logout all users)</li>
           </ul>
         </CCallout>
       </CCol>
@@ -455,7 +456,7 @@ const Sessions = () => {
                       <CTableDataCell>{parseTimestamp(record.date_created)}</CTableDataCell>
                       <CTableDataCell>
                       <CButtonGroup>
-                        <CButton color="secondary" onClick={() => {changeSelectedRecord(record); changeEditUrl("/sessions/edit?session_token=" + record.session_token + "&mode=view")}}>
+                        <CButton color="secondary" onClick={() => {changeSelectedRecord(record); changeEditUrl("/sessions/edit?session_token=" + record.session_token + "&username=" + record.username + "&mode=view")}}>
                           <CIcon icon={cilPenAlt} style={{color: 'white'}} size="sm"/>
                         </CButton>
                         {((record.username !== loggedUser) || (record.expired) ? (

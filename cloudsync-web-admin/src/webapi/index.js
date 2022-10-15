@@ -161,6 +161,12 @@ export function removeAllSessions () {
   return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/sessions`)
 }
 
+// Sessions - Listing details and profile page
+export function getSession (user_filter) {
+  let url = APP_APPSERVER_BASE_URL + `/api/v1/sessions?user_filter=${user_filter}`
+  return axios.get(url)
+}
+
 
 // Recovery - Listing
 export function getRecoveries (start, limit, user_filter) {
