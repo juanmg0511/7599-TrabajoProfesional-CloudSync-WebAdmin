@@ -23,6 +23,7 @@ export const UNDELETABLE_ADMIN_NAME = 'cloudsyncgod'
 
 // Field validation regular expressions
 export const guidRegex = /^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$/
+export const urlRegex = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/
 
 export const usernameRegex = /^[a-zA-Z0-9_.]+$/
 export const nameRegex = /(.|\s)*\S(.|\s)*/
@@ -32,5 +33,11 @@ export const levelRegex = /^[1-9]|10$/
 export const timeElapsedRegex = /^(?:(?:([0-9]{2,}):)?([0-5]?\d):)?([0-5]?\d)(\.(\d{3}))$/
 export const scoreRegex = /^[0-9]*[1-9][0-9]*$/
 
-// Default URL for avatars
+// Defaults for avatars
+// Size, in KB
+export const defaultAvatarSize = 512
+// Size, in pixels
+export const defaultAvatarWidth = 256
+export const defaultAvatarHeight = 256
+// Url for default avatar
 export const defaultAvatarUrl = "https://ui-avatars.com/api/?name=FirstName+LastName&background=321FDB&color=FFFFFF&size=512"

@@ -19,6 +19,7 @@ import {
   CFormFeedback,
   CFormLabel,
   CFormText,
+  CFormSwitch,
   CModal,
   CModalHeader,
   CModalTitle,
@@ -30,7 +31,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilTrash, cilWarning } from '@coreui/icons';
 import { getUser, createUser, saveUser, removeUser, doChangeUserAvatar, doChangeUserPassword } from '../../../webapi'
-import { usernameRegex, nameRegex, emailRegex, passwordRegex } from '../../../config'
+import { usernameRegex, nameRegex, emailRegex, passwordRegex, urlRegex, defaultAvatarSize, defaultAvatarWidth, defaultAvatarHeight } from '../../../config'
 import { getUsername } from '../../../stateapi/auth'
 import { parseTimestamp, getDefaulAvatartUrl } from 'src/helpers';
 
@@ -52,6 +53,11 @@ const UsersEdit = () => {
 
   const [record, changeRecord] = useState(null)
   const [recordEmpty, changeRecordEmpty] = useState(false)
+
+  const [modalIsUrl, changeModalIsUrl] = useState(false)
+  const [modalImg, changeModalImg] = useState("")
+  const [modalImgPath, changeModalImgPath] = useState("")
+  const [modalUrl, changeModalUrl] = useState("")
 
   const [modalPassword, changeModalPassword] = useState("")
   const [modalPasswordConfirm, changeModalPasswordConfirm] = useState("")
@@ -177,8 +183,10 @@ const UsersEdit = () => {
           changeFormLastName(data.last_name)
           changeFormEmail(data.contact.email)
 
-          //console.log(data.avatar.isUrl)
-          //console.log(data.avatar.data)
+          changeModalIsUrl(data.avatar.isUrl)
+          changeModalUrl("")
+          changeModalImgPath("")
+          changeModalImg("")
         } else {
           changeRecord(null)
           changeRecordEmpty(true)
@@ -211,14 +219,88 @@ const UsersEdit = () => {
       })
   }
 
+  function handleModalIsUrlChange() {
+
+    if (modalIsUrl) {
+      changeModalUrl("")
+    }
+    else {
+      changeModalImg("")
+      changeModalImgPath("")
+    }
+    changeModalIsUrl(!modalIsUrl)
+  }
+
   function changeAvatar() {
 
     changeChangingAvatar(true)
-    doChangeUserAvatar(username, "")
+    if (modalIsUrl) {
+
+      if (modalUrl.match(urlRegex)) {
+        let newAvatar = {
+          isUrl: true,
+          data: modalUrl,
+        }
+        changeAvatarPatch(newAvatar)
+      }
+      else {
+        addToast(generateToast("warning","Please verify your input!"))
+        changeChangingAvatar(false)
+      }
+    }
+    else {
+      const reader = new FileReader()
+      reader.addEventListener('load', (event) => {
+        
+        const result = event.target.result
+        let validFile = false
+        let validMessage = "Please verify your input!"
+
+        if (modalImg.type && !modalImg.type.startsWith('image/')) {
+          validMessage = "File is not an image!"
+        } else {
+          if (modalImg.size > (defaultAvatarSize * 1024)) {
+            validMessage = "File size exceeds allowed maximum!"
+          } else {
+            validFile = true
+            let image = new Image();
+            image.src = result;
+            image.onload = function() {
+              if (image.width > defaultAvatarWidth || image.height > defaultAvatarHeight) {
+                addToast(generateToast("warning","Image dimensions exceed allowd maximum!"))
+                changeChangingAvatar(false)                
+              }
+              else {
+                let newAvatar = {
+                  isUrl: false,
+                  data: result.split(',')[1],
+                }
+                changeAvatarPatch(newAvatar)
+              }
+            }
+            image.onerror = function() {
+              addToast(generateToast("warning","Image is corrupt or invalid!"))
+              changeChangingAvatar(false)
+            }
+          }
+        }
+        if (!validFile) {
+          addToast(generateToast("warning",validMessage))
+          changeChangingAvatar(false)          
+        }
+      })
+      reader.readAsDataURL(modalImg)
+    }
+  }
+
+  function changeAvatarPatch(newAvatar) {
+
+    doChangeUserAvatar(username, newAvatar)
       .then(_ => {
         changeChangingAvatar(false)
         changeCAvatarVisible(false)
         addToast(generateToast("success","Avatar change succesful!"))
+        getData()
       })
       .catch(err => {
         let message = "Avatar change failure!"
@@ -270,22 +352,62 @@ const UsersEdit = () => {
   return (
     <CRow>
       { cAvatarVisible ? (
-      <CModal alignment="center" visible={cAvatarVisible} onClose={() => changeCAvatarVisible(false)}>
+      <CModal alignment="center" visible={cAvatarVisible} onClose={() => {getData(); changeCAvatarVisible(false) }}>
         <CModalHeader>
           <CModalTitle>Change user avatar</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CRow className="mb-3">
             <CCol>
-                Content
+              Use this window to change the avatar for user <strong>"{formUsername}"</strong> ({formEmail}). You have the choice of setting a URL or uploading an image file.
             </CCol>
           </CRow>
+          <CRow className="mb-3">
+            <CCol>
+              <CFormLabel>Is URL</CFormLabel>
+              <CFormSwitch
+                id="formIsUrl"
+                size="xl"
+                color="primary"
+                checked={modalIsUrl}
+                onChange={() => handleModalIsUrlChange()}
+              />
+            </CCol>
+          </CRow>
+          { modalIsUrl ? (
+            <CRow className="mb-3">
+              <CCol>
+                <CFormLabel>Avatar URL</CFormLabel>
+                <CFormInput
+                  type="text"
+                  id="formUrl"
+                  value={modalUrl}
+                  onChange={(e) => changeModalUrl(e.target.value)}
+                />
+                <CFormText>Please enter a valid URL, pointing to an image file.</CFormText>
+              </CCol>
+            </CRow>
+        ) : (
+            <CRow className="mb-3">
+              <CCol>
+                <CFormLabel>Avatar file to upload</CFormLabel>
+                <CFormInput
+                  type="file"
+                  id="formFile"
+                  accept=".jpg, .jpeg, .png"
+                  value={modalImgPath}
+                  onChange={(e) => {changeModalImgPath(e.target.value); changeModalImg(e.target.files[0])}}
+                />
+              <CFormText>Please select a file to upload from your computer. Valid formats are JPG or PNG. The maximum allowed size is {defaultAvatarSize}KB. The maximum allowed resolution is {defaultAvatarWidth}x{defaultAvatarHeight} pixels.</CFormText>
+              </CCol>
+            </CRow>
+          )}
         </CModalBody>
         <CModalFooter>
           <CButton style={{color: 'white'}}
                    ccolor="secondary"
                    disabled={changingAvatar}
-                   onClick={() => changeCAvatarVisible(false)}>
+                   onClick={() => {getData(); changeCAvatarVisible(false)}}>
             Cancel
           </CButton>
           {changingAvatar ? (
@@ -304,7 +426,7 @@ const UsersEdit = () => {
         null
       )}
       { cPasswordVisible ? (
-      <CModal alignment="center" visible={cPasswordVisible} onClose={() => changeCPasswordVisible(false)}>
+      <CModal alignment="center" visible={cPasswordVisible} onClose={() => {changeModalPassword(""); changeModalPasswordConfirm(""); changeCPasswordVisible(false)}}>
         <CModalHeader>
           <CModalTitle>Change user password</CModalTitle>
         </CModalHeader>
@@ -340,7 +462,7 @@ const UsersEdit = () => {
           <CButton style={{color: 'white'}}
                    ccolor="secondary"
                    disabled={changingPassword}
-                   onClick={() => changeCPasswordVisible(false)}>
+                   onClick={() => {changeModalPassword(""); changeModalPasswordConfirm(""); changeCPasswordVisible(false)}}>
             Cancel
           </CButton>
           {changingPassword ? (
