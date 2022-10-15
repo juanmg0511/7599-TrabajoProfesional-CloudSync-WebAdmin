@@ -183,8 +183,8 @@ const SessionsEdit = () => {
                             />
                           </CCol>
                         </div>                        
-                        <div>
-                          <CFormLabel>User role</CFormLabel>
+                        <div className="mb-3">
+                          <CFormLabel>Role</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
@@ -212,7 +212,7 @@ const SessionsEdit = () => {
                           </CCol>
                         </div>
                         <div className="mb-3">
-                            <CFormLabel>Expired?</CFormLabel>
+                            <CFormLabel>Valid session?</CFormLabel>
                             <CCol>
                             <CFormInput
                                 type="text"
@@ -237,12 +237,12 @@ const SessionsEdit = () => {
                           </CCol>
                         </div>
                         <div className="mb-3">
-                          <CFormLabel>Database Id</CFormLabel>
+                          <CFormLabel>Date Created</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="formId"
-                              value={(formMode == "new" ? "" : record.id)}
+                              id="formCreated"
+                              value={(formMode == "new" ? "" : parseTimestamp(record.date_created))}
                               disabled={true}
                               required={false}
                               noValidate
@@ -250,12 +250,12 @@ const SessionsEdit = () => {
                           </CCol>
                         </div>
                         <div className="mb-3">
-                          <CFormLabel>Date Created</CFormLabel>
+                          <CFormLabel>Database Id</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="formCreated"
-                              value={(formMode == "new" ? "" : parseTimestamp(record.date_created))}
+                              id="formId"
+                              value={(formMode == "new" ? "" : record.id)}
                               disabled={true}
                               required={false}
                               noValidate

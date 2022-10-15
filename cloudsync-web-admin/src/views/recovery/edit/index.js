@@ -217,7 +217,7 @@ const RecoveryEdit = () => {
                         </div>
                         <div className="mb-3"
                                 style={{display: (formMode == "new" ? "none" : null)}}>
-                            <CFormLabel>Expired?</CFormLabel>
+                            <CFormLabel>Valid request?</CFormLabel>
                             <CCol>
                             <CFormInput
                                 type="text"
@@ -244,12 +244,12 @@ const RecoveryEdit = () => {
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel>Database Id</CFormLabel>
+                          <CFormLabel>Date Created</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="formId"
-                              value={(formMode == "new" ? "" : record.id)}
+                              id="formCreated"
+                              value={(formMode == "new" ? "" : parseTimestamp(record.date_created))}
                               disabled={true}
                               required={false}
                               noValidate
@@ -258,12 +258,12 @@ const RecoveryEdit = () => {
                         </div>
                         <div className="mb-3"
                               style={{display: (formMode == "new" ? "none" : null)}}>
-                          <CFormLabel>Date Created</CFormLabel>
+                          <CFormLabel>Database Id</CFormLabel>
                           <CCol>
                             <CFormInput
                               type="text"
-                              id="formCreated"
-                              value={(formMode == "new" ? "" : parseTimestamp(record.date_created))}
+                              id="formId"
+                              value={(formMode == "new" ? "" : record.id)}
                               disabled={true}
                               required={false}
                               noValidate
