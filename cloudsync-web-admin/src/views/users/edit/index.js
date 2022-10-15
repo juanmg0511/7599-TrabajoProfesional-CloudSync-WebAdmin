@@ -692,7 +692,9 @@ const UsersEdit = () => {
                             />
                           )}
                           <CFormText>Avatars can be a link to an image file (URL), or a base64 respresentatinon of a PNG or JPEG file.
-                            If an avatar fails to load, a message will appear and a place holder will be displayed. Please use the "change avatar" button below to modify this value.</CFormText>
+                            If an avatar fails to load, a message will appear and a place holder will be displayed.
+                            { !record.account_closed ? (" Please use the \"change avatar\" button below to modify this value.") : null }
+                          </CFormText>
                         </CCol>
                       </div>
                       <div className="mb-3"
