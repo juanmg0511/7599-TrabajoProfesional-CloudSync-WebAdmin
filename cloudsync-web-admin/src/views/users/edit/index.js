@@ -27,6 +27,7 @@ import {
   CModalFooter,
   CSpinner,
   CRow,
+  CFormTextarea,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilTrash, cilWarning } from '@coreui/icons';
@@ -51,6 +52,7 @@ const UsersEdit = () => {
   const [changingAvatar, changeChangingAvatar] = useState(false)
   const [cAvatarVisible, changeCAvatarVisible] = useState(false)
 
+  const [avatarLoaded, changeAvatarLoaded] = useState(false)
   const [record, changeRecord] = useState(null)
   const [recordEmpty, changeRecordEmpty] = useState(false)
 
@@ -187,6 +189,16 @@ const UsersEdit = () => {
           changeModalUrl("")
           changeModalImgPath("")
           changeModalImg("")
+
+          let image = new Image()
+          image.src = data.avatar.data
+          image.onload = function() {
+            changeAvatarLoaded(true)
+          }
+          image.onerror = function() {
+            changeAvatarLoaded(false)
+            addToast(generateToast("warning","Could not load avatar!"))
+          }          
         } else {
           changeRecord(null)
           changeRecordEmpty(true)
@@ -341,13 +353,8 @@ const UsersEdit = () => {
       }
     }
   }
+
   
-  function handleBrokenAvatar(e) {
-
-    e.currentTarget.src = getDefaulAvatartUrl(formFirstName, formLastName)
-  }
-
-
   useEffect(() => {setupForm()}, [])
   return (
     <CRow>
@@ -662,6 +669,34 @@ const UsersEdit = () => {
                       </div>
                       <div className="mb-3"
                             style={{display: (formMode == "new" ? "none" : null)}}>
+                        <CFormLabel>Avatar Raw Data</CFormLabel>
+                        <CCol>
+                          { record.avatar.isUrl ? (
+                            <CFormInput
+                              type="text"
+                              id="userFormAvatarUrl"
+                              value={record.avatar.data}
+                              disabled={true}
+                              required={false}
+                              noValidate
+                            />
+                          ) : (
+                            <CFormTextarea
+                              type="text"
+                              id="userFormAvatarData"
+                              value={record.avatar.data}
+                              disabled={true}
+                              required={false}
+                              rows="10"
+                              noValidate
+                            />
+                          )}
+                          <CFormText>Avatars can be a link to an image file (URL), or a base64 respresentatinon of a PNG or JPEG file.
+                            If an avatar fails to load, a message will appear and a place holder will be displayed. Please use the "change avatar" button below to modify this value.</CFormText>
+                        </CCol>
+                      </div>
+                      <div className="mb-3"
+                            style={{display: (formMode == "new" ? "none" : null)}}>
                         <CFormLabel>Database Id</CFormLabel>
                         <CCol>
                           <CFormInput
@@ -707,23 +742,42 @@ const UsersEdit = () => {
                           className="d-none d-xl-block d-xxl-block">
                       { formMode != "new" ? (
                         <>
-                        <CAvatar
-                          style={{ fontSize: '4.5rem',
-                                    width: '150px',
-                                    height: '150px',
-                                    marginTop: '25px' }}>
-                            <img className="avatar-img"
-                                  onError={(e) => {handleBrokenAvatar(e)}}
-                                  src={(record.avatar.isUrl ? record.avatar.data : "data:" + record.avatar.data)}
-                            />
-                            <CTooltip content={(record.online ? "User is online" : (record.account_closed ? "User account is marked as closed" : "User is offline"))}
-                                      placement="bottom">
-                              <span className={"avatar-status " + (record.online ? "bg-success" : (record.account_closed ? "bg-dark" : "bg-danger"))}
-                                    style = {{ width: '50px',
-                                              height: '50px' }}>
-                              </span>
-                            </CTooltip>
-                        </CAvatar>
+                        { avatarLoaded ? (
+                          <CAvatar
+                            style={{ fontSize: '4.5rem',
+                                      width: '150px',
+                                      height: '150px',
+                                      marginTop: '25px' }}>
+                              <img className="avatar-img"
+                                   src={(record.avatar.isUrl ? record.avatar.data : record.avatar.data)}
+                              />
+                              <CTooltip content={(record.online ? "User is online" : (record.account_closed ? "User account is marked as closed" : "User is offline"))}
+                                        placement="bottom">
+                                <span className={"avatar-status " + (record.online ? "bg-success" : (record.account_closed ? "bg-dark" : "bg-danger"))}
+                                      style = {{ width: '50px',
+                                                height: '50px' }}>
+                                </span>
+                              </CTooltip>
+                          </CAvatar>
+                        ) : (
+                          <CAvatar
+                            color="primary"
+                            textColor="white"
+                            style={{ fontSize: '4.5rem',
+                                      width: '150px',
+                                      height: '150px',
+                                      marginTop: '25px' }}>
+                              {record.first_name.charAt(0).toUpperCase() + record.last_name.charAt(0).toUpperCase()}
+                              <CTooltip content={(record.online ? "User is online" : (record.account_closed ? "User account is marked as closed" : "User is offline"))}
+                                        placement="bottom">
+                                <span className={"avatar-status " + (record.online ? "bg-success" : (record.account_closed ? "bg-dark" : "bg-danger"))}
+                                      style = {{ width: '50px',
+                                                height: '50px' }}>
+                                </span>
+                              </CTooltip>
+                          </CAvatar>
+                        )
+                        }
                         <div style={{ fontWeight: 'bold',
                                       marginTop: '10px' }}>
                           {record.last_name + ", " + record.first_name}
