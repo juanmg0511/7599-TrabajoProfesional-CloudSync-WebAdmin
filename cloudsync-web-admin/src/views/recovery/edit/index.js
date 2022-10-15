@@ -144,7 +144,7 @@ const RecoveryEdit = () => {
       <CCol style={{marginLeft: 'auto', marginRight: 'auto'}} xs={10}>
         <CCallout color="info" className="bg-white">
           <p>Welcome to the <strong>Recovery details</strong> page!</p>
-          <p>From this page you can create, view or edit a FIUBA CloudSync password recovery request:</p>
+          <p>From this page you can create or view a FIUBA CloudSync password recovery request:</p>
           <ul>
             <li>Send a new request to a user</li>
             <li>View a particular request's details</li>
