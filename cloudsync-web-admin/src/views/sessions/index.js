@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import qs from 'qs'
 import {
     CToaster,
     CToast,
@@ -46,6 +47,9 @@ import {
 const Sessions = () => {
 
   const loggedUser = useSelector(getUsername)
+  const { user_filter } = qs.parse(location.search, {
+    ignoreQueryPrefix: true
+  })
 
   const [selectedRecord, changeSelectedRecord] = useState({})
   const [records, changeRecords] = useState()
@@ -188,6 +192,9 @@ const Sessions = () => {
       changeStart(0)
       if (filterActive) {
 
+        if (user_filter) {
+          navigate("/sessions")
+        }
         changeFilterText("")
       }
       changeFilterActive(!filterActive)
@@ -249,6 +256,15 @@ const Sessions = () => {
 
   function refresh () {
 
+    if (user_filter && !filterActive) {
+      if (usernameRegex.test(user_filter.toLowerCase())) {
+        changeFilterText(user_filter.toLowerCase())
+        changeFilterActive(true)
+        return
+      } else {
+        addToast(generateToast("warning","Invalid filter value!"))
+      }
+    }
     //console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
     getSessions(start, pageSize, filterText)
       .then(response => {
