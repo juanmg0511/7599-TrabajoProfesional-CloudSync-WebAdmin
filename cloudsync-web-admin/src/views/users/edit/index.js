@@ -815,8 +815,7 @@ const UsersEdit = () => {
                         </CCol>
                       </div>
                     </CCol>
-                    <CCol style={{ textAlign: 'center' }}
-                          className="d-none d-xl-block d-xxl-block">
+                    <CCol style={{ textAlign: 'center' }}>
                       { formMode != "new" ? (
                         <>
                         { avatarLoaded ? (
