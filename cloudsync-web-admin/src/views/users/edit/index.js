@@ -30,7 +30,7 @@ import {
   CFormTextarea,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilTrash, cilWarning } from '@coreui/icons';
+import { cilTrash, cilWarning, cilArrowCircleTop } from '@coreui/icons';
 import { getUser, createUser, saveUser, removeUser, doChangeUserAvatar, doChangeUserPassword } from '../../../webapi'
 import { usernameRegex, nameRegex, emailRegex, passwordRegex, urlRegex, defaultAvatarSize, defaultAvatarWidth, defaultAvatarHeight } from '../../../config'
 import { getUsername } from '../../../stateapi/auth'
@@ -301,7 +301,13 @@ const UsersEdit = () => {
           changeChangingAvatar(false)          
         }
       })
-      reader.readAsDataURL(modalImg)
+      if (modalImgPath != "") {
+        reader.readAsDataURL(modalImg)
+      }
+      else {
+        addToast(generateToast("warning","Please verify your input!"))
+        changeChangingAvatar(false)
+      }
     }
   }
 
@@ -679,11 +685,11 @@ const UsersEdit = () => {
                             style={{display: (formMode == "new" ? "none" : null)}}>
                         <CFormLabel>Avatar Raw Data</CFormLabel>
                         <CCol>
-                          { record.avatar.isUrl ? (
+                          { formMode != "new" && record.avatar.isUrl ? (
                             <CFormInput
                               type="text"
                               id="userFormAvatarUrl"
-                              value={record.avatar.data}
+                              value={(formMode == "new" ? "" : record.avatar.data)}
                               disabled={true}
                               required={false}
                               noValidate
@@ -692,7 +698,7 @@ const UsersEdit = () => {
                             <CFormTextarea
                               type="text"
                               id="userFormAvatarData"
-                              value={record.avatar.data}
+                              value={(formMode == "new" ? "" : record.avatar.data)}
                               disabled={true}
                               required={false}
                               rows="10"
@@ -701,7 +707,7 @@ const UsersEdit = () => {
                           )}
                           <CFormText>Avatars can be a link to an image file (URL), or a base64 respresentatinon of a PNG or JPEG file.
                             If an avatar fails to load, a message will appear and a place holder will be displayed.
-                            { !record.account_closed ? (" Please use the \"change avatar\" button below to modify this value.") : null }
+                            { formMode != "new" && !record.account_closed ? (" Please use the \"change avatar\" button below to modify this value.") : null }
                           </CFormText>
                         </CCol>
                       </div>
@@ -799,8 +805,53 @@ const UsersEdit = () => {
                       }
                     </CCol>
                   </CRow>
+                  {formMode == "view" ? (
+                    <CRow className="mb-3">
+                      <CCol style={{ marginTop: "50px"}}>
+                        <div className="d-grid gap-2 d-sm-flex">
+                          { !record.account_closed ? (
+                            <>
+                              <CButton
+                                color="success"
+                                style={{ color: 'white',
+                                         display: ((record.online) ? null : 'none' )}}
+                                onClick={() => {navigate("/sessions?user_filter=" + record.username)}}>  
+                                <CIcon icon={cilArrowCircleTop}/>
+                                &nbsp;User Sessions
+                              </CButton>
+                              <CButton
+                                color="success"
+                                style={{ color: 'white' }}
+                                onClick={() => {navigate("/recovery?user_filter=" + record.username)}}>
+                                <CIcon icon={cilArrowCircleTop}/>
+                                &nbsp;User Recovery
+                              </CButton>
+                              <CButton
+                                color="success"
+                                style={{ color: 'white' }}
+                                onClick={() => {navigate("/game-progress?user_filter=" + record.username)}}>
+                                <CIcon icon={cilArrowCircleTop}/>
+                                &nbsp;User Progress
+                              </CButton>
+                            </>
+                          ) : (
+                            null
+                          )}
+                          <CButton
+                            color="success"
+                            style={{ color: 'white' }}
+                            onClick={() => {navigate("/highscores?user_filter=" + record.username)}}>
+                            <CIcon icon={cilArrowCircleTop}/>
+                            &nbsp;User Highscores
+                          </CButton>
+                        </div>
+                      </CCol>
+                    </CRow>
+                  ) : (
+                    null
+                  )}
                   <CRow className="mb-3">
-                    <CCol style={{ marginTop: "50px"}}>
+                    <CCol style={(formMode=="view" ? null : { marginTop: "50px" } )}>
                       <div className="d-grid gap-2 d-sm-flex">
                         <CButton style={{color: 'white'}}
                           ccolor="secondary"
@@ -845,7 +896,15 @@ const UsersEdit = () => {
                           <CButton
                               color="danger"
                               style={{ color: 'white',
-                                        display: ((!record.account_closed) ? null : 'none' )}}
+                                       display: ((record.account_closed || !record.online) ? 'none' : null )}}
+                              onClick={() => {changeDeleteVisible(true)}}>
+                              <CIcon icon={cilTrash}/>
+                              &nbsp;Logout user
+                          </CButton>
+                          <CButton
+                              color="danger"
+                              style={{ color: 'white',
+                                       display: ((!record.account_closed) ? null : 'none' )}}
                               onClick={() => {changeDeleteVisible(true)}}>
                               <CIcon icon={cilTrash}/>
                               &nbsp;Close account
