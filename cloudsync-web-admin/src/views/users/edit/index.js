@@ -31,7 +31,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilTrash, cilWarning, cilArrowCircleTop } from '@coreui/icons';
-import { getUser, createUser, saveUser, removeUser, doChangeUserAvatar, doChangeUserPassword } from '../../../webapi'
+import { getUser, createUser, saveUser, removeUser, removeAllUserSessions, doChangeUserAvatar, doChangeUserPassword } from '../../../webapi'
 import { usernameRegex, nameRegex, emailRegex, passwordRegex, urlRegex, defaultAvatarSize, defaultAvatarWidth, defaultAvatarHeight } from '../../../config'
 import { getUsername } from '../../../stateapi/auth'
 import { parseTimestamp, getDefaulAvatartUrl } from 'src/helpers';
@@ -47,6 +47,9 @@ const UsersEdit = () => {
   const [submitting, changeSubmitting] = useState(false)
   const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
+
+  const [loggingout, changeLoggingout] = useState(false)
+  const [logoutUserVisible, changeLogoutUserVisible] = useState(false)
   const [changingPassword, changeChangingPassword] = useState(false)
   const [cPasswordVisible, changeCPasswordVisible] = useState(false)
   const [changingAvatar, changeChangingAvatar] = useState(false)
@@ -231,6 +234,26 @@ const UsersEdit = () => {
       })
   }
 
+  function logOutUser() {
+
+    changeLoggingout(true)
+    removeAllUserSessions(record.username)
+      .then(_ => {
+
+        changeLogoutUserVisible(false)
+        changeLoggingout(false)
+        addToast(generateToast("success","User logged out succesfully!"))
+        getData()
+      })
+      .catch(_ => {
+
+        changeLogoutUserVisible(false)
+        changeLoggingout(false)
+        addToast(generateToast("danger","Error logging out user!"))
+        getData()
+      })
+  }
+
   function handleModalIsUrlChange() {
 
     if (modalIsUrl) {
@@ -394,6 +417,7 @@ const UsersEdit = () => {
                 <CFormInput
                   type="text"
                   id="formUrl"
+                  placeholder="please enter an avatar URL"
                   value={modalUrl}
                   onChange={(e) => changeModalUrl(e.target.value)}
                 />
@@ -524,6 +548,43 @@ const UsersEdit = () => {
               <CButton style={{color: 'white'}} color="danger" onClick={() => {closeAccount(false)}}>
                 <CIcon icon={cilTrash}/>
                 &nbsp;Close account
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
+      { logoutUserVisible ? (
+      <CModal alignment="center" visible={logoutUserVisible} onClose={() => changeLogoutUserVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Logout user</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <strong>Warning!</strong>&nbsp;You are about to logout user <strong>"{formUsername}"</strong> ({formEmail}).
+          <br /><br />This will:
+          <ul>
+            <li>Delete all of the user's sessions.</li>
+            <li>Log out the user.</li>
+          </ul>
+          This action cannot be undone. Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={loggingout}
+                   onClick={() => changeLogoutUserVisible(false)}>
+            Cancel
+          </CButton>
+          {loggingout ? (
+            <CButton style={{color: 'white'}} color="danger" disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton style={{color: 'white'}} color="danger" onClick={() => {logOutUser()}}>
+                <CIcon icon={cilTrash}/>
+                &nbsp;Logout user
               </CButton>
             )
           }
@@ -897,7 +958,7 @@ const UsersEdit = () => {
                               color="danger"
                               style={{ color: 'white',
                                        display: ((record.account_closed || !record.online) ? 'none' : null )}}
-                              onClick={() => {changeDeleteVisible(true)}}>
+                              onClick={() => {changeLogoutUserVisible(true)}}>
                               <CIcon icon={cilTrash}/>
                               &nbsp;Logout user
                           </CButton>

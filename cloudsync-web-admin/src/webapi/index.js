@@ -128,6 +128,9 @@ export function saveUser (username, user) {
   return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}`, user)
 }
 
+export function removeAllUserSessions (username) {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}/sessions`)
+}
 
 // Request Log
 export function getAppReqLog(server, lastWeek, today, reqid) {
