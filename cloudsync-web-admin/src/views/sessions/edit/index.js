@@ -217,7 +217,7 @@ const SessionsEdit = () => {
                             <CFormInput
                                 type="text"
                                 id="formExpired"
-                                value={(formMode == "new" ? "" : (record.expired == true ? "Yes" : "No"))}
+                                value={(formMode == "new" ? "" : (record.expired == true ? "No" : "Yes"))}
                                 disabled={true}
                                 required={false}
                                 noValidate
