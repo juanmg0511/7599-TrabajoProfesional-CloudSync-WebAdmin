@@ -79,6 +79,10 @@ export function saveAdminUser (username, user) {
   return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/adminusers/${username}`, user)
 }
 
+export function removeAllAdminuserSessions (username) {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/users/${username}/sessions`)
+}
+
 
 // Users - Listing
 export function getUsers (show_closed, start, limit, user_filter) {

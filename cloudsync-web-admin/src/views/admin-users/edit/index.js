@@ -28,8 +28,8 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilTrash, cilWarning } from '@coreui/icons';
-import { getAdminUser, createAdminUser, saveAdminUser, removeAdminUser, doChangeAdminPassword } from '../../../webapi'
+import { cilTrash, cilWarning, cilArrowCircleTop } from '@coreui/icons';
+import { getAdminUser, createAdminUser, saveAdminUser, removeAdminUser, removeAllAdminuserSessions, doChangeAdminPassword } from '../../../webapi'
 import { UNDELETABLE_ADMIN_NAME, usernameRegex, nameRegex, emailRegex, passwordRegex } from '../../../config'
 import { getUsername } from '../../../stateapi/auth'
 import { parseTimestamp } from 'src/helpers';
@@ -45,6 +45,8 @@ const AdminEdit = () => {
   const [submitting, changeSubmitting] = useState(false)
   const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
+  const [loggingout, changeLoggingout] = useState(false)
+  const [logoutUserVisible, changeLogoutUserVisible] = useState(false)
   const [changingPassword, changeChangingPassword] = useState(false)
   const [cPasswordVisible, changeCPasswordVisible] = useState(false)
 
@@ -196,6 +198,26 @@ const AdminEdit = () => {
       })
   }
 
+  function logOutUser() {
+
+    changeLoggingout(true)
+    removeAllAdminuserSessions(record.username)
+      .then(_ => {
+
+        changeLogoutUserVisible(false)
+        changeLoggingout(false)
+        addToast(generateToast("success","User logged out succesfully!"))
+        getData()
+      })
+      .catch(_ => {
+
+        changeLogoutUserVisible(false)
+        changeLoggingout(false)
+        addToast(generateToast("danger","Error logging out user!"))
+        getData()
+      })
+  }
+
   function changePassword() {
 
     if (modalPassword != modalPasswordConfirm) {
@@ -313,6 +335,43 @@ const AdminEdit = () => {
               <CButton style={{color: 'white'}} color="danger" onClick={() => {closeAccount(false)}}>
                 <CIcon icon={cilTrash}/>
                 &nbsp;Close account
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
+      { logoutUserVisible ? (
+      <CModal alignment="center" visible={logoutUserVisible} onClose={() => changeLogoutUserVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Logout admin user</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <strong>Warning!</strong>&nbsp;You are about to logout admin user <strong>"{formUsername}"</strong> ({formEmail}).
+          <br /><br />This will:
+          <ul>
+            <li>Delete all of the admin user's sessions.</li>
+            <li>Log out the admin user.</li>
+          </ul>
+          This action cannot be undone. Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={loggingout}
+                   onClick={() => changeLogoutUserVisible(false)}>
+            Cancel
+          </CButton>
+          {loggingout ? (
+            <CButton style={{color: 'white'}} color="danger" disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton style={{color: 'white'}} color="danger" onClick={() => {logOutUser()}}>
+                <CIcon icon={cilTrash}/>
+                &nbsp;Logout user
               </CButton>
             )
           }
@@ -499,8 +558,7 @@ const AdminEdit = () => {
                         </CCol>
                       </div>
                       </CCol>
-                    <CCol style={{ textAlign: 'center' }}
-                          className="d-none d-xl-block d-xxl-block">
+                    <CCol style={{ textAlign: 'center' }}>
                       { formMode != "new" ? (
                         <>
                         <CAvatar
@@ -530,8 +588,25 @@ const AdminEdit = () => {
                       }
                     </CCol>
                     </CRow>
+                    {formMode == "view" && !record.account_closed && record.online ? (
+                      <CRow className="mb-3">
+                        <CCol style={{ marginTop: "50px"}}>
+                          <div className="d-grid gap-2 d-sm-flex">
+                            <CButton
+                                color="success"
+                                style={{ color: 'white' }}
+                                onClick={() => {navigate("/sessions?user_filter=" + record.username)}}>  
+                                <CIcon icon={cilArrowCircleTop}/>
+                                &nbsp;User Sessions
+                            </CButton>
+                          </div>
+                        </CCol>
+                      </CRow>
+                    ) : (
+                      null
+                    )}
                     <CRow className="mb-3">
-                      <CCol style={{ marginTop: "50px"}}>
+                      <CCol style={(formMode == "view" && !record.account_closed && record.online ? null : { marginTop: "50px" } )}>
                         <div className="d-grid gap-2 d-sm-flex">
                           <CButton style={{color: 'white'}}
                             ccolor="secondary"
@@ -566,6 +641,14 @@ const AdminEdit = () => {
                                 style={{ display: ( (!record.account_closed) ? null : 'none' )}}
                                 onClick={() => {changeCPasswordVisible(true)}}>
                                 Change Password
+                            </CButton>
+                            <CButton
+                              color="danger"
+                              style={{ color: 'white',
+                                       display: ((record.account_closed || record.username == loggedUser || !record.online) ? 'none' : null )}}
+                              onClick={() => {changeLogoutUserVisible(true)}}>
+                              <CIcon icon={cilTrash}/>
+                              &nbsp;Logout user
                             </CButton>
                             <CButton
                                 color="danger"
