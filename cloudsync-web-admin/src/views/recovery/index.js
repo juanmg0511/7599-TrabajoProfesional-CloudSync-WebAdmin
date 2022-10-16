@@ -35,8 +35,8 @@ import {
     CTooltip,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilPenAlt, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd, cilArrowThickFromBottom } from '@coreui/icons';
-  import { getRecoveries } from '../../webapi'
+  import { cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd, cilArrowThickFromBottom } from '@coreui/icons';
+  import { getRecoveries, removeRecovery } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
   import { parseTimestamp } from 'src/helpers';
 
@@ -50,6 +50,9 @@ const Recovery = () => {
   const [gotoPageVisible, changeGotoPageVisible] = useState(false)
   const [modalGotoPate, changeModalGotoPate] = useState("")
 
+  const [deleting, changeDeleting] = useState(false)
+  const [deleteVisible, changeDeleteVisible] = useState(false)
+  const [deleteAllVisible, changeDeleteAllVisible] = useState(false) 
   const [filterActive, changeFilterActive] = useState(false)
   const [filterText, changeFilterText] = useState("")
 
@@ -209,6 +212,26 @@ const Recovery = () => {
     }    
   }
 
+  function deleteRecord() {
+
+    changeDeleting(true)
+    removeRecovery(selectedRecord.username)
+      .then(_ => {
+
+        changeDeleteVisible(false)
+        changeDeleting(false)
+        addToast(generateToast("success","Recovery record deleted succesfully!"))
+        reloadTable()
+      })
+      .catch(_ => {
+
+        changeDeleteVisible(false)
+        changeDeleting(false)
+        addToast(generateToast("danger","Error deleting recovery record!"))
+        reloadTable()        
+      })
+  }
+
   function reloadTable() {
     changeEmptyRecords(false)
     changeRecords(null)
@@ -285,7 +308,38 @@ const Recovery = () => {
       </CModal>
       ) : (
         null
-      )}       
+      )}
+      { deleteVisible ? (
+      <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Delete password recovery request</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <strong>Warning!</strong>&nbsp;You are about to delete the password recovery request for user <strong>"{selectedRecord.username}"</strong>.<br /><br />This action cannot be undone. Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={deleting}
+                   onClick={() => changeDeleteVisible(false)}>
+            Cancel
+          </CButton>
+          {deleting ? (
+            <CButton style={{color: 'white'}} color="danger" disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton style={{color: 'white'}} color="danger" onClick={() => {changeStart(0); deleteRecord(false)}}>
+                <CIcon icon={cilTrash}/>
+                &nbsp;Delete recovery request
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
       <CCol xs={12}>
         <CCallout color="info" className="bg-white">
           <p>Welcome to the <strong>Recovery</strong> listing!</p>
@@ -364,6 +418,9 @@ const Recovery = () => {
                       <CButtonGroup>
                         <CButton color="secondary" onClick={() => {changeSelectedRecord(record); changeEditUrl("/recovery/edit?username=" + record.username + "&mode=view")}}>
                           <CIcon icon={cilPenAlt} style={{color: 'white'}} size="sm"/>
+                        </CButton>
+                        <CButton color="danger" onClick={() => {changeSelectedRecord(record); changeDeleteVisible(true)}}>
+                          <CIcon icon={cilTrash} style={{color: 'white'}} size="sm"/>
                         </CButton>
                       </CButtonGroup>    
                       </CTableDataCell>

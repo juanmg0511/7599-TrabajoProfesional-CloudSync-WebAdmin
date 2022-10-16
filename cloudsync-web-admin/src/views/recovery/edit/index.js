@@ -18,11 +18,16 @@ import {
   CFormText,
   CSpinner,
   CRow,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
   CFormTextarea,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilWarning } from '@coreui/icons';
-import { getRecovery, createRecovery } from '../../../webapi'
+import { cilTrash, cilWarning } from '@coreui/icons';
+import { getRecovery, createRecovery, removeRecovery } from '../../../webapi'
 import { usernameRegex } from '../../../config'
 import { parseTimestamp } from 'src/helpers';
 
@@ -32,6 +37,10 @@ const RecoveryEdit = () => {
   const { mode, username } = qs.parse(location.search, {
     ignoreQueryPrefix: true
   })
+
+  const [deleting, changeDeleting] = useState(false)
+  const [deleteVisible, changeDeleteVisible] = useState(false)
+
   const [formMode, changeFormMode] = useState(mode)
   const [submitting, changeSubmitting] = useState(false)
 
@@ -137,10 +146,61 @@ const RecoveryEdit = () => {
     })
   }
 
+  function deleteRecord() {
+
+    changeDeleting(true)
+    removeRecovery(record.username)
+      .then(_ => {
+
+        changeDeleteVisible(false)
+        changeDeleting(false)
+        addToast(generateToast("success","Recovery record deleted succesfully!"))
+        navigate("/recovery")
+      })
+      .catch(_ => {
+
+        changeDeleteVisible(false)
+        changeDeleting(false)
+        addToast(generateToast("danger","Error deleting recovery record!"))
+        getData()
+      })
+  }
+
 
   useEffect(() => {setupForm()}, [])
   return (
     <CRow>
+      { deleteVisible ? (
+      <CModal alignment="center" visible={deleteVisible} onClose={() => changeDeleteVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Delete password recovery request</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <strong>Warning!</strong>&nbsp;You are about to delete the password recovery request for user <strong>"{record.username}"</strong>.<br /><br />This action cannot be undone. Are you sure?
+        </CModalBody>
+        <CModalFooter>
+          <CButton style={{color: 'white'}}
+                   ccolor="secondary"
+                   disabled={deleting}
+                   onClick={() => changeDeleteVisible(false)}>
+            Cancel
+          </CButton>
+          {deleting ? (
+            <CButton style={{color: 'white'}} color="danger" disabled>
+              <CSpinner component="span" size="sm" aria-hidden="true"/>
+            </CButton>
+            ) : (
+              <CButton style={{color: 'white'}} color="danger" onClick={() => {deleteRecord(false)}}>
+                <CIcon icon={cilTrash}/>
+                &nbsp;Delete recovery request
+              </CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      ) : (
+        null
+      )}
       <CCol style={{marginLeft: 'auto', marginRight: 'auto'}} xs={10}>
         <CCallout color="info" className="bg-white">
           <p>Welcome to the <strong>Recovery details</strong> page!</p>
@@ -222,7 +282,7 @@ const RecoveryEdit = () => {
                             <CFormInput
                                 type="text"
                                 id="adminFormAccountClosed"
-                                value={(formMode == "new" ? "" : (record.expired == true ? "Yes" : "No"))}
+                                value={(formMode == "new" ? "" : (record.expired == true ? "No" : "Yes"))}
                                 disabled={true}
                                 required={false}
                                 noValidate
@@ -293,6 +353,17 @@ const RecoveryEdit = () => {
                                   </CButton>
                                 )
                               }
+                              {formMode == "view" ? (
+                                <CButton
+                                    color="danger"
+                                    style={{ color: 'white' }}
+                                    onClick={() => {changeDeleteVisible(true)}}>
+                                    <CIcon icon={cilTrash}/>
+                                    &nbsp;Delete recovery request
+                                </CButton>
+                              ) : (
+                                null
+                              )}
                             </div>
                         </CCol>
                       </CRow>

@@ -177,6 +177,10 @@ export function getRecoveries (start, limit, user_filter) {
   return axios.get(url)
 }
 
+export function removeRecovery (user) {
+  return axios.delete(APP_APPSERVER_BASE_URL + `/api/v1/recovery/${user}`)
+}
+
 // Recovery - Listing details and profile page
 export function createRecovery (user) {
   return axios.post(APP_APPSERVER_BASE_URL + '/api/v1/recovery', user)
