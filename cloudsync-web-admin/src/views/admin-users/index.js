@@ -37,7 +37,7 @@ import {
     CTooltip,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilArrowThickFromBottom } from '@coreui/icons';
+  import { cilSortAscending, cilSortDescending, cilUserPlus, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilArrowThickFromBottom } from '@coreui/icons';
   import { getAdminUsers, removeAdminUser } from '../../webapi'
   import { UNDELETABLE_ADMIN_NAME, PAGE_SIZES, usernameRegex } from '../../config'
   import { getUsername } from '../../stateapi/auth'
@@ -62,6 +62,10 @@ const AdminUsers = () => {
   const [start, changeStart] = useState(0)
   const [pageSize, changePageSize] = useState(PAGE_SIZES[0])
   const [resultsSize, changeResultsSize] = useState(0)
+
+  const [sortColumn, changeSortColumn] = useState("")
+  const [sortOrder, changeSortOrder] = useState(1)
+  const [sortActive, changeSortActive] = useState(false)
 
   const [total, changeTotal] = useState(0)
 
@@ -196,6 +200,18 @@ const AdminUsers = () => {
     }
   }
 
+  function handleSortActive(columnName) {
+
+    changeStart(0)
+    if (columnName != sortColumn) {
+      changeSortColumn(columnName)
+      changeSortOrder(1)
+    } else {
+      changeSortOrder((sortOrder == 1 ? -1 : 1))
+    }
+    changeSortActive(!sortActive)
+  }
+
   function handleGotoPage() {
 
     let input = 0
@@ -245,7 +261,7 @@ const AdminUsers = () => {
   function refresh () {
 
     //console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
-    getAdminUsers(showClosed, start, pageSize, filterText)
+    getAdminUsers(showClosed, start, pageSize, filterText, sortColumn, sortOrder)
       .then(response => {
         const { data } = response
         const u = {}
@@ -270,7 +286,7 @@ const AdminUsers = () => {
       })
   }
 
-  useEffect(() => {reloadTable()}, [start, showClosed, pageSize, filterActive])
+  useEffect(() => {reloadTable()}, [start, showClosed, pageSize, filterActive, sortActive])
   useEffect(() => {navigateToEdit()}, [editUrl])
   return (
     <CRow>
@@ -399,12 +415,72 @@ const AdminUsers = () => {
             <CTable striped align="middle" style={{textAlign: 'center'}} responsive>
               <CTableHead color="dark">
                 <CTableRow>
-                  <CTableHeaderCell scope="col">Username</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Last name</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">First name</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+                <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Username">
+                      <span onClick={() => {handleSortActive("username")}} style={{ cursor: "pointer"}}>
+                        Username&nbsp;
+                        { sortColumn == "username" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "username" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Last Name">
+                      <span onClick={() => {handleSortActive("last_name")}} style={{ cursor: "pointer"}}>
+                        Last name&nbsp;
+                        { sortColumn == "last_name" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "last_name" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>                  
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by First Name">
+                      <span onClick={() => {handleSortActive("first_name")}} style={{ cursor: "pointer"}}>
+                        First name&nbsp;
+                        { sortColumn == "first_name" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "first_name" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>                  
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Email">
+                      <span onClick={() => {handleSortActive("email")}} style={{ cursor: "pointer"}}>
+                        Email&nbsp;
+                        { sortColumn == "email" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "email" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
                   <CTableHeaderCell scope="col">Online?</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Closed account?</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Closed account">
+                      <span onClick={() => {handleSortActive("account_closed")}} style={{ cursor: "pointer"}}>
+                        Closed account?&nbsp;
+                        { sortColumn == "account_closed" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "account_closed" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
                   <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>

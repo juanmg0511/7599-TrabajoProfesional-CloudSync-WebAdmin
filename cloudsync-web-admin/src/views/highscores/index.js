@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux'
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import qs from 'qs'
 import {
     CToaster,
@@ -32,10 +32,11 @@ import {
     CTableRow,
     CPagination,
     CPaginationItem,
+    CTooltip,
     CSpinner,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd, cilArrowThickFromBottom } from '@coreui/icons';
+  import { cilSortAscending, cilSortDescending, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd, cilArrowThickFromBottom } from '@coreui/icons';
   import { getHighScores, removeHighScore } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
   import { getUsername } from '../../stateapi/auth'
@@ -63,6 +64,10 @@ const Highscores = () => {
   const [start, changeStart] = useState(0)
   const [pageSize, changePageSize] = useState(PAGE_SIZES[0])
   const [resultsSize, changeResultsSize] = useState(0)
+
+  const [sortColumn, changeSortColumn] = useState("")
+  const [sortOrder, changeSortOrder] = useState(1)
+  const [sortActive, changeSortActive] = useState(false)
 
   const [total, changeTotal] = useState(0)
 
@@ -200,6 +205,18 @@ const Highscores = () => {
     }
   }
 
+  function handleSortActive(columnName) {
+
+    changeStart(0)
+    if (columnName != sortColumn) {
+      changeSortColumn(columnName)
+      changeSortOrder(1)
+    } else {
+      changeSortOrder((sortOrder == 1 ? -1 : 1))
+    }
+    changeSortActive(!sortActive)
+  }
+
   function handleGotoPage() {
 
     let input = 0
@@ -258,7 +275,7 @@ const Highscores = () => {
       }
     }
     //console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
-    getHighScores(start, pageSize, filterText)
+    getHighScores(start, pageSize, filterText, sortColumn, sortOrder)
       .then(response => {
         const { data } = response
         const r = {}
@@ -284,7 +301,7 @@ const Highscores = () => {
   }
 
 
-  useEffect(() => {reloadTable()}, [start, pageSize, filterActive])
+  useEffect(() => {reloadTable()}, [start, pageSize, filterActive, sortActive])
   useEffect(() => {navigateToEdit()}, [editUrl])
   return (
     <CRow>
@@ -405,13 +422,97 @@ const Highscores = () => {
             <CTable striped align="middle" style={{textAlign: 'center'}} responsive>
               <CTableHead color="dark">
                 <CTableRow>
-                  <CTableHeaderCell scope="col">Username</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Achieved level</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Difficulty level</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Time elapsed</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Gold collected</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Highscore</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Date</CTableHeaderCell>
+                <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Username">
+                      <span onClick={() => {handleSortActive("username")}} style={{ cursor: "pointer"}}>
+                        Username&nbsp;
+                        { sortColumn == "username" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "username" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Achieved level">
+                      <span onClick={() => {handleSortActive("achieved_level")}} style={{ cursor: "pointer"}}>
+                        Achieved level&nbsp;
+                        { sortColumn == "achieved_level" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "achieved_level" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Difficulty level">
+                      <span onClick={() => {handleSortActive("difficulty_level")}} style={{ cursor: "pointer"}}>
+                        Difficulty level&nbsp;
+                        { sortColumn == "difficulty_level" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "difficulty_level" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Time elapsed">
+                      <span onClick={() => {handleSortActive("time_elapsed")}} style={{ cursor: "pointer"}}>
+                        Time elapsed&nbsp;
+                        { sortColumn == "time_elapsed" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "time_elapsed" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Gold collected">
+                      <span onClick={() => {handleSortActive("gold_collected")}} style={{ cursor: "pointer"}}>
+                        Gold collected&nbsp;
+                        { sortColumn == "gold_collected" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "gold_collected" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Highscore">
+                      <span onClick={() => {handleSortActive("high_score")}} style={{ cursor: "pointer"}}>
+                        Highscore&nbsp;
+                        { sortColumn == "high_score" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "high_score" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Date">
+                      <span onClick={() => {handleSortActive("date_created")}} style={{ cursor: "pointer"}}>
+                        Date&nbsp;
+                        { sortColumn == "date_created" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "date_created" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
                   <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>

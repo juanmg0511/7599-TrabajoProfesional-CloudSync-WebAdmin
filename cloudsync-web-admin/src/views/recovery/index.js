@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import qs from 'qs'
 import {
     CToaster,
@@ -36,7 +36,7 @@ import {
     CTooltip,
   } from '@coreui/react'
   import CIcon from '@coreui/icons-react'
-  import { cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd, cilArrowThickFromBottom } from '@coreui/icons';
+  import { cilSortAscending, cilSortDescending, cilPenAlt, cilTrash, cilWarning, cilReload, cilFilter, cilFilterX, cilPlaylistAdd, cilArrowThickFromBottom } from '@coreui/icons';
   import { getRecoveries, removeRecovery } from '../../webapi'
   import { PAGE_SIZES, usernameRegex } from '../../config'
   import { parseTimestamp } from 'src/helpers';
@@ -57,13 +57,16 @@ const Recovery = () => {
 
   const [deleting, changeDeleting] = useState(false)
   const [deleteVisible, changeDeleteVisible] = useState(false)
-  const [deleteAllVisible, changeDeleteAllVisible] = useState(false) 
   const [filterActive, changeFilterActive] = useState(false)
   const [filterText, changeFilterText] = useState("")
 
   const [start, changeStart] = useState(0)
   const [pageSize, changePageSize] = useState(PAGE_SIZES[0])
   const [resultsSize, changeResultsSize] = useState(0)
+
+  const [sortColumn, changeSortColumn] = useState("")
+  const [sortOrder, changeSortOrder] = useState(1)
+  const [sortActive, changeSortActive] = useState(false)
 
   const [total, changeTotal] = useState(0)
 
@@ -201,6 +204,17 @@ const Recovery = () => {
     }
   }
 
+  function handleSortActive(columnName) {
+
+    if (columnName != sortColumn) {
+      changeSortColumn(columnName)
+      changeSortOrder(1)
+    } else {
+      changeSortOrder((sortOrder == 1 ? -1 : 1))
+    }
+    changeSortActive(!sortActive)
+  }
+
   function handleGotoPage() {
 
     let input = 0
@@ -259,7 +273,7 @@ const Recovery = () => {
       }
     }
     //console.log('showClosed: ' + showClosed + ', start: ' + start + ', pageSize: ' + pageSize + ', filterText: ' + filterText)
-    getRecoveries(start, pageSize, filterText)
+    getRecoveries(start, pageSize, filterText, sortColumn, sortOrder)
       .then(response => {
         const { data } = response
         const r = {}
@@ -284,7 +298,7 @@ const Recovery = () => {
       })
   }
 
-  useEffect(() => {reloadTable()}, [start, pageSize, filterActive])
+  useEffect(() => {reloadTable()}, [start, pageSize, filterActive, sortActive])
   useEffect(() => {navigateToEdit()}, [editUrl])
   return (
     <CRow>
@@ -404,11 +418,59 @@ const Recovery = () => {
             <CTable striped align="middle" style={{textAlign: 'center'}} responsive>
               <CTableHead color="dark">
                 <CTableRow>
-                  <CTableHeaderCell scope="col">Username</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Username">
+                      <span onClick={() => {handleSortActive("username")}} style={{ cursor: "pointer"}}>
+                        Username&nbsp;
+                        { sortColumn == "username" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "username" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Email">
+                      <span onClick={() => {handleSortActive("email")}} style={{ cursor: "pointer"}}>
+                        Email&nbsp;
+                        { sortColumn == "email" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "email" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
                   <CTableHeaderCell scope="col">Valid request?</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Expires</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Created</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Expiry Date">
+                      <span onClick={() => {handleSortActive("expires")}} style={{ cursor: "pointer"}}>
+                        Expires&nbsp;
+                        { sortColumn == "expires" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "expires" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
+                  <CTableHeaderCell scope="col">
+                    <CTooltip content="Sort by Creation Date">
+                      <span onClick={() => {handleSortActive("date_created")}} style={{ cursor: "pointer"}}>
+                        Created&nbsp;
+                        { sortColumn == "date_created" && sortOrder == 1 ? (
+                          <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                        { sortColumn == "date_created" && sortOrder == -1 ? (
+                          <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
+                        ) : ( null )}
+                      </span>
+                    </CTooltip>
+                  </CTableHeaderCell>
                   <CTableHeaderCell scope="col">Actions</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>

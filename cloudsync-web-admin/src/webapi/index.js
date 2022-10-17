@@ -39,10 +39,16 @@ export function doRecoveryPassword (key, username, password) {
 
 
 // Admin Users - Listing
-export function getAdminUsers (show_closed, start, limit, user_filter) {
+export function getAdminUsers (show_closed, start, limit, user_filter, sort_column, sort_order) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/adminusers?show_closed=${show_closed}&start=${start}&limit=${limit}`
   if (user_filter) {
     url += `&user_filter=${user_filter}`
+  }
+  if (sort_column) {
+    url += `&sort_column=${sort_column}`
+  }
+  if (sort_order) {
+    url += `&sort_order=${sort_order}`
   }
   return axios.get(url)
 }
@@ -85,10 +91,16 @@ export function removeAllAdminuserSessions (username) {
 
 
 // Users - Listing
-export function getUsers (show_closed, start, limit, user_filter) {
+export function getUsers (show_closed, start, limit, user_filter, sort_column, sort_order) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/users?show_closed=${show_closed}&start=${start}&limit=${limit}`
   if (user_filter) {
     url += `&user_filter=${user_filter}`
+  }
+  if (sort_column) {
+    url += `&sort_column=${sort_column}`
+  }
+  if (sort_order) {
+    url += `&sort_order=${sort_order}`
   }
   return axios.get(url)
 }
@@ -152,10 +164,16 @@ export function getAppReqLog(server, lastWeek, today, reqid) {
 
 
 // Sessions - Listing
-export function getSessions (start, limit, user_filter) {
+export function getSessions (start, limit, user_filter, sort_column, sort_order) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/sessions?start=${start}&limit=${limit}`
   if (user_filter) {
     url += `&user_filter=${user_filter}`
+  }
+  if (sort_column) {
+    url += `&sort_column=${sort_column}`
+  }
+  if (sort_order) {
+    url += `&sort_order=${sort_order}`
   }
   return axios.get(url)
 }
@@ -176,10 +194,16 @@ export function getSession (user_filter) {
 
 
 // Recovery - Listing
-export function getRecoveries (start, limit, user_filter) {
+export function getRecoveries (start, limit, user_filter, sort_column, sort_order) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/recovery?start=${start}&limit=${limit}`
   if (user_filter) {
     url += `&user_filter=${user_filter}`
+  }
+  if (sort_column) {
+    url += `&sort_column=${sort_column}`
+  }
+  if (sort_order) {
+    url += `&sort_order=${sort_order}`
   }
   return axios.get(url)
 }
@@ -199,10 +223,16 @@ export function getRecovery (username) {
 
 
 // Game Progress - Listing
-export function getAllGameProgress (start, limit, user_filter) {
+export function getAllGameProgress (start, limit, user_filter, sort_column, sort_order) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/gameprogress?start=${start}&limit=${limit}`
   if (user_filter) {
     url += `&user_filter=${user_filter}`
+  }
+  if (sort_column) {
+    url += `&sort_column=${sort_column}`
+  }
+  if (sort_order) {
+    url += `&sort_order=${sort_order}`
   }
   return axios.get(url)
 }
@@ -226,10 +256,16 @@ export function saveGameProgress (id, progress) {
 
 
 // High Scores - Listing
-export function getHighScores (start, limit, user_filter) {
+export function getHighScores (start, limit, user_filter, sort_column, sort_order) {
   let url = APP_APPSERVER_BASE_URL + `/api/v1/highscores?start=${start}&limit=${limit}`
   if (user_filter) {
     url += `&user_filter=${user_filter}`
+  }
+  if (sort_column) {
+    url += `&sort_column=${sort_column}`
+  }
+  if (sort_order) {
+    url += `&sort_order=${sort_order}`
   }
   return axios.get(url)
 }
