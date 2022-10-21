@@ -87,9 +87,10 @@ const AdminEdit = () => {
     event.preventDefault()
     event.stopPropagation()
 
-    const passwordMissMatch = (formPassword != formPasswordConfirm ? changeFormPasswordConfirmInvalid(true) : changeFormPasswordConfirmInvalid(false))
-    if (form.checkValidity() === false || passwordMissMatch) {
+    const passwordMismatch = formPassword != formPasswordConfirm
+    if (form.checkValidity() === false || passwordMismatch) {
 
+      changeFormPasswordConfirmInvalid(true)
       addToast(generateToast("warning","Please review your input!"))
 
     } else {
