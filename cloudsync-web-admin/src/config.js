@@ -1,10 +1,8 @@
 const REACT_APP_ENV_DEFAULT = 'DEV'
 const REACT_APP_APPSERVER_BASE_URL_DEFAULT = 'https://fiuba-qa-7599-cs-app-server.herokuapp.com'
-const REACT_APP_AUTHERVER_BASE_URL_DEFAULT = 'https://fiuba-qa-7599-cs-auth-server.herokuapp.com'
 
 export const APP_ENV = (process.env.REACT_APP_ENV ? process.env.REACT_APP_ENV : REACT_APP_ENV_DEFAULT)
 export const APP_APPSERVER_BASE_URL = ( process.env.REACT_APP_APPSERVER_BASE_URL ? process.env.REACT_APP_APPSERVER_BASE_URL : REACT_APP_APPSERVER_BASE_URL_DEFAULT)
-export const APP_AUTHSERVER_BASE_URL = ( process.env.REACT_APP_AUTHSERVER_BASE_URL ? process.env.REACT_APP_AUTHSERVER_BASE_URL : REACT_APP_AUTHERVER_BASE_URL_DEFAULT)
 
 export const APP_QA_COLOR = '#F58A06'
 export const APP_DEV_COLOR = '#228C22'

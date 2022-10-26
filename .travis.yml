@@ -41,7 +41,7 @@ deploy:
   - provider: script
     script:
       # build docker images, push to dockerhub & heroku
-      docker build --build-arg envid="$ENVID_QA" --build-arg appurl="$APPURL_QA" --build-arg authurl="$AUTHURL_QA" -t juanmg0511/7599-trabajoprofesional-cloudsync-webadmin:qa .;
+      docker build --build-arg envid="$ENVID_QA" --build-arg appurl="$APPURL_QA" -t juanmg0511/7599-trabajoprofesional-cloudsync-webadmin:qa .;
       docker tag juanmg0511/7599-trabajoprofesional-cloudsync-webadmin:qa registry.heroku.com/$HEROKU_APP_NAME_QA/web;
       docker push juanmg0511/7599-trabajoprofesional-cloudsync-webadmin:qa;
       docker push registry.heroku.com/$HEROKU_APP_NAME_QA/web;
@@ -52,7 +52,7 @@ deploy:
   - provider: script
     script:
       # build docker images, push to dockerhub & heroku
-      docker build build-arg envid="$ENVID_PROD" build-arg appurl="$APPURL_PROD" --build-arg authurl="$AUTHURL_PROD" -t juanmg0511/7599-trabajoprofesional-cloudsync-webadmin:production .;
+      docker build build-arg envid="$ENVID_PROD" build-arg appurl="$APPURL_PROD" -t juanmg0511/7599-trabajoprofesional-cloudsync-webadmin:production .;
       docker tag juanmg0511/7599-trabajoprofesional-cloudsync-webadmin:production registry.heroku.com/$HEROKU_APP_NAME/web;
       docker push juanmg0511/7599-trabajoprofesional-cloudsync-webadmin:production;
       docker push registry.heroku.com/$HEROKU_APP_NAME/web;

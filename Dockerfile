@@ -31,7 +31,6 @@ ARG authurl
 # Assigning arguments to environment variables
 ENV REACT_APP_ENV $envid
 ENV REACT_APP_APPSERVER_BASE_URL $appurl
-ENV REACT_APP_AUTHSERVER_BASE_URL $authurl
 # Building the app
 RUN npm run build
 
