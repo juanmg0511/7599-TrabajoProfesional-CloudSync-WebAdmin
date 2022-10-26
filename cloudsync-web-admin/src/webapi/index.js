@@ -286,3 +286,12 @@ export function getHighScore (id) {
 export function saveHighScore (id, highscore) {
   return axios.put(APP_APPSERVER_BASE_URL + `/api/v1/highscores/${id}`, highscore)
 }
+
+// Stats - App y Auth servers
+export function getAuthStats (sort_ascending) {
+  return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/statsauthserver?sortascending=${sort_ascending}`)
+}
+
+export function getAppStats (sort_ascending) {
+  return axios.get(APP_APPSERVER_BASE_URL + `/api/v1/stats?sortascending=${sort_ascending}`)
+}
