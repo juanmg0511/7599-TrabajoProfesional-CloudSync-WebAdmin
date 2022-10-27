@@ -5,7 +5,7 @@ import {
   cilStar,
   cilUser,
   cilClock,
-  cilVideogame,
+  cilGamepad,
   cilBarChart,
   cilClipboard,
   cilLockUnlocked,
@@ -55,7 +55,7 @@ const _nav = [
     component: CNavItem,
     name: "Game Progress",
     to: "/game-progress",
-    icon: <CIcon icon={cilVideogame} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilGamepad} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,

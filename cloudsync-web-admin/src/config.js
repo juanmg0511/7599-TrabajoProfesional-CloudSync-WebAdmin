@@ -16,7 +16,7 @@ export const UNFOLDABLE_ON = 'UNFOLDABLE_ON'
 export const UNFOLDABLE_OFF = 'UNFOLDABLE_OFF'
 
 export const PAGE_SIZES = [10, 25, 50, 75, 100]
-
+export const DAYS_TO_KEEP_STATS = 30
 export const UNDELETABLE_ADMIN_NAME = 'cloudsyncgod'
 
 // Field validation regular expressions

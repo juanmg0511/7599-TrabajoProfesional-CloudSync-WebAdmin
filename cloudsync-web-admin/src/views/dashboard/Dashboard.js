@@ -1,460 +1,762 @@
-import React from 'react'
-
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  CAvatar,
-  CButton,
-  CButtonGroup,
-  CCard,
-  CCardBody,
-  CCardFooter,
-  CCardHeader,
   CCol,
-  CProgress,
+  CCard,
+  CCardHeader,
+  CCardBody,
+  CFormText,
+  CLink,
   CRow,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
+  CCallout,
+  CSpinner,
+  CToast,
+  CToastBody,
+  CToastClose,
+  CToaster,
+  CWidgetStatsF,
 } from '@coreui/react'
-import { CChartLine } from '@coreui/react-chartjs'
+import { CChartBar, CChartPie, CChartLine } from '@coreui/react-chartjs'
 import { getStyle, hexToRgba } from '@coreui/utils'
 import CIcon from '@coreui/icons-react'
-import {
-  cibCcAmex,
-  cibCcApplePay,
-  cibCcMastercard,
-  cibCcPaypal,
-  cibCcStripe,
-  cibCcVisa,
-  cibGoogle,
-  cibFacebook,
-  cibLinkedin,
-  cifBr,
-  cifEs,
-  cifFr,
-  cifIn,
-  cifPl,
-  cifUs,
-  cibTwitter,
-  cilCloudDownload,
-  cilPeople,
-  cilUser,
-  cilUserFemale,
-} from '@coreui/icons'
+import { cilWarning, cilArrowRight, cilUser, cilClock, cilBarChart, cilGamepad } from '@coreui/icons';
+import { getAppStats, getAuthStats } from '../../webapi'
+import { DAYS_TO_KEEP_STATS } from '../../config'
+import { selectProp } from 'src/helpers';
 
-import avatar1 from 'src/assets/images/avatars/1.jpg'
-import avatar2 from 'src/assets/images/avatars/2.jpg'
-import avatar3 from 'src/assets/images/avatars/3.jpg'
-import avatar4 from 'src/assets/images/avatars/4.jpg'
-import avatar5 from 'src/assets/images/avatars/5.jpg'
-import avatar6 from 'src/assets/images/avatars/6.jpg'
-
-import WidgetsBrand from '../widgets/WidgetsBrand'
-import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
 const Dashboard = () => {
-  const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
-  const progressExample = [
-    { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
-    { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
-    { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
-    { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
-    { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
-  ]
+  const [dataLoadedApp, changeDataLoadedApp] = useState(false)
+  const [dataLoadedAuth, changeDataLoadedAuth] = useState(false)
+  const [dataError, changeDataError] = useState(false)
 
-  const progressGroupExample1 = [
-    { title: 'Monday', value1: 34, value2: 78 },
-    { title: 'Tuesday', value1: 56, value2: 94 },
-    { title: 'Wednesday', value1: 12, value2: 67 },
-    { title: 'Thursday', value1: 43, value2: 91 },
-    { title: 'Friday', value1: 22, value2: 73 },
-    { title: 'Saturday', value1: 53, value2: 82 },
-    { title: 'Sunday', value1: 9, value2: 69 },
-  ]
+  const [dataApp, changeDataApp] = useState(null)
+  const [dataAuth, changeDataAuth] = useState(null)
 
-  const progressGroupExample2 = [
-    { title: 'Male', icon: cilUser, value: 53 },
-    { title: 'Female', icon: cilUserFemale, value: 43 },
-  ]
+  function generateToast(toastColor, toastMessage) {
+    return (
+      <CToast color={toastColor}
+              className="text-white align-items-center"
+      >
+        <div className="d-flex">
+          <CToastBody>{toastMessage}</CToastBody>
+          <CToastClose className="me-2 m-auto" white />
+        </div>
+      </CToast>
+    )
+  }
+  const toaster = useRef()
+  const [toast, addToast] = useState(0)
 
-  const progressGroupExample3 = [
-    { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
-    { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
-    { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
-    { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
-  ]
+  function getAppData () {
+    getAppStats(true)
+    .then(response => {
+      const { data } = response
+      changeDataApp(data)
+      changeDataLoadedApp(true)
+    })
+    .catch(_ => {
+      changeDataApp(null)
+      changeDataLoadedApp(false)
+      changeDataError(true)
+      addToast(generateToast("danger","Error fetching data!"))
+    })
+  }
 
-  const tableExample = [
-    {
-      avatar: { src: avatar1, status: 'success' },
-      user: {
-        name: 'Yiorgos Avraamu',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'USA', flag: cifUs },
-      usage: {
-        value: 50,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'success',
-      },
-      payment: { name: 'Mastercard', icon: cibCcMastercard },
-      activity: '10 sec ago',
-    },
-    {
-      avatar: { src: avatar2, status: 'danger' },
-      user: {
-        name: 'Avram Tarasios',
-        new: false,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Brazil', flag: cifBr },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'info',
-      },
-      payment: { name: 'Visa', icon: cibCcVisa },
-      activity: '5 minutes ago',
-    },
-    {
-      avatar: { src: avatar3, status: 'warning' },
-      user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2021' },
-      country: { name: 'India', flag: cifIn },
-      usage: {
-        value: 74,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'warning',
-      },
-      payment: { name: 'Stripe', icon: cibCcStripe },
-      activity: '1 hour ago',
-    },
-    {
-      avatar: { src: avatar4, status: 'secondary' },
-      user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2021' },
-      country: { name: 'France', flag: cifFr },
-      usage: {
-        value: 98,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'danger',
-      },
-      payment: { name: 'PayPal', icon: cibCcPaypal },
-      activity: 'Last month',
-    },
-    {
-      avatar: { src: avatar5, status: 'success' },
-      user: {
-        name: 'Agapetus Tadeáš',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Spain', flag: cifEs },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'primary',
-      },
-      payment: { name: 'Google Wallet', icon: cibCcApplePay },
-      activity: 'Last week',
-    },
-    {
-      avatar: { src: avatar6, status: 'danger' },
-      user: {
-        name: 'Friderik Dávid',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'Poland', flag: cifPl },
-      usage: {
-        value: 43,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'success',
-      },
-      payment: { name: 'Amex', icon: cibCcAmex },
-      activity: 'Last week',
-    },
-  ]
+  function getAuthData () {
+    getAuthStats(true)
+    .then(response => {
+      const { data } = response
+      changeDataAuth(data)
+      changeDataLoadedAuth(true)
+    })
+    .catch(_ => {
+      changeDataAuth(null)
+      changeDataError(true)
+      changeDataLoadedAuth(false)
+      addToast(generateToast("danger","Error fetching data!"))
+    })
+  }
 
+  useEffect(() => {getAppData()}, [])
+  useEffect(() => {getAuthData()}, [])
   return (
-    <>
-      <WidgetsDropdown />
-      <CCard className="mb-4">
-        <CCardBody>
-          <CRow>
-            <CCol sm={5}>
-              <h4 id="traffic" className="card-title mb-0">
-                Traffic
-              </h4>
-              <div className="small text-medium-emphasis">January - July 2021</div>
-            </CCol>
-            <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
-                <CIcon icon={cilCloudDownload} />
-              </CButton>
-              <CButtonGroup className="float-end me-3">
-                {['Day', 'Month', 'Year'].map((value) => (
-                  <CButton
-                    color="outline-secondary"
-                    key={value}
-                    className="mx-0"
-                    active={value === 'Month'}
-                  >
-                    {value}
-                  </CButton>
-                ))}
-              </CButtonGroup>
-            </CCol>
-          </CRow>
-          <CChartLine
-            style={{ height: '300px', marginTop: '40px' }}
-            data={{
-              labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-              datasets: [
-                {
-                  label: 'My First dataset',
-                  backgroundColor: hexToRgba(getStyle('--cui-info'), 10),
-                  borderColor: getStyle('--cui-info'),
-                  pointHoverBackgroundColor: getStyle('--cui-info'),
-                  borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                  fill: true,
-                },
-                {
-                  label: 'My Second dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-success'),
-                  pointHoverBackgroundColor: getStyle('--cui-success'),
-                  borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                },
-                {
-                  label: 'My Third dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-danger'),
-                  pointHoverBackgroundColor: getStyle('--cui-danger'),
-                  borderWidth: 1,
-                  borderDash: [8, 5],
-                  data: [65, 65, 65, 65, 65, 65, 65],
-                },
-              ],
-            }}
-            options={{
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: false,
-                },
-              },
-              scales: {
-                x: {
-                  grid: {
-                    drawOnChartArea: false,
-                  },
-                },
-                y: {
-                  ticks: {
-                    beginAtZero: true,
-                    maxTicksLimit: 5,
-                    stepSize: Math.ceil(250 / 5),
-                    max: 250,
-                  },
-                },
-              },
-              elements: {
-                line: {
-                  tension: 0.4,
-                },
-                point: {
-                  radius: 0,
-                  hitRadius: 10,
-                  hoverRadius: 4,
-                  hoverBorderWidth: 3,
-                },
-              },
-            }}
-          />
-        </CCardBody>
-        <CCardFooter>
-          <CRow xs={{ cols: 1 }} md={{ cols: 5 }} className="text-center">
-            {progressExample.map((item, index) => (
-              <CCol className="mb-sm-2 mb-0" key={index}>
-                <div className="text-medium-emphasis">{item.title}</div>
-                <strong>
-                  {item.value} ({item.percent}%)
-                </strong>
-                <CProgress thin className="mt-2" color={item.color} value={item.percent} />
-              </CCol>
-            ))}
-          </CRow>
-        </CCardFooter>
-      </CCard>
-
-      <WidgetsBrand withCharts />
-
+    <CRow>
       <CRow>
-        <CCol xs>
+        <CCol xs={12}>
+          <CCallout color="info" className="bg-white">
+            <p>Welcome to the <strong>FIUBA CloudSync</strong> adminstrative website!</p>
+            <p>From this page you can view at a glance all key parameters of the cloud platform:</p>
+            <ul>
+                <li>Key figures, users and admins</li>
+                <li>Sessions, reponse times and hits per endpoint</li>
+                <li>Actions related to Users, Game Progress and Highscores</li>
+                <li>API calls indicating an unsuccessful response</li>
+            </ul>
+          </CCallout>
+        </CCol>
+      </CRow>
+      { dataLoadedApp && dataLoadedAuth ? (
+        <CRow>
+          <CCol sm={6} lg={3}>
+            <CWidgetStatsF
+              className="mb-3"
+              color="primary"
+              footer={
+                <CLink
+                  className="font-weight-bold font-xs text-medium-emphasis"
+                  href="/users"
+                  rel="noopener norefferer"
+                >
+                  View more
+                  <CIcon icon={cilArrowRight} className="float-end" width={16} />
+                </CLink>
+              }
+              icon={<CIcon icon={cilUser} height={24} />}
+              title={"User account" + (dataAuth.registered_users > 1 ? "s" : "")}
+              value={dataAuth.registered_users}/>
+          </CCol>
+          <CCol sm={6} lg={3}>
+            <CWidgetStatsF
+              className="mb-3"
+              color="primary"
+              footer={
+                <CLink
+                  className="font-weight-bold font-xs text-medium-emphasis"
+                  href="/sessions"
+                  rel="noopener norefferer"
+                >
+                  View more
+                  <CIcon icon={cilArrowRight} className="float-end" width={16} />
+                </CLink>
+              }
+              icon={<CIcon icon={cilClock} height={24} />}
+              title={"Active session" + (dataAuth.active_sessions > 1 ? "s" : "")} 
+              value={dataAuth.active_sessions}/>
+          </CCol>
+          <CCol sm={6} lg={3}>
+            <CWidgetStatsF
+              className="mb-3"
+              color="primary"
+              footer={
+                <CLink
+                  className="font-weight-bold font-xs text-medium-emphasis"
+                  href="/game-progress"
+                  rel="noopener norefferer"
+                >
+                  View more
+                  <CIcon icon={cilArrowRight} className="float-end" width={16} />
+                </CLink>
+              }
+              icon={<CIcon icon={cilGamepad} height={24} />}
+              title="Game Progress"
+              value={dataApp.registered_game_progress}/>
+          </CCol>
+          <CCol sm={6} lg={3}>
+            <CWidgetStatsF
+              className="mb-3"
+              color="primary"
+              footer={
+                <CLink
+                  className="font-weight-bold font-xs text-medium-emphasis"
+                  href="/highscores"
+                  rel="noopener norefferer"
+                >
+                  View more
+                  <CIcon icon={cilArrowRight} className="float-end" width={16} />
+                </CLink>
+              }
+              icon={<CIcon icon={cilBarChart} height={24} />}
+              title={"Highscore" + (dataApp.registered_higshscores > 1 ? "s" : "")} 
+              value={dataApp.registered_higshscores}/>
+          </CCol>                                    
+        </CRow>
+      ) : (
+        null
+      )}
+      <CRow>
+        <CCol xs={12}>
           <CCard className="mb-4">
-            <CCardHeader>Traffic {' & '} Sales</CCardHeader>
-            <CCardBody>
+            <CCardHeader>
               <CRow>
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-info py-1 px-3">
-                        <div className="text-medium-emphasis small">New Clients</div>
-                        <div className="fs-5 fw-semibold">9,123</div>
-                      </div>
-                    </CCol>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Recurring Clients</div>
-                        <div className="fs-5 fw-semibold">22,643</div>
-                      </div>
-                    </CCol>
-                  </CRow>
-
-                  <hr className="mt-0" />
-                  {progressGroupExample1.map((item, index) => (
-                    <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-prepend">
-                        <span className="text-medium-emphasis small">{item.title}</span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="info" value={item.value1} />
-                        <CProgress thin color="danger" value={item.value2} />
-                      </div>
-                    </div>
-                  ))}
-                </CCol>
-
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Pageviews</div>
-                        <div className="fs-5 fw-semibold">78,623</div>
-                      </div>
-                    </CCol>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Organic</div>
-                        <div className="fs-5 fw-semibold">49,123</div>
-                      </div>
-                    </CCol>
-                  </CRow>
-
-                  <hr className="mt-0" />
-
-                  {progressGroupExample2.map((item, index) => (
-                    <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">{item.value}%</span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="warning" value={item.value} />
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="mb-5"></div>
-
-                  {progressGroupExample3.map((item, index) => (
-                    <div className="progress-group" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">
-                          {item.value}{' '}
-                          <span className="text-medium-emphasis small">({item.percent}%)</span>
-                        </span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="success" value={item.percent} />
-                      </div>
-                    </div>
-                  ))}
+                <CCol>
+                  <strong>User Stats</strong>
+                  <CFormText>Key figures, users and admins</CFormText>
                 </CCol>
               </CRow>
-
-              <br />
-
-              <CTable align="middle" className="mb-0 border" hover responsive>
-                <CTableHead color="light">
-                  <CTableRow>
-                    <CTableHeaderCell className="text-center">
-                      <CIcon icon={cilPeople} />
-                    </CTableHeaderCell>
-                    <CTableHeaderCell>User</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Country</CTableHeaderCell>
-                    <CTableHeaderCell>Usage</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Payment Method</CTableHeaderCell>
-                    <CTableHeaderCell>Activity</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {tableExample.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
-                      <CTableDataCell className="text-center">
-                        <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div>{item.user.name}</div>
-                        <div className="small text-medium-emphasis">
-                          <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-                          {item.user.registered}
-                        </div>
-                      </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="clearfix">
-                          <div className="float-start">
-                            <strong>{item.usage.value}%</strong>
-                          </div>
-                          <div className="float-end">
-                            <small className="text-medium-emphasis">{item.usage.period}</small>
-                          </div>
-                        </div>
-                        <CProgress thin color={item.usage.color} value={item.usage.value} />
-                      </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.payment.icon} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="small text-medium-emphasis">Last login</div>
-                        <strong>{item.activity}</strong>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
+            </CCardHeader>
+            <CCardBody>
+              { dataLoadedApp && dataLoadedAuth ? (
+                <>
+                  <CRow className="row-center">
+                    <CCol sm={5}>
+                      <CChartPie
+                        style={{ height: '300px' }}
+                        data={{
+                          labels: ['User accounts active', 'Users using login service', 'User accounts closed'],
+                          datasets: [
+                            {
+                              data: [dataAuth.registered_users_active,
+                                    dataAuth.registered_users_login_service,
+                                    dataAuth.registered_users_closed],
+                            },],                        
+                        }}
+                        options={{
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: {
+                              display: true,
+                              position: 'bottom'
+                            },
+                            title: {
+                              display: true,
+                              text: 'User Accounts',
+                              font: {
+                                size: 18,
+                                weight: 'bold'
+                              },
+                            },
+                            subtitle: {
+                              display: true,
+                              text: 'User account composition',
+                              font: {
+                                size: 12,
+                                style: 'italic'
+                              },
+                              padding: {
+                                bottom: 20
+                              },
+                            },    
+                          },
+                        }}
+                      />
+                    </CCol>
+                    <CCol sm={5}>
+                      <CChartPie
+                        style={{ height: '300px' }}
+                        data={{
+                          labels: ['Adminuser accounts active', 'Adminuser accounts closed'],
+                          datasets: [
+                            {
+                              data: [dataAuth.registered_adminusers_active,
+                                    dataAuth.registered_adminusers_closed],
+                            },],
+                        }}
+                        options={{
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: {
+                              display: true,
+                              position: 'bottom'
+                            },
+                            title: {
+                              display: true,
+                              text: 'Admin User Accounts',
+                              font: {
+                                size: 18,
+                                weight: 'bold'
+                              },
+                            },
+                            subtitle: {
+                              display: true,
+                              text: 'Administrator user account composition',
+                              font: {
+                                size: 12,
+                                style: 'italic'
+                              },
+                              padding: {
+                                bottom: 20
+                              },
+                            },    
+                          },
+                        }}
+                      />
+                    </CCol>
+                  </CRow>
+                </>
+              ) : (
+                dataError ? (
+                  <CRow>
+                    <CCol style={{ textAlign: 'center'}}>
+                      <CIcon icon={cilWarning} size="lg"/>
+                      <span style={{ marginLeft:"10px" }}>Error fetching data!</span>
+                    </CCol>
+                  </CRow>
+                ) : (
+                  <CRow>
+                    <CCol style={{ textAlign: 'center'}}>
+                      <CSpinner color="dark" size="sm" />
+                    </CCol>
+                  </CRow>
+                )
+              )}
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
-    </>
+      <CRow>
+        <CCol xs={12}>
+          <CCard className="mb-4">
+            <CCardHeader>
+              <CRow>
+                <CCol>
+                  <strong>Traffic {'&'} Performance</strong>
+                  <CFormText>Sessions, reponse times and hits per endpoint</CFormText>
+                </CCol>
+              </CRow>
+            </CCardHeader>
+            <CCardBody>
+              { dataLoadedApp && dataLoadedAuth ? (
+
+                <>
+                <CChartLine
+                  style={{ height: '300px' }}
+                  data={{
+                    labels: dataAuth.daily_stats.map(selectProp("date")),
+                    datasets: [
+                      {
+                        label: 'Sessions opened',
+                        data: dataAuth.daily_stats.map(selectProp("sessions_opened")),
+                      },
+                      {
+                        label: 'Sessions closed',
+                        data: dataAuth.daily_stats.map(selectProp("sessions_closed")),
+                      },
+                    ],
+                  }}
+                  options={{
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'bottom'
+                      },
+                      title: {
+                        display: true,
+                        text: 'Platform traffic',
+                        font: {
+                          size: 18,
+                          weight: 'bold'
+                        },
+                      },
+                      subtitle: {
+                        display: true,
+                        text: 'Sessions opened and closed, last ' + DAYS_TO_KEEP_STATS + ' days',
+                        font: {
+                          size: 12,
+                          style: 'italic'
+                        },
+                        padding: {
+                          bottom: 20
+                        },
+                      },
+                    },
+                  }}      
+                />
+                <CChartLine
+                  style={{ height: '300px', marginTop: '40px' }}
+                  data={{
+                    labels: dataApp.daily_stats.map(selectProp("date")),
+                    datasets: [
+                      {
+                        label: 'Maximum response time',
+                        data: dataApp.daily_stats.map(selectProp("response_time_max")),
+                      },
+                      {
+                        label: 'Average response time',
+                        data: dataApp.daily_stats.map(selectProp("response_time_avg")),
+                      },
+                      {
+                        label: 'Minimum response time',
+                        data: dataApp.daily_stats.map(selectProp("response_time_min")),
+                      },
+                    ],
+                  }}
+                  options={{
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'bottom'
+                      },
+                      title: {
+                        display: true,
+                        text: 'Average Response Times',
+                        font: {
+                          size: 18,
+                          weight: 'bold'
+                        },
+                      },
+                      subtitle: {
+                        display: true,
+                        text: 'Maximum, average and minimum, last ' + DAYS_TO_KEEP_STATS + ' days',
+                        font: {
+                          size: 12,
+                          style: 'italic'
+                        },
+                        padding: {
+                          bottom: 20
+                        },
+                      },
+                    },
+                  }}      
+                />
+                <CChartBar
+                  style={{ height: '300px' }}
+                  data={{
+                    labels: dataAuth.daily_stats.map(selectProp("date")),
+                    datasets: [
+                      {
+                        label: 'Adminusers',
+                        data: dataAuth.daily_stats.map(selectProp("requests_adminusers")),
+                      },
+                      {
+                        label: 'Users',
+                        data: dataAuth.daily_stats.map(selectProp("requests_users")),
+                      },
+                      {
+                        label: 'Sessions',
+                        data: dataAuth.daily_stats.map(selectProp("requests_sessions")),
+                      },
+                      {
+                        label: 'Recovery',
+                        data: dataAuth.daily_stats.map(selectProp("requests_recovery")),
+                      },
+                      {
+                        label: 'Gameprogress',
+                        data: dataApp.daily_stats.map(selectProp("requests_game_progress")),
+                      },
+                      {
+                        label: 'Highscores',
+                        data: dataApp.daily_stats.map(selectProp("requests_highscores")),
+                      },
+                    ],
+                  }}
+                  options={{
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'bottom'
+                      },
+                      title: {
+                        display: true,
+                        text: 'Requests Per Endpoint',
+                        font: {
+                          size: 18,
+                          weight: 'bold'
+                        },
+                      },
+                      subtitle: {
+                        display: true,
+                        text: 'Adminusers, Users, Sessions, Recovery, Gameprogress and Highscores, last ' + DAYS_TO_KEEP_STATS + ' days',
+                        font: {
+                          size: 12,
+                          style: 'italic'
+                        },
+                        padding: {
+                          bottom: 20
+                        },
+                      },
+                    },
+                  }}      
+                />
+                </>
+
+                
+              ) : (
+                dataError ? (
+                  <CRow>
+                    <CCol style={{ textAlign: 'center'}}>
+                      <CIcon icon={cilWarning} size="lg"/>
+                      <span style={{ marginLeft:"10px" }}>Error fetching data!</span>
+                    </CCol>
+                  </CRow>
+                ) : (
+                  <CRow>
+                    <CCol style={{ textAlign: 'center'}}>
+                      <CSpinner color="dark" size="sm" />
+                    </CCol>
+                  </CRow>
+                )
+              )}
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+      <CRow>
+        <CCol xs={12}>
+          <CCard className="mb-4">
+            <CCardHeader>
+              <CRow>
+                <CCol>
+                  <strong>API Activities</strong>
+                  <CFormText>Actions related to Users, Game Progress and Highscores</CFormText>
+                </CCol>
+              </CRow>
+            </CCardHeader>
+            <CCardBody>
+              { dataLoadedApp && dataLoadedAuth ? (
+                <>
+                  <CChartLine
+                    style={{ height: '300px' }}
+                    data={{
+                      labels: dataAuth.daily_stats.map(selectProp("date")),
+                      datasets: [
+                        {
+                          label: 'User accounts opened',
+                          data: dataAuth.daily_stats.map(selectProp("users_new")),
+                        },
+                        {
+                          label: 'User accounts closed',
+                          data: dataAuth.daily_stats.map(selectProp("users_deleted")),
+                        },
+                        {
+                          label: 'Password recovery requests',
+                          data: dataAuth.daily_stats.map(selectProp("recovery_requests")),
+                        },
+                      ],
+                    }}
+                    options={{
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: true,
+                          position: 'bottom'
+                        },
+                        title: {
+                          display: true,
+                          text: 'User accounts activity',
+                          font: {
+                            size: 18,
+                            weight: 'bold'
+                          },
+                        },
+                        subtitle: {
+                          display: true,
+                          text: 'Accounts opened, closed and password recovery requests, last ' + DAYS_TO_KEEP_STATS + ' days',
+                          font: {
+                            size: 12,
+                            style: 'italic'
+                          },
+                          padding: {
+                            bottom: 20
+                          },
+                        },
+
+                      },
+                    }}      
+                  />
+                  <CChartLine
+                    style={{ height: '300px', marginTop: '40px' }}
+                    data={{
+                      labels: dataApp.daily_stats.map(selectProp("date")),
+                      datasets: [
+                        {
+                          label: 'Game Progress records saved',
+                          data: dataApp.daily_stats.map(selectProp("game_progress_saved")),
+                        },
+                        {
+                          label: 'Game Progress records updated',
+                          data: dataApp.daily_stats.map(selectProp("game_progress_updated")),
+                        },
+                        {
+                          label: 'Game Progress records deleted',
+                          data: dataApp.daily_stats.map(selectProp("game_progress_deleted")),
+                        },
+                      ],
+                    }}
+                    options={{
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: true,
+                          position: 'bottom'
+                        },
+                        title: {
+                          display: true,
+                          text: 'Game progress activity',
+                          font: {
+                            size: 18,
+                            weight: 'bold'
+                          },
+                        },
+                        subtitle: {
+                          display: true,
+                          text: 'Game progress records saved, updated and deleted, last ' + DAYS_TO_KEEP_STATS + ' days',
+                          font: {
+                            size: 12,
+                            style: 'italic'
+                          },
+                          padding: {
+                            bottom: 20
+                          },
+                        },
+                      },
+                    }}      
+                  />
+                  <CChartLine
+                    style={{ height: '300px' }}
+                    data={{
+                      labels: dataApp.daily_stats.map(selectProp("date")),
+                      datasets: [
+                        {
+                          label: 'Highscore records posted',
+                          data: dataApp.daily_stats.map(selectProp("highscores_new")),
+                        },
+                        {
+                          label: 'Highscore records deleted',
+                          data: dataApp.daily_stats.map(selectProp("highscores_deleted")),
+                        },
+                      ],
+                    }}
+                    options={{
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: true,
+                          position: 'bottom'
+                        },
+                        title: {
+                          display: true,
+                          text: 'Highscores activity',
+                          font: {
+                            size: 18,
+                            weight: 'bold'
+                          },
+                        },
+                        subtitle: {
+                          display: true,
+                          text: 'Highscore records created and deleted, last ' + DAYS_TO_KEEP_STATS + ' days',
+                          font: {
+                            size: 12,
+                            style: 'italic'
+                          },
+                          padding: {
+                            bottom: 20
+                          },
+                        },
+                      },
+                    }}      
+                  />
+                </>
+              ) : (
+                dataError ? (
+                  <CRow>
+                    <CCol style={{ textAlign: 'center'}}>
+                      <CIcon icon={cilWarning} size="lg"/>
+                      <span style={{ marginLeft:"10px" }}>Error fetching data!</span>
+                    </CCol>
+                  </CRow>
+                ) : (
+                  <CRow>
+                    <CCol style={{ textAlign: 'center'}}>
+                      <CSpinner color="dark" size="sm" />
+                    </CCol>
+                  </CRow>
+                )
+              )}
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+      <CRow>
+        <CCol xs={12}>
+          <CCard className="mb-4">
+            <CCardHeader>
+              <CRow>
+                <CCol>
+                  <strong>Error Codes</strong>
+                  <CFormText>API calls indicating an unsuccessful response</CFormText>
+                </CCol>
+              </CRow>
+            </CCardHeader>
+            <CCardBody>
+
+              { dataLoadedApp && dataLoadedAuth ? (
+                <CChartLine
+                  style={{ height: '300px' }}
+                  data={{
+                    labels: dataAuth.daily_stats.map(selectProp("date")),
+                    datasets: [
+                      {
+                        label: '400 Errors',
+                        data: dataAuth.daily_stats.map(selectProp("requests_error_400")),
+                      },
+                      {
+                        label: '401 Errors',
+                        data: dataAuth.daily_stats.map(selectProp("requests_error_401")),
+                      },
+                      {
+                        label: '404 Errors',
+                        data: dataAuth.daily_stats.map(selectProp("requests_error_404")),
+                      },
+                      {
+                        label: '405 Errors',
+                        data: dataAuth.daily_stats.map(selectProp("requests_error_405")),
+                      },
+                      {
+                        label: '500 Errors',
+                        data: dataAuth.daily_stats.map(selectProp("requests_error_500")),
+                      },
+                      {
+                        label: '503 Errors',
+                        data: dataAuth.daily_stats.map(selectProp("requests_error_503")),
+                      },
+                    ],
+                  }}
+                  options={{
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'bottom'
+                      },
+                      title: {
+                        display: true,
+                        text: 'Response Error Codes',
+                        font: {
+                          size: 18,
+                          weight: 'bold'
+                        },
+                      },
+                      subtitle: {
+                        display: true,
+                        text: 'Response error code count, last ' + DAYS_TO_KEEP_STATS + ' days',
+                        font: {
+                          size: 12,
+                          style: 'italic'
+                        },
+                        padding: {
+                          bottom: 20
+                        },
+                      },
+                    },
+                  }}      
+                />
+              ) : (
+                dataError ? (
+                  <CRow>
+                    <CCol style={{ textAlign: 'center'}}>
+                      <CIcon icon={cilWarning} size="lg"/>
+                      <span style={{ marginLeft:"10px" }}>Error fetching data!</span>
+                    </CCol>
+                  </CRow>
+                ) : (
+                  <CRow>
+                    <CCol style={{ textAlign: 'center'}}>
+                      <CSpinner color="dark" size="sm" />
+                    </CCol>
+                  </CRow>
+                )
+              )}
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+      <CToaster ref={toaster} push={toast} placement="top-end" />
+    </CRow>
   )
 }
 

@@ -7,6 +7,12 @@ export function parseTimestamp(timestamp) {
   return utcDate.toUTCString()
 }
 
+export function selectProp(prop){
+  return function(obj){
+    return obj[prop];
+  }
+}
+
 export function getDefaulAvatartUrl(firstName, lastName) {
 
   return (
