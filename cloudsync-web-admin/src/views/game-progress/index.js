@@ -435,12 +435,12 @@ const GameProgress = () => {
                   </CTableHeaderCell>
                   <CTableHeaderCell scope="col">
                     <CTooltip content="Sort by Next level">
-                      <span onClick={() => {handleSortActive("difficulty_level")}} style={{ cursor: "pointer"}}>
+                      <span onClick={() => {handleSortActive("next_level")}} style={{ cursor: "pointer"}}>
                         Next level&nbsp;
-                        { sortColumn == "difficulty_level" && sortOrder == 1 ? (
+                        { sortColumn == "next_level" && sortOrder == 1 ? (
                           <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
                         ) : ( null )}
-                        { sortColumn == "difficulty_level" && sortOrder == -1 ? (
+                        { sortColumn == "next_level" && sortOrder == -1 ? (
                           <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
                         ) : ( null )}
                       </span>
@@ -448,12 +448,12 @@ const GameProgress = () => {
                   </CTableHeaderCell>
                   <CTableHeaderCell scope="col">
                     <CTooltip content="Sort by Difficulty level">
-                      <span onClick={() => {handleSortActive("next_level")}} style={{ cursor: "pointer"}}>
+                      <span onClick={() => {handleSortActive("difficulty_level")}} style={{ cursor: "pointer"}}>
                         Difficulty level&nbsp;
-                        { sortColumn == "next_level" && sortOrder == 1 ? (
+                        { sortColumn == "difficulty_level" && sortOrder == 1 ? (
                           <CIcon icon={cilSortAscending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
                         ) : ( null )}
-                        { sortColumn == "next_level" && sortOrder == -1 ? (
+                        { sortColumn == "difficulty_level" && sortOrder == -1 ? (
                           <CIcon icon={cilSortDescending} style={{color: 'var(--cui-table-color)'}} size="sm"/>
                         ) : ( null )}
                       </span>
