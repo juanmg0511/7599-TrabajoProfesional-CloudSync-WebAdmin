@@ -252,7 +252,6 @@ const Dashboard = () => {
                           datasets: [
                             {
                               borderColor: [getStyle('--cui-success'),
-                                            getStyle('--cui-info'),
                                             getStyle('--cui-dark')],
                               backgroundColor: [getStyle('--cui-success'),
                                                 getStyle('--cui-dark')],
