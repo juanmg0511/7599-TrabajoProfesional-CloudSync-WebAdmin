@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   CCol,
   CCard,
@@ -16,10 +15,10 @@ import {
   CToaster,
   CWidgetStatsF,
 } from '@coreui/react'
-import { CChartBar, CChartPie, CChartLine } from '@coreui/react-chartjs'
-import { getStyle, hexToRgba } from '@coreui/utils'
 import CIcon from '@coreui/icons-react'
 import { cilWarning, cilArrowRight, cilUser, cilClock, cilBarChart, cilGamepad } from '@coreui/icons';
+import { CChartBar, CChartPie, CChartLine } from '@coreui/react-chartjs'
+import { getStyle } from '@coreui/utils'
 import { getAppStats, getAuthStats } from '../../webapi'
 import { DAYS_TO_KEEP_STATS } from '../../config'
 import { selectProp } from 'src/helpers';
@@ -52,7 +51,9 @@ const Dashboard = () => {
   function getAppData () {
     getAppStats(true)
     .then(response => {
-      const { data } = response
+      let { data } = response
+      if (data.daily_stats.length > DAYS_TO_KEEP_STATS)
+        data.daily_stats = data.daily_stats.slice(-DAYS_TO_KEEP_STATS)
       changeDataApp(data)
       changeDataLoadedApp(true)
     })
@@ -67,7 +68,9 @@ const Dashboard = () => {
   function getAuthData () {
     getAuthStats(true)
     .then(response => {
-      const { data } = response
+      let { data } = response
+      if (data.daily_stats.length > DAYS_TO_KEEP_STATS)
+        data.daily_stats = data.daily_stats.slice(-DAYS_TO_KEEP_STATS)
       changeDataAuth(data)
       changeDataLoadedAuth(true)
     })
@@ -192,11 +195,19 @@ const Dashboard = () => {
                   <CRow className="row-center">
                     <CCol sm={5}>
                       <CChartPie
-                        style={{ height: '300px' }}
+                        style={{ height: '400px' }}
                         data={{
-                          labels: ['User accounts active', 'Users using login service', 'User accounts closed'],
+                          labels: ['User accounts active',
+                                   'Users using login service',
+                                   'User accounts closed'],
                           datasets: [
                             {
+                              borderColor: [getStyle('--cui-success'),
+                                            getStyle('--cui-info'),
+                                            getStyle('--cui-dark')],
+                              backgroundColor: [getStyle('--cui-success'),
+                                                getStyle('--cui-info'),
+                                                getStyle('--cui-dark')],
                               data: [dataAuth.registered_users_active,
                                     dataAuth.registered_users_login_service,
                                     dataAuth.registered_users_closed],
@@ -234,11 +245,17 @@ const Dashboard = () => {
                     </CCol>
                     <CCol sm={5}>
                       <CChartPie
-                        style={{ height: '300px' }}
+                        style={{ height: '400px' }}
                         data={{
-                          labels: ['Adminuser accounts active', 'Adminuser accounts closed'],
+                          labels: ['Adminuser accounts active',
+                                   'Adminuser accounts closed'],
                           datasets: [
                             {
+                              borderColor: [getStyle('--cui-success'),
+                                            getStyle('--cui-info'),
+                                            getStyle('--cui-dark')],
+                              backgroundColor: [getStyle('--cui-success'),
+                                                getStyle('--cui-dark')],
                               data: [dataAuth.registered_adminusers_active,
                                     dataAuth.registered_adminusers_closed],
                             },],
@@ -308,19 +325,24 @@ const Dashboard = () => {
             </CCardHeader>
             <CCardBody>
               { dataLoadedApp && dataLoadedAuth ? (
-
                 <>
                 <CChartLine
-                  style={{ height: '300px' }}
+                  style={{ height: '400px' }}
                   data={{
                     labels: dataAuth.daily_stats.map(selectProp("date")),
                     datasets: [
                       {
                         label: 'Sessions opened',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-success'),
+                        backgroundColor: getStyle('--cui-success'),
                         data: dataAuth.daily_stats.map(selectProp("sessions_opened")),
                       },
                       {
                         label: 'Sessions closed',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-dark'),
+                        backgroundColor: getStyle('--cui-dark'),
                         data: dataAuth.daily_stats.map(selectProp("sessions_closed")),
                       },
                     ],
@@ -352,23 +374,41 @@ const Dashboard = () => {
                         },
                       },
                     },
+                    scales: {
+                      y: {
+                        title: {
+                          display: true,
+                          text: 'Ocurrences (n)',
+                        }
+                      }
+                    },
                   }}      
                 />
                 <CChartLine
-                  style={{ height: '300px', marginTop: '40px' }}
+                  style={{ height: '400px', marginTop: '40px' }}
                   data={{
                     labels: dataApp.daily_stats.map(selectProp("date")),
                     datasets: [
                       {
                         label: 'Maximum response time',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-danger'),
+                        backgroundColor: getStyle('--cui-danger'),
                         data: dataApp.daily_stats.map(selectProp("response_time_max")),
                       },
                       {
                         label: 'Average response time',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-warning'),
+                        backgroundColor: getStyle('--cui-warning'),
+                        borderDash: [8, 5],
                         data: dataApp.daily_stats.map(selectProp("response_time_avg")),
                       },
                       {
                         label: 'Minimum response time',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-success'),
+                        backgroundColor: getStyle('--cui-success'),
                         data: dataApp.daily_stats.map(selectProp("response_time_min")),
                       },
                     ],
@@ -400,35 +440,61 @@ const Dashboard = () => {
                         },
                       },
                     },
+                    scales: {
+                      y: {
+                        title: {
+                          display: true,
+                          text: 'Time (s)',
+                        }
+                      }
+                    },
                   }}      
                 />
                 <CChartBar
-                  style={{ height: '300px' }}
+                  style={{ height: '400px' }}
                   data={{
                     labels: dataAuth.daily_stats.map(selectProp("date")),
                     datasets: [
                       {
                         label: 'Adminusers',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-success'),
+                        backgroundColor: getStyle('--cui-success'),  
                         data: dataAuth.daily_stats.map(selectProp("requests_adminusers")),
                       },
                       {
                         label: 'Users',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-warning'),
+                        backgroundColor: getStyle('--cui-warning'),  
                         data: dataAuth.daily_stats.map(selectProp("requests_users")),
                       },
                       {
                         label: 'Sessions',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-danger'),
+                        backgroundColor: getStyle('--cui-danger'),  
                         data: dataAuth.daily_stats.map(selectProp("requests_sessions")),
                       },
                       {
                         label: 'Recovery',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-info'),
+                        backgroundColor: getStyle('--cui-info'),  
                         data: dataAuth.daily_stats.map(selectProp("requests_recovery")),
                       },
                       {
                         label: 'Gameprogress',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-primary'),
+                        backgroundColor: getStyle('--cui-primary'),  
                         data: dataApp.daily_stats.map(selectProp("requests_game_progress")),
                       },
                       {
                         label: 'Highscores',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-dark'),
+                        backgroundColor: getStyle('--cui-dark'),  
                         data: dataApp.daily_stats.map(selectProp("requests_highscores")),
                       },
                     ],
@@ -460,11 +526,17 @@ const Dashboard = () => {
                         },
                       },
                     },
+                    scales: {
+                      y: {
+                        title: {
+                          display: true,
+                          text: 'Ocurrences (n)',
+                        }
+                      }
+                    },
                   }}      
                 />
                 </>
-
-                
               ) : (
                 dataError ? (
                   <CRow>
@@ -500,20 +572,29 @@ const Dashboard = () => {
               { dataLoadedApp && dataLoadedAuth ? (
                 <>
                   <CChartLine
-                    style={{ height: '300px' }}
+                    style={{ height: '400px' }}
                     data={{
                       labels: dataAuth.daily_stats.map(selectProp("date")),
                       datasets: [
                         {
                           label: 'User accounts opened',
+                          borderWidth: 1,
+                          borderColor: getStyle('--cui-success'),
+                          backgroundColor: getStyle('--cui-success'),  
                           data: dataAuth.daily_stats.map(selectProp("users_new")),
                         },
                         {
                           label: 'User accounts closed',
+                          borderWidth: 1,
+                          borderColor: getStyle('--cui-danger'),
+                          backgroundColor: getStyle('--cui-danger'),  
                           data: dataAuth.daily_stats.map(selectProp("users_deleted")),
                         },
                         {
                           label: 'Password recovery requests',
+                          borderWidth: 1,
+                          borderColor: getStyle('--cui-warning'),
+                          backgroundColor: getStyle('--cui-warning'),  
                           data: dataAuth.daily_stats.map(selectProp("recovery_requests")),
                         },
                       ],
@@ -544,25 +625,41 @@ const Dashboard = () => {
                             bottom: 20
                           },
                         },
-
                       },
+                      scales: {
+                        y: {
+                          title: {
+                            display: true,
+                            text: 'Ocurrences (n)',
+                          }
+                        }
+                      },  
                     }}      
                   />
                   <CChartLine
-                    style={{ height: '300px', marginTop: '40px' }}
+                    style={{ height: '400px', marginTop: '40px' }}
                     data={{
                       labels: dataApp.daily_stats.map(selectProp("date")),
                       datasets: [
                         {
                           label: 'Game Progress records saved',
+                          borderWidth: 1,
+                          borderColor: getStyle('--cui-success'),
+                          backgroundColor: getStyle('--cui-success'),  
                           data: dataApp.daily_stats.map(selectProp("game_progress_saved")),
                         },
                         {
                           label: 'Game Progress records updated',
+                          borderWidth: 1,
+                          borderColor: getStyle('--cui-warning'),
+                          backgroundColor: getStyle('--cui-warning'),  
                           data: dataApp.daily_stats.map(selectProp("game_progress_updated")),
                         },
                         {
                           label: 'Game Progress records deleted',
+                          borderWidth: 1,
+                          borderColor: getStyle('--cui-danger'),
+                          backgroundColor: getStyle('--cui-danger'),  
                           data: dataApp.daily_stats.map(selectProp("game_progress_deleted")),
                         },
                       ],
@@ -594,19 +691,33 @@ const Dashboard = () => {
                           },
                         },
                       },
+                      scales: {
+                        y: {
+                          title: {
+                            display: true,
+                            text: 'Ocurrences (n)',
+                          }
+                        }
+                      },
                     }}      
                   />
                   <CChartLine
-                    style={{ height: '300px' }}
+                    style={{ height: '400px' }}
                     data={{
                       labels: dataApp.daily_stats.map(selectProp("date")),
                       datasets: [
                         {
                           label: 'Highscore records posted',
+                          borderWidth: 1,
+                          borderColor: getStyle('--cui-success'),
+                          backgroundColor: getStyle('--cui-success'),  
                           data: dataApp.daily_stats.map(selectProp("highscores_new")),
                         },
                         {
                           label: 'Highscore records deleted',
+                          borderWidth: 1,
+                          borderColor: getStyle('--cui-danger'),
+                          backgroundColor: getStyle('--cui-danger'),  
                           data: dataApp.daily_stats.map(selectProp("highscores_deleted")),
                         },
                       ],
@@ -637,6 +748,14 @@ const Dashboard = () => {
                             bottom: 20
                           },
                         },
+                      },
+                      scales: {
+                        y: {
+                          title: {
+                            display: true,
+                            text: 'Ocurrences (n)',
+                          }
+                        }
                       },
                     }}      
                   />
@@ -676,32 +795,50 @@ const Dashboard = () => {
 
               { dataLoadedApp && dataLoadedAuth ? (
                 <CChartLine
-                  style={{ height: '300px' }}
+                  style={{ height: '400px' }}
                   data={{
                     labels: dataAuth.daily_stats.map(selectProp("date")),
                     datasets: [
                       {
                         label: '400 Errors',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-info'),
+                        backgroundColor: getStyle('--cui-info'),
                         data: dataAuth.daily_stats.map(selectProp("requests_error_400")),
                       },
                       {
                         label: '401 Errors',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-warning'),
+                        backgroundColor: getStyle('--cui-warning'),
                         data: dataAuth.daily_stats.map(selectProp("requests_error_401")),
                       },
                       {
                         label: '404 Errors',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-dark'),
+                        backgroundColor: getStyle('--cui-dark'),
                         data: dataAuth.daily_stats.map(selectProp("requests_error_404")),
                       },
                       {
                         label: '405 Errors',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-success'),
+                        backgroundColor: getStyle('--cui-success'),
                         data: dataAuth.daily_stats.map(selectProp("requests_error_405")),
                       },
                       {
                         label: '500 Errors',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-danger'),
+                        backgroundColor: getStyle('--cui-danger'),
                         data: dataAuth.daily_stats.map(selectProp("requests_error_500")),
                       },
                       {
                         label: '503 Errors',
+                        borderWidth: 1,
+                        borderColor: getStyle('--cui-primary'),
+                        backgroundColor: getStyle('--cui-primary'),
                         data: dataAuth.daily_stats.map(selectProp("requests_error_503")),
                       },
                     ],
@@ -732,6 +869,14 @@ const Dashboard = () => {
                           bottom: 20
                         },
                       },
+                    },
+                    scales: {
+                      y: {
+                        title: {
+                          display: true,
+                          text: 'Ocurrences (n)',
+                        }
+                      }
                     },
                   }}      
                 />
