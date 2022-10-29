@@ -150,7 +150,7 @@ const UsersEdit = () => {
         if (err.response.data.message)
           message = "Error: " + err.response.data.message
 
-        if (formMode == "edit") {
+        if ((formMode == "edit") && (!((err.response.status == 400) && (err.response.data.code == -4)))) {
           changeFormMode("view")
           getData()
         }
