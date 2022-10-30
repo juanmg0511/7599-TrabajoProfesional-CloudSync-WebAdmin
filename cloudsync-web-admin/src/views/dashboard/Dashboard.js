@@ -105,7 +105,7 @@ const Dashboard = () => {
           <CCol sm={6} lg={3}>
             <CWidgetStatsF
               className="mb-3"
-              color="primary"
+              color="success"
               footer={
                 <CLink
                   className="font-weight-bold font-xs text-medium-emphasis"
@@ -123,7 +123,7 @@ const Dashboard = () => {
           <CCol sm={6} lg={3}>
             <CWidgetStatsF
               className="mb-3"
-              color="primary"
+              color="info"
               footer={
                 <CLink
                   className="font-weight-bold font-xs text-medium-emphasis"
@@ -141,7 +141,7 @@ const Dashboard = () => {
           <CCol sm={6} lg={3}>
             <CWidgetStatsF
               className="mb-3"
-              color="primary"
+              color="warning"
               footer={
                 <CLink
                   className="font-weight-bold font-xs text-medium-emphasis"
