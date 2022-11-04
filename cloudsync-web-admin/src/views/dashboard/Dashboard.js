@@ -197,9 +197,9 @@ const Dashboard = () => {
                       <CChartPie
                         style={{ height: '400px' }}
                         data={{
-                          labels: ['User accounts active',
-                                   'Users using login service',
-                                   'User accounts closed'],
+                          labels: ['Active accounts',
+                                   'Active accounts (login service)',
+                                   'Closed accounts'],
                           datasets: [
                             {
                               borderColor: [getStyle('--cui-success'),
@@ -209,8 +209,8 @@ const Dashboard = () => {
                                                 getStyle('--cui-info'),
                                                 getStyle('--cui-dark')],
                               data: [dataAuth.registered_users_active,
-                                    dataAuth.registered_users_login_service,
-                                    dataAuth.registered_users_closed],
+                                     dataAuth.registered_users_login_service,
+                                     dataAuth.registered_users_closed],
                             },],                        
                         }}
                         options={{
@@ -247,8 +247,8 @@ const Dashboard = () => {
                       <CChartPie
                         style={{ height: '400px' }}
                         data={{
-                          labels: ['Adminuser accounts active',
-                                   'Adminuser accounts closed'],
+                          labels: ['Active accounts',
+                                   'Closed accounts'],
                           datasets: [
                             {
                               borderColor: [getStyle('--cui-success'),
