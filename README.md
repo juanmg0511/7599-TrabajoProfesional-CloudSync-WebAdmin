@@ -33,10 +33,12 @@ El mismo consiste en la creación de un juego en 2D con mecánicas _roguelike_ c
 ## Ambientes
 
 ### Production (PR)
-[![Build Status](https://app.travis-ci.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin.svg?branch=master&kill_cache=1?)](https://app.travis-ci.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin)
+[![Build Status](https://app.travis-ci.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin.svg?branch=master&kill_cache=1?)](https://app.travis-ci.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin)  
+https://fiuba-pr-7599-cs-web-admin.herokuapp.com/
 
 ### Quality Assurance (QA)
-[![Build Status](https://app.travis-ci.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin.svg?branch=qa&kill_cache=1?)](https://app.travis-ci.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin)
+[![Build Status](https://app.travis-ci.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin.svg?branch=qa&kill_cache=1?)](https://app.travis-ci.com/juanmg0511/7599-TrabajoProfesional-CloudSync-WebAdmin)  
+https://fiuba-qa-7599-cs-web-admin.herokuapp.com/
 
 ### Development (DV - desarrollo local)
 
